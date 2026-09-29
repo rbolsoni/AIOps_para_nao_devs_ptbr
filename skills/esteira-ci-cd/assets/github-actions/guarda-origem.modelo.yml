@@ -1,0 +1,31 @@
+# Sinaliza, com check vermelho, PR para main que não venha de staging.
+#
+# ATENÇÃO ao que isto NÃO faz: sozinho, não impede o merge. Só bloqueia se a hospedagem
+# permitir exigir este check (ruleset / proteção de branch) — o que pode não existir no seu
+# plano. Quem de fato barra a produção é o job "homologacao" do release. Este check existe
+# para avisar o contribuidor na hora, em vez de ele descobrir na release.
+
+name: Guarda — main só recebe PR de staging
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  origem:
+    name: Origem do PR é staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Conferir branch de origem
+        env:
+          ORIGEM: ${{ github.head_ref }}
+        run: |
+          if [ "$ORIGEM" != "staging" ]; then
+            echo "::error::PR para main só pode sair de staging. Este vem de '$ORIGEM'. Abra o PR para staging; a promoção para main sai de lá."
+            exit 1
+          fi
+          echo "Origem staging: permitido."

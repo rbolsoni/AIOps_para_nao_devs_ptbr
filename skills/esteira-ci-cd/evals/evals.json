@@ -1,0 +1,37 @@
+{
+  "skill_name": "esteira-ci-cd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Quero que todo merge na main vá direto pra produção na Vercel, mas sem risco de subir código quebrado. Temos Postgres com migrações e o repositório é privado no GitHub Free.",
+      "expected_output": "O agente propõe fluxo de promoção staging -> main, explica que proteção de branch não está disponível no plano, implementa a trava na release (CI verde na staging para o mesmo SHA), desliga o deploy automático por git e lista as tarefas de painel.",
+      "assertions": [
+        "Explica que a proteção de branch pode não existir no plano e que a trava fica na esteira",
+        "O workflow de release verifica via API o CI verde na staging para o commit promovido",
+        "Instrui a desligar o deploy automático por git da plataforma",
+        "Segredos de produção ficam num environment separado",
+        "Actions fixadas por SHA"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Nosso release terminou verde mas o site não atualizou. O passo de deploy tem 'if: env.VERCEL_TOKEN != ''''. Descobre o que houve.",
+      "expected_output": "O agente identifica que o passo foi pulado porque o segredo não estava disponível, troca por verificação que falha com mensagem clara e orienta cadastrar o segredo no environment correto.",
+      "assertions": [
+        "Identifica que o if pulou o passo silenciosamente",
+        "Substitui por verificação que falha quando o segredo está ausente",
+        "Indica onde cadastrar o segredo (environment correto)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "configura release automática com versionamento semântico pra essa biblioteca, sem homologação",
+      "expected_output": "O agente usa o fluxo em tronco com release disparada pelo fim do CI (workflow_run), cálculo de versão pelos Commits Convencionais, e nenhuma release quando só há docs/chore.",
+      "assertions": [
+        "A release só roda quando o CI termina com sucesso em push na main",
+        "Versão calculada por feat/fix/breaking",
+        "Commits só de docs/chore não geram release"
+      ]
+    }
+  ]
+}

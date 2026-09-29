@@ -1,0 +1,10 @@
+[
+  { "query": "esse código tá uma bagunça, organiza pra mim seguindo boas práticas", "should_trigger": true },
+  { "query": "como aplico SOLID nesse módulo de pagamentos em Java?", "should_trigger": true },
+  { "query": "revisa a qualidade dessa classe UserService, acho que ela faz coisa demais", "should_trigger": true },
+  { "query": "tem muito if repetido por tipo de cliente espalhado no código, como resolvo?", "should_trigger": true },
+  { "query": "quero criar a estrutura de pastas de um novo serviço em Go de forma limpa", "should_trigger": true },
+  { "query": "configura o prettier para formatar ao salvar no VS Code", "should_trigger": false },
+  { "query": "qual o melhor livro para aprender algoritmos e estruturas de dados?", "should_trigger": false },
+  { "query": "o CI quebrou no passo de lint, vê o que aconteceu no workflow", "should_trigger": false }
+]

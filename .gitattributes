@@ -1,0 +1,10 @@
+# Terminação de linha única no repositório. Sem isto, com core.autocrlf=true no Windows,
+# arquivos acabam misturando CRLF e LF, e scripts que editam texto corrompem em silêncio.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

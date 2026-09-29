@@ -1,0 +1,10 @@
+[
+  { "query": "adiciona CPF e telefone no cadastro de clientes", "should_trigger": true },
+  { "query": "o Sentry está capturando o e-mail dos usuários nos erros, tem problema?", "should_trigger": true },
+  { "query": "preciso de uma política de privacidade para o app", "should_trigger": true },
+  { "query": "um cliente pediu todos os dados que temos dele, como exporto?", "should_trigger": true },
+  { "query": "vamos mandar os dados dos pedidos para uma IA resumir, pode?", "should_trigger": true },
+  { "query": "muda a cor do botão de salvar na tela de perfil", "should_trigger": false },
+  { "query": "configura o modo privado do repositório no GitHub", "should_trigger": false },
+  { "query": "otimiza o carregamento da lista de produtos", "should_trigger": false }
+]

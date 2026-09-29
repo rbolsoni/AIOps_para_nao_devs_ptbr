@@ -1,0 +1,10 @@
+[
+  { "query": "commita isso aí com uma mensagem boa", "should_trigger": true },
+  { "query": "abre um PR dessa branch para a staging", "should_trigger": true },
+  { "query": "dei push na main sem querer, como desfaço?", "should_trigger": true },
+  { "query": "salva tudo no github", "should_trigger": true },
+  { "query": "deu conflito no merge com a main, resolve", "should_trigger": true },
+  { "query": "o workflow de release não está calculando a versão certa, corrige o YAML", "should_trigger": false },
+  { "query": "instala o git no meu Windows", "should_trigger": false },
+  { "query": "cria um webhook que recebe eventos de push do GitHub na nossa API", "should_trigger": false }
+]

@@ -1,0 +1,32 @@
+# --- Segredos e configuração local (valem para qualquer stack) ---
+# Junte estas linhas ao .gitignore padrão da linguagem (github.com/github/gitignore).
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+credentials.json
+service-account*.json
+# Tokens de ferramentas de build/monitoramento guardados em arquivo local
+.env.sentry-build-plugin
+.npmrc.local
+
+# --- Artefatos que não devem ser versionados ---
+node_modules/
+dist/
+build/
+coverage/
+.venv/
+__pycache__/
+target/
+bin/
+obj/
+*.log
+
+# --- Área de trabalho de agentes de IA (dados transitórios) ---
+.agentes/

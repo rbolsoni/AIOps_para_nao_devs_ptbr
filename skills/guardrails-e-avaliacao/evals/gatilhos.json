@@ -1,0 +1,10 @@
+[
+  { "query": "como impeço que usuários façam prompt injection no meu chatbot?", "should_trigger": true },
+  { "query": "monta uma suíte de evals pro nosso agente antes de trocar de modelo", "should_trigger": true },
+  { "query": "quero usar NeMo Guardrails para bloquear assuntos fora do escopo", "should_trigger": true },
+  { "query": "o bot está vazando o e-mail dos clientes nas respostas", "should_trigger": true },
+  { "query": "minha skill não está sendo ativada quando deveria, como testo?", "should_trigger": true },
+  { "query": "escreve testes unitários para a função de cálculo de impostos", "should_trigger": false },
+  { "query": "configura o guard do Laravel para autenticar as rotas de admin", "should_trigger": false },
+  { "query": "configura o limite de requisições por IP na API de login", "should_trigger": false }
+]

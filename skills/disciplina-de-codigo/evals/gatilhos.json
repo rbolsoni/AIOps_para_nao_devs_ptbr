@@ -1,0 +1,10 @@
+[
+  { "query": "arruma o bug do botão de salvar que não faz nada", "should_trigger": true },
+  { "query": "Implemente paginação na listagem de clientes em src/clientes/lista.py", "should_trigger": true },
+  { "query": "refatora esse controller que tá gigante", "should_trigger": true },
+  { "query": "adiciona um campo de telefone no cadastro e salva no banco", "should_trigger": true },
+  { "query": "faz funcionar o script de importação, dá erro na linha 40", "should_trigger": true },
+  { "query": "o que é um closure em javascript? só quero entender o conceito", "should_trigger": false },
+  { "query": "me explica a diferença entre REST e GraphQL para uma apresentação", "should_trigger": false },
+  { "query": "resume esse artigo sobre arquitetura de microsserviços", "should_trigger": false }
+]

@@ -1,0 +1,25 @@
+{
+  "skill_name": "memoria-de-projeto",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Da próxima vez não roda o build local, ele manda os source maps pro Sentry de verdade. Lembra disso.",
+      "expected_output": "Uma memória do tipo feedback ou projeto, em arquivo próprio, com Por quê e Como aplicar, data absoluta e linha correspondente no índice.",
+      "assertions": [
+        "Cria um arquivo de memória separado com frontmatter nome, descricao, tipo e atualizado",
+        "O corpo contém 'Por quê' e 'Como aplicar'",
+        "Adiciona uma linha ao INDICE.md apontando para o arquivo",
+        "Não registra nenhum token ou segredo"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Anota aí que o projeto usa Next.js 15 e a pasta de componentes é src/components",
+      "expected_output": "O agente observa que isso já está no código/package.json e pergunta o que foi não óbvio antes de registrar, em vez de duplicar o que o repositório já informa.",
+      "assertions": [
+        "Aponta que a informação já é derivável do repositório",
+        "Pergunta se há algo não óbvio a registrar ou registra apenas o não óbvio"
+      ]
+    }
+  ]
+}

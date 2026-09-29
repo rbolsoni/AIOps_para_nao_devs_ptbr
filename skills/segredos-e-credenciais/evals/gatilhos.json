@@ -1,0 +1,10 @@
+[
+  { "query": "onde eu coloco a chave da API da OpenAI no meu projeto?", "should_trigger": true },
+  { "query": "acho que subi minha senha do banco no GitHub", "should_trigger": true },
+  { "query": "cria o Dockerfile da aplicação Node", "should_trigger": true },
+  { "query": "configura a conexão com o banco lendo a string do ambiente", "should_trigger": true },
+  { "query": "roda uma varredura pra ver se tem token esquecido no código", "should_trigger": true },
+  { "query": "cria a tela de 'esqueci minha senha' para os usuários do app", "should_trigger": false },
+  { "query": "gera um gerador de senhas aleatórias em Python para o usuário final", "should_trigger": false },
+  { "query": "explica como funciona criptografia de chave pública", "should_trigger": false }
+]

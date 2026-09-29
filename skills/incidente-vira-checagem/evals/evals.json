@@ -1,0 +1,17 @@
+{
+  "skill_name": "incidente-vira-checagem",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Descobrimos que um PDF com o manual interno do painel admin estava em public/ e qualquer um baixava. Já removi. Como garanto que não volta?",
+      "expected_output": "Registro de incidente sem culpados, checagem automática que lista a pasta pública e falha para padrões proibidos (com cabeçalho de origem, saída 0/1/2 e --json), prova de que a checagem pega um caso de violação, ligação na esteira e nota na memória.",
+      "assertions": [
+        "Cria registro do incidente incluindo por que nada pegou antes",
+        "Cria checagem automática que verifica a pasta pública pelo padrão, não só aquele arquivo",
+        "A checagem tem cabeçalho com a origem e distingue 'não verificado' de 'violação'",
+        "Demonstra a checagem falhando contra um arquivo de exemplo proibido",
+        "Adiciona a checagem à esteira"
+      ]
+    }
+  ]
+}

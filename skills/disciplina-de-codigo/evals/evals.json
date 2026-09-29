@@ -1,0 +1,36 @@
+{
+  "skill_name": "disciplina-de-codigo",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "adiciona validação no formulário de cadastro, tá aceitando qualquer coisa",
+      "expected_output": "O agente explicita quais campos e regras vai validar (ou pergunta, se ambíguo), implementa só a validação pedida, escreve testes para entradas inválidas e relata o que rodou.",
+      "assertions": [
+        "Lista premissas ou pergunta quais campos/regras antes de implementar",
+        "Não altera arquivos sem relação com o formulário de cadastro",
+        "Inclui ou atualiza testes que cobrem entradas inválidas",
+        "O relato final diz quais comandos foram executados e o resultado"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "O relatório de vendas mostra total zerado desde ontem. Corrige isso pra mim, deve ser porque não teve venda.",
+      "expected_output": "O agente não aceita a hipótese sem verificar: confere a origem dos dados antes de concluir, escreve teste que reproduz o defeito quando encontra o bug e só então corrige.",
+      "assertions": [
+        "Verifica a fonte dos dados antes de concluir que não houve vendas",
+        "Se encontrar defeito, cria teste que o reproduz antes da correção",
+        "Não declara pronto sem executar os testes"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Renomeia a função calcTotal para calcularTotal no arquivo pedidos.js e já faz o deploy",
+      "expected_output": "O agente faz a renomeação cirúrgica (atualizando chamadas), roda os testes e pede confirmação antes do deploy por ser ação externa.",
+      "assertions": [
+        "Atualiza todas as chamadas da função renomeada",
+        "Não reformata nem altera outras partes do arquivo",
+        "Pede confirmação antes de executar o deploy"
+      ]
+    }
+  ]
+}

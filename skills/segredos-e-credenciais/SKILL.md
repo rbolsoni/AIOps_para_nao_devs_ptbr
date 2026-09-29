@@ -1,0 +1,101 @@
+---
+name: segredos-e-credenciais
+description: >-
+  Use sempre que o trabalho envolver senhas, chaves de API, tokens, certificados,
+  strings de conexão, arquivos .env, variáveis de ambiente, secrets da esteira ou da
+  plataforma de deploy — ao escrever código que lê configuração, integrar um serviço
+  externo, montar Dockerfile, commitar, ou quando um segredo possa ter vazado (commit,
+  log, print, conversa). Garante que nenhum segredo fique no código, na imagem ou no
+  histórico, e conduz a rotação quando vazar. Inclui varredor de segredos sem instalação.
+license: MIT
+compatibility: O script de varredura requer Node.js 20+; usa o git quando disponível.
+metadata:
+  categoria: seguranca-e-conformidade
+  versao: "1.0.0"
+---
+
+# Segredos e credenciais
+
+Um segredo que entrou no repositório deve ser tratado como vazado — mesmo que o
+repositório seja privado, mesmo que o commit tenha sido apagado. O histórico guarda tudo,
+clones e caches guardam o histórico, e repositório privado muda de visibilidade, ganha
+colaboradores e é copiado por ferramentas.
+
+## Regras
+
+1. **Nenhum segredo em arquivo versionado**: nem no código, nem em teste, exemplo,
+   documentação, comentário, notebook ou mensagem de commit.
+2. **Configuração obrigatória ausente derruba a aplicação** com erro claro. Nunca use valor
+   padrão literal para credencial:
+
+   ```javascript
+   // Errado: embute a chave e ainda a usa em silêncio quando a variável falta
+   const chave = process.env.PAGAMENTO_API_KEY || '<chave-real>';
+
+   // Certo
+   const chave = process.env.PAGAMENTO_API_KEY;
+   if (!chave) throw new Error('PAGAMENTO_API_KEY não configurada (veja .env.example)');
+   ```
+
+3. **`.env` fica fora do git e fora da imagem.** `.gitignore` e `.dockerignore` excluem
+   `.env*` (exceto `.env.example`). Sem `.dockerignore`, um `COPY . .` leva o `.env` para uma
+   camada da imagem — e a camada fica no cache e no registro.
+4. **`.env.example` lista toda variável**, com marcador (`<sua-chave-aqui>`) e comentário
+   dizendo onde obter o valor.
+5. **Segredo mora em cofre**: secrets da esteira separados por ambiente, variáveis da
+   plataforma de deploy, gerenciador de segredos da nuvem. Configuração pública (enviada ao
+   navegador) pode ficar como variável comum — e nunca carrega segredo.
+6. **Menor privilégio e uma chave por ambiente e por uso.** Chave de desenvolvimento não
+   abre produção. Chave que ignora as regras de acesso (service role, admin) só no servidor,
+   só onde é indispensável.
+7. **Nunca peça ao usuário para colar um segredo na conversa.** Diga onde ele deve
+   cadastrar (arquivo `.env` local, painel de secrets) e como confirmar que funcionou (skill
+   `guiar-usuario-em-paineis`). Se o usuário colar um segredo na conversa, avise que ele
+   deve ser considerado exposto e rotacionado.
+8. **Segredo não aparece em log, erro ou saída de ferramenta.** Mascare (primeiros
+   caracteres + tamanho) quando precisar identificar qual chave está em uso.
+9. **Arquivos locais de ferramentas também carregam segredo** (tokens de plugins de build,
+   `.npmrc`, credenciais de CLI). Eles precisam estar no `.gitignore` — e causam efeitos
+   externos quando a ferramenta roda localmente.
+
+## Varredura
+
+Use as três camadas, da mais barata para a mais completa:
+
+1. **Na hospedagem**: varredura de segredos com bloqueio de push (no GitHub, *secret
+   scanning* e *push protection*, gratuitos em repositório público; em privado dependem do
+   plano). É tarefa de painel para o usuário.
+2. **Na esteira e antes do commit**: gitleaks, ou o script desta skill quando não houver
+   instalação:
+   `node scripts/verificar-segredos.mjs` (arquivos do git) ou `--todos` (pasta sem git).
+3. **Revisão**: todo PR é lido procurando credencial, URL com senha, token em teste.
+
+Falso positivo se resolve na linha, com motivo (`verificar-segredos: ignorar (fixture
+gerada)`), nunca desligando a regra — e nunca para um segredo real.
+
+## Se vazou
+
+Siga [references/resposta-a-vazamento.md](references/resposta-a-vazamento.md). O primeiro
+passo é sempre **rotacionar**: remover do código e reescrever o histórico não invalidam a
+credencial.
+
+## Script disponível
+
+- **`scripts/verificar-segredos.mjs`** — procura chaves privadas, tokens de provedores
+  conhecidos, JWT com papel de serviço, URL com senha, `.env` versionado, credencial literal
+  de alta entropia e valor padrão literal para variável sensível (JS/TS, Python, Ruby, PHP,
+  C#, Java). Opções: `--todos`, `--json`, `--help`. Sai com 1 se encontrar algo. Nunca
+  imprime o segredo inteiro.
+
+## Armadilhas
+
+- **Fixture de teste com token no formato real**: dispara scanners e o bloqueio de push da
+  hospedagem. Gere o valor em tempo de execução ou use marcador óbvio.
+- **Scanner que acusa configuração pública** (chave anônima, variável com prefixo público):
+  a equipe aprende a ignorar o scanner. Diferencie público de secreto nas regras.
+- **Documentar o incidente com o padrão vulnerável** faz o scanner acusar a documentação.
+  Restrinja regras de código a arquivos de código.
+- **Segredo passado como argumento de linha de comando** aparece na lista de processos e
+  no histórico do shell. Use variável de ambiente ou arquivo com permissão restrita.
+- **`echo $SEGREDO` para "depurar" na esteira**: a máscara automática da plataforma não
+  cobre valores transformados (base64, trechos). Não imprima.

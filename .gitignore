@@ -1,0 +1,20 @@
+# Dependências e artefatos
+node_modules/
+coverage/
+*.log
+
+# Segredos e configuração local — nunca versionar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Área de trabalho de avaliações de skills (gerada, pode ser grande)
+*-workspace/
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

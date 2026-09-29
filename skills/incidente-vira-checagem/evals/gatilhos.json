@@ -1,0 +1,10 @@
+[
+  { "query": "isso não pode acontecer de novo, a gente subiu a chave de produção outra vez", "should_trigger": true },
+  { "query": "o deploy de ontem derrubou o login, já revertemos. e agora?", "should_trigger": true },
+  { "query": "escreve o postmortem do incidente de sexta", "should_trigger": true },
+  { "query": "como faço uma checagem automática pra ninguém mais colocar arquivo interno na pasta public?", "should_trigger": true },
+  { "query": "o agente sempre esquece de rodar os testes antes de dizer que terminou, como evito?", "should_trigger": true },
+  { "query": "cria um formulário para os clientes reportarem problemas no app", "should_trigger": false },
+  { "query": "configura um alerta quando a fila passar de mil mensagens", "should_trigger": false },
+  { "query": "faz um checklist de tarefas para a reunião de planejamento", "should_trigger": false }
+]

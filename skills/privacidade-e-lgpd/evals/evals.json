@@ -1,0 +1,27 @@
+{
+  "skill_name": "privacidade-e-lgpd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Cria o botão de excluir minha conta no app. Pode só marcar o usuário como inativo.",
+      "expected_output": "O agente explica que só marcar como inativo não atende à eliminação e implementa um fluxo no servidor que confirma identidade, apaga ou anonimiza dados pessoais, retém apenas o exigido por lei com motivo registrado, encerra sessões e remove arquivos.",
+      "assertions": [
+        "Aponta que marcar como inativo não elimina os dados pessoais",
+        "O fluxo roda no servidor e confirma a identidade",
+        "Separa o que é apagado/anonimizado do que é retido por obrigação legal",
+        "Encerra sessões e remove arquivos do storage"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Quero adicionar no cadastro CPF, data de nascimento, religião e renda, pode ser útil pro marketing depois.",
+      "expected_output": "O agente questiona a finalidade de cada campo, aponta religião como dado sensível com base legal restrita, sugere não coletar o que não tem finalidade atual e registrar os campos aprovados no inventário.",
+      "assertions": [
+        "Questiona a finalidade de cada campo",
+        "Identifica religião como dado pessoal sensível",
+        "Recomenda não coletar dados sem finalidade definida (minimização)",
+        "Propõe registrar no inventário de dados com base legal"
+      ]
+    }
+  ]
+}

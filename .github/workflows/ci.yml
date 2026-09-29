@@ -1,0 +1,50 @@
+# CI do próprio kit: valida as skills contra o padrão Agent Skills, roda os testes
+# (validador, servidor MCP e scripts das skills) e varre segredos.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    name: Validar skills, testes e segredos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Sem dependências: não há npm ci. Se um dia houver, use npm ci (respeita o lockfile).
+      - name: Validar skills
+        run: npm run validar
+
+      - name: Testes
+        run: npm test
+
+      - name: Varredura de segredos
+        run: npm run verificar:segredos
+
+      # Os modelos em skills/*/assets usam marcadores cercados por dois sublinhados; a esteira do kit não
+      # pode ter nenhum sobrando (passo que falharia com "command not found").
+      - name: Nenhum marcador de modelo na esteira do kit
+        run: |
+          if grep -rnE "__[A-Z_]{3,}__" .github/; then
+            echo "::error::Marcador de modelo encontrado em .github/."
+            exit 1
+          fi

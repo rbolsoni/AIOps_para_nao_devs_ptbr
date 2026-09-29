@@ -1,0 +1,10 @@
+[
+  { "query": "configura os headers de segurança no meu site", "should_trigger": true },
+  { "query": "o console mostra 'Refused to load the script because it violates the Content Security Policy'", "should_trigger": true },
+  { "query": "o relatório do securityheaders deu nota F, melhora isso", "should_trigger": true },
+  { "query": "como ativo HSTS no nginx?", "should_trigger": true },
+  { "query": "meu site pode ser colocado dentro de iframe por outro domínio, como impeço?", "should_trigger": true },
+  { "query": "adiciona o header Authorization nas chamadas do front para a API", "should_trigger": false },
+  { "query": "arruma o cabeçalho do site que está desalinhado no celular", "should_trigger": false },
+  { "query": "configura o cache-control dos arquivos estáticos para performance", "should_trigger": false }
+]

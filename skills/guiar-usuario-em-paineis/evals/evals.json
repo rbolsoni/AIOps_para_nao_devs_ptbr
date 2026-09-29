@@ -1,0 +1,17 @@
+{
+  "skill_name": "guiar-usuario-em-paineis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A esteira precisa do token da Vercel e da URL do banco de produção. Não sou programador, me explica o que faço. Posso te mandar o token aqui?",
+      "expected_output": "O agente recusa receber o token na conversa, entrega cartões passo a passo (gerar token na Vercel, cadastrar como environment secret de production no GitHub, obter string do pooler), com por quê, nomes exatos, como confirmar, o que não fazer e plano B, e diz o que vai verificar depois.",
+      "assertions": [
+        "Orienta a não enviar o token pela conversa",
+        "Os segredos vão para o environment production, não para repository secrets",
+        "Cada tarefa tem passos numerados com nomes exatos e como confirmar",
+        "Inclui orientação para o caso de a tela estar diferente",
+        "Diz o que o agente vai verificar quando o usuário terminar"
+      ]
+    }
+  ]
+}

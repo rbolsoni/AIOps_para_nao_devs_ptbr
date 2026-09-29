@@ -1,0 +1,27 @@
+{
+  "skill_name": "iniciar-projeto",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tenho uma API em Python com FastAPI numa pasta, sem git, sem nada. Quero deixar pronto pra colocar em produção do jeito certo. Não sou programador.",
+      "expected_output": "O agente diagnostica sem alterar nada, faz poucas perguntas que mudam o plano, apresenta o plano e, após OK, cria AGENTS.md com comandos Python reais, .gitignore com segredos, .gitattributes, .env.example, README, SECURITY.md e lista em linguagem simples as tarefas de painel.",
+      "assertions": [
+        "Apresenta diagnóstico e plano antes de criar arquivos",
+        "O AGENTS.md criado usa comandos de Python (ex.: pytest, ruff), sem marcadores __COMANDO__ restantes",
+        "O .gitignore inclui .env e mantém .env.example versionável",
+        "Entrega lista de tarefas de painel sem pedir que o usuário cole segredos na conversa",
+        "Não faz commit nem push sem pedido"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Nosso repositório Node já existe, tem README e um .env commitado sem querer. Organiza o projeto com as boas práticas.",
+      "expected_output": "O agente trata o .env versionado como prioridade (rotação das chaves antes de qualquer outra coisa), não sobrescreve o README existente sem mostrar diff e acrescenta apenas o que falta.",
+      "assertions": [
+        "Aponta o .env versionado como risco prioritário e orienta rotacionar as chaves",
+        "Não sobrescreve o README existente sem mostrar a mudança",
+        "Explica que adicionar ao .gitignore não remove o arquivo do histórico"
+      ]
+    }
+  ]
+}

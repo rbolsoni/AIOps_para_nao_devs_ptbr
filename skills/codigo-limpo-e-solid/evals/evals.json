@@ -1,0 +1,27 @@
+{
+  "skill_name": "codigo-limpo-e-solid",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Esse arquivo servicos/pedido.ts tem 900 linhas e faz de tudo: calcula imposto, manda e-mail, grava log. Refatora pra ficar limpo.",
+      "expected_output": "O agente garante testes do comportamento atual antes, extrai responsabilidades em passos pequenos sem mudar comportamento e não cria abstrações sem uso real.",
+      "assertions": [
+        "Verifica ou cria testes do comportamento atual antes de refatorar",
+        "Separa cálculo de imposto, notificação e log em unidades distintas",
+        "Não introduz interface ou fábrica com uma única implementação sem justificar",
+        "Não altera o comportamento observável"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "revisa esse código python pra mim e diz o que melhorar: def f(d, x=True):\n    try:\n        r = db.query('select * from u where id=' + d['id'])\n    except: pass\n    if x: ...",
+      "expected_output": "Uma revisão priorizada que aponta a injeção de SQL e o except vazio como problemas graves, nomes genéricos e o parâmetro booleano como melhorias, com correções concretas.",
+      "assertions": [
+        "Aponta a concatenação de SQL como vulnerabilidade de injeção e sugere consulta parametrizada",
+        "Aponta o except vazio que engole erros",
+        "Sugere nomes descritivos no lugar de f, d, x e r",
+        "Prioriza os problemas por gravidade"
+      ]
+    }
+  ]
+}

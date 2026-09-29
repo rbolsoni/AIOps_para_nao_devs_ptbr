@@ -1,0 +1,10 @@
+[
+  { "query": "escreve um README decente pro meu projeto, hoje não tem nada", "should_trigger": true },
+  { "query": "registra num ADR por que escolhemos fila em vez de cron", "should_trigger": true },
+  { "query": "mudei o comando de rodar os testes, atualiza onde precisar", "should_trigger": true },
+  { "query": "escreve a descrição do PR dessa branch", "should_trigger": true },
+  { "query": "o AGENTS.md e o CLAUDE.md estão falando coisas diferentes, alinha", "should_trigger": true },
+  { "query": "gera a documentação OpenAPI automaticamente a partir das rotas do FastAPI", "should_trigger": false },
+  { "query": "traduz esse texto de marketing do site para inglês", "should_trigger": false },
+  { "query": "cria um slide explicando nossa arquitetura para os investidores", "should_trigger": false }
+]

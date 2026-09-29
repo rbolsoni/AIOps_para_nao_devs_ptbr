@@ -1,0 +1,26 @@
+{
+  "skill_name": "dependencias-e-licencas",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Nosso SaaS é fechado. Posso usar uma biblioteca AGPL para gerar PDFs no backend?",
+      "expected_output": "O agente explica que AGPL gera obrigação ao oferecer o software pela rede, recomenda não usar em SaaS fechado e sugere alternativas permissivas, deixando claro que não é parecer jurídico.",
+      "assertions": [
+        "Explica a obrigação da AGPL para uso pela rede",
+        "Recomenda não usar em SaaS fechado ou buscar alternativa permissiva",
+        "Indica que a decisão final é de quem responde juridicamente"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Configura a verificação de licenças no CI do nosso projeto Node. Hoje aparece o sharp com LGPL e o build quebraria.",
+      "expected_output": "Checagem com lista permitida + exceção nomeada para o sharp com motivo e condição de invalidação, separando produção de desenvolvimento, ferramenta com versão fixada, aviso para exceções não usadas, rodando na esteira.",
+      "assertions": [
+        "Não libera LGPL para o projeto inteiro; cria exceção nomeada para o pacote",
+        "A exceção registra motivo e condição que a invalida",
+        "Fixa a versão da ferramenta de verificação",
+        "A checagem roda na esteira"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[
+  { "query": "divide essa migração grande entre vários agentes em paralelo", "should_trigger": true },
+  { "query": "quero que um segundo agente revise e tente quebrar o que o primeiro fez", "should_trigger": true },
+  { "query": "delega a pesquisa sobre as bibliotecas de PDF para um subagente", "should_trigger": true },
+  { "query": "monta uma equipe de agentes: um implementa, outro testa, outro audita", "should_trigger": true },
+  { "query": "valida de forma independente se a documentação bate com o código", "should_trigger": true },
+  { "query": "cria um chatbot de atendimento com LLM para o site", "should_trigger": false },
+  { "query": "organiza as tarefas da equipe no quadro do Trello", "should_trigger": false },
+  { "query": "revisa o meu PR de correção do cálculo de frete", "should_trigger": false }
+]

@@ -1,0 +1,27 @@
+{
+  "skill_name": "headers-de-seguranca",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "O scanner de segurança disse que meu site Next.js não tem CSP nem HSTS. Configura isso sem quebrar nada. Uso Google Analytics e Sentry.",
+      "expected_output": "Configuração em next.config com CSP montada por ambiente (sem hosts de dev em produção, sem unsafe-eval em produção), origens de analytics e Sentry nas diretivas certas, HSTS com rollout gradual, publicação em Report-Only primeiro e verificação com o script.",
+      "assertions": [
+        "CSP inclui default-src, object-src 'none', base-uri, form-action e frame-ancestors",
+        "Hosts de desenvolvimento e 'unsafe-eval' ficam fora da política de produção",
+        "Origens do analytics e do Sentry aparecem nas diretivas corretas (script-src/connect-src)",
+        "Recomenda Report-Only antes de aplicar e HSTS com max-age inicial curto",
+        "Indica rodar scripts/verificar-headers.mjs na URL publicada"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Coloquei o hash do meu script de JSON-LD na CSP pra tirar o unsafe-inline e o site parou de funcionar inteiro. Por quê?",
+      "expected_output": "Explica que a presença de hash/nonce faz o navegador ignorar 'unsafe-inline' na diretiva, bloqueando os outros scripts inline do framework, e apresenta as opções com seus custos.",
+      "assertions": [
+        "Explica que hash/nonce na diretiva faz o navegador ignorar 'unsafe-inline'",
+        "Aponta que scripts inline do framework sem hash passaram a ser bloqueados",
+        "Apresenta alternativas com trade-offs e sugere registrar a decisão em ADR"
+      ]
+    }
+  ]
+}

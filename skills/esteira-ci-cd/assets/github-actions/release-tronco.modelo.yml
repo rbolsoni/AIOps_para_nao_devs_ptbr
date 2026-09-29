@@ -1,0 +1,60 @@
+# Modelo de release para o fluxo em tronco único: branch de trabalho -> PR -> main.
+#
+# Serve para bibliotecas, sites estáticos, documentação e projetos sem banco compartilhado.
+# A trava: este workflow só começa quando o CI termina com SUCESSO num push em main — ele
+# é disparado pelo próprio fim do CI (workflow_run), não pelo push. Push com CI vermelho
+# nunca vira release.
+#
+# Requisitos: .github/scripts/proxima-versao.sh copiado da skill esteira-ci-cd, e o nome
+# do workflow de CI abaixo igual ao "name:" do ci.yml.
+
+name: Release
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write # criar tag e GitHub Release
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Versão, tag e release
+    # Só CI concluído com sucesso e disparado por push (não por PR).
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Faz checkout exatamente do commit que o CI aprovou, não do topo atual da main.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - id: calculo
+        run: bash .github/scripts/proxima-versao.sh >> "$GITHUB_OUTPUT"
+
+      - name: Sem versão nova
+        if: steps.calculo.outputs.proxima == ''
+        run: echo "Nenhum commit feat/fix/breaking desde a última versão; nada a publicar." >> "$GITHUB_STEP_SUMMARY"
+
+      # __PUBLICAR_ARTEFATO__ — se o projeto publica pacote, imagem ou site, faça aqui,
+      # antes da tag, com o segredo vindo de um environment. Ex.: npm publish --provenance.
+
+      - name: Criar tag e release
+        if: steps.calculo.outputs.proxima != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSAO: ${{ steps.calculo.outputs.proxima }}
+        run: |
+          gh release create "$VERSAO" \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.event.workflow_run.head_sha }}" \
+            --title "$VERSAO" \
+            --generate-notes

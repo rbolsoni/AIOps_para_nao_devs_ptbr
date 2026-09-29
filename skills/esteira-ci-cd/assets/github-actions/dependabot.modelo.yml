@@ -1,0 +1,31 @@
+# Copie para .github/dependabot.yml.
+#
+# Os prefixos de commit conversam com o cálculo de versão (proxima-versao.sh):
+#   - dependência de produção atualizada -> "fix(deps)" -> gera patch e chega à produção
+#   - dependência de desenvolvimento     -> "chore(deps)" -> não gera versão
+# Sem isso, atualização de segurança de produção ficaria parada esperando outro feat/fix.
+
+version: 2
+updates:
+  # Mantém as actions fixadas por SHA atualizadas (atualiza SHA e comentário de versão).
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: __BRANCH_BASE__
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+
+  # Ecossistema do projeto: npm | pip | uv | gomod | maven | gradle | nuget | cargo | composer | bundler | pub
+  - package-ecosystem: __ECOSSISTEMA__
+    directory: /
+    target-branch: __BRANCH_BASE__
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: fix(deps)
+      prefix-development: chore(deps)
+    groups:
+      desenvolvimento:
+        dependency-type: development

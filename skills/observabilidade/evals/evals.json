@@ -1,0 +1,26 @@
+{
+  "skill_name": "observabilidade",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Adiciona Sentry no nosso app Next.js e loga os erros do checkout com o máximo de detalhe pra facilitar o debug.",
+      "expected_output": "Configuração do Sentry com release e ambiente, usuário pseudonimizado, sem captura de corpo/campos com dados pessoais, source maps pela esteira com envio que não bloqueia a release, CSP liberando a ingestão, e logs estruturados do checkout sem dados sensíveis.",
+      "assertions": [
+        "Identifica usuário por ID, não por e-mail ou nome",
+        "Desliga ou mascara captura de corpo de requisição e campos de formulário",
+        "Envio de source maps pela esteira e sem bloquear a release",
+        "Logs do checkout não incluem dados de cartão, token ou dados pessoais completos",
+        "Menciona liberar o endpoint de ingestão na CSP"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "O job noturno que gera as faturas não rodou ontem e ninguém percebeu. Como evito isso?",
+      "expected_output": "Um sinal de vida (dead man's switch) que alerta quando o job não roda no período esperado, alerta com dono e canal, além de alerta em falha.",
+      "assertions": [
+        "Propõe alerta disparado pela ausência de execução, não só por erro",
+        "O alerta tem dono e canal definido"
+      ]
+    }
+  ]
+}

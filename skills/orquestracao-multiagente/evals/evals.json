@@ -1,0 +1,17 @@
+{
+  "skill_name": "orquestracao-multiagente",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refatora a documentação do projeto (README, AGENTS.md e o dossiê técnico) usando vários agentes, e quero que alguém tente derrubar o resultado antes de eu aprovar.",
+      "expected_output": "Plano com papéis (executores por documento, revisor e desafiante), briefings autossuficientes apontando para o pedido original, desafiante somente leitura que roda verificações reais (ex.: comparação literal por script e conferência contra o código), vereditos explícitos e integração pelo orquestrador.",
+      "assertions": [
+        "Registra o pedido original como contrato",
+        "Os briefings trazem escopo, restrições imutáveis e critérios verificáveis",
+        "O desafiante é somente leitura e executa verificações em vez de confiar em relato",
+        "Cada entrega tem veredito explícito com evidência",
+        "A pasta .agentes/ fica fora do git"
+      ]
+    }
+  ]
+}

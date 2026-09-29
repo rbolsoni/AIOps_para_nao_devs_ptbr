@@ -1,0 +1,25 @@
+{
+  "skill_name": "documentacao-viva",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Adicionei integração com o gateway de pagamento, precisa da variável PAGAMENTO_API_KEY. Atualiza o que for preciso de documentação.",
+      "expected_output": "O agente adiciona a variável ao .env.example com marcador (sem valor real), atualiza README/AGENTS.md com a configuração necessária e indica onde o segredo deve ser cadastrado.",
+      "assertions": [
+        "Adiciona PAGAMENTO_API_KEY ao .env.example com valor marcador, não um valor real",
+        "Atualiza README ou AGENTS.md explicando a configuração",
+        "Não inclui nenhum valor de chave real na documentação"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Decidimos trocar o banco de MongoDB para PostgreSQL por causa de transações. Registra essa decisão.",
+      "expected_output": "Um ADR numerado seguindo o modelo, com contexto, decisão, alternativas, consequências (incluindo riscos aceitos) e condições que invalidam a decisão.",
+      "assertions": [
+        "Cria arquivo em docs/adr/ com numeração sequencial",
+        "Contém seções de Contexto, Decisão, Alternativas e Consequências",
+        "Registra ao menos uma consequência negativa ou risco aceito"
+      ]
+    }
+  ]
+}

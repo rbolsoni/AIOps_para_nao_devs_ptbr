@@ -1,0 +1,21 @@
+# Uma única terminação de linha no repositório (LF), independente do sistema operacional.
+# Sem isto, com core.autocrlf=true no Windows, o repositório acaba com CRLF e LF misturados,
+# e scripts que editam texto corrompem arquivos em silêncio (diffs gigantes, \r órfão).
+* text=auto eol=lf
+
+# Scripts do Windows precisam de CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binários: nunca converter
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.woff binary
+*.woff2 binary

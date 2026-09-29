@@ -1,0 +1,10 @@
+[
+  { "query": "cria o formulário de cadastro com nome, e-mail e senha", "should_trigger": true },
+  { "query": "meu site precisa funcionar com leitor de tela, o que ajusto?", "should_trigger": true },
+  { "query": "as cores do botão estão apagadas, é problema de contraste?", "should_trigger": true },
+  { "query": "faz um menu dropdown de navegação", "should_trigger": true },
+  { "query": "adiciona um gráfico de vendas mensais no dashboard", "should_trigger": true },
+  { "query": "cria a API REST de produtos em Go", "should_trigger": false },
+  { "query": "configura o acesso SSH ao servidor", "should_trigger": false },
+  { "query": "dá permissão de acesso de administrador para a Maria no painel", "should_trigger": false }
+]

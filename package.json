@@ -1,0 +1,40 @@
+{
+  "name": "padroes-skill-aiops-ptbr",
+  "version": "1.0.0",
+  "description": "Skills em português (padrão Agent Skills) que fazem qualquer agente de IA programar com as boas práticas de mercado: segurança, governança, CI/CD, documentação e qualidade. Inclui servidor MCP somente leitura.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "padroes-skill-aiops-ptbr": "mcp/servidor.mjs"
+  },
+  "files": [
+    "mcp/",
+    "ferramentas/lib/",
+    "skills/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "validar": "node ferramentas/validar-skills.mjs",
+    "test": "node --test",
+    "verificar:segredos": "node skills/segredos-e-credenciais/scripts/verificar-segredos.mjs",
+    "mcp": "node mcp/servidor.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rbolsoni/Padroes_skill_para_AIOps_ptbr.git"
+  },
+  "keywords": [
+    "agent-skills",
+    "skills",
+    "mcp",
+    "boas-praticas",
+    "seguranca",
+    "ci-cd",
+    "lgpd",
+    "pt-br"
+  ]
+}

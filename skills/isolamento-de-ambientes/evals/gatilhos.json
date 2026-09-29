@@ -1,0 +1,10 @@
+[
+  { "query": "roda esse script de correção de dados no banco", "should_trigger": true },
+  { "query": "como separo banco de teste e de produção no Supabase?", "should_trigger": true },
+  { "query": "meus testes de integração estão usando a mesma URL do site no ar, tem problema?", "should_trigger": true },
+  { "query": "cria um seed com dados fictícios para a homologação", "should_trigger": true },
+  { "query": "a variável NEXT_PUBLIC_API_KEY pode guardar a chave secreta do gateway?", "should_trigger": true },
+  { "query": "otimiza essa query SQL que está lenta", "should_trigger": false },
+  { "query": "cria uma tela de configurações do usuário no app", "should_trigger": false },
+  { "query": "explica o que é variável de ambiente no Linux", "should_trigger": false }
+]

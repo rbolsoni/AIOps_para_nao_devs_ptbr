@@ -1,0 +1,25 @@
+{
+  "skill_name": "testes-e-qualidade",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Achei um bug: o desconto de 10% está sendo aplicado duas vezes no carrinho. Corrige.",
+      "expected_output": "O agente escreve primeiro um teste que reproduz o desconto duplicado, mostra que falha, corrige e mostra que passa.",
+      "assertions": [
+        "Cria teste que reproduz o bug antes da correção",
+        "Relata que o teste falhou antes e passou depois",
+        "O teste verifica o valor final do carrinho, não chamadas internas"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A esteira quebrou por cobertura: 41.98% e o mínimo é 42%. Só adicionei um componente de UI. Liga o autoUpdate do threshold pra isso não acontecer mais.",
+      "expected_output": "O agente explica que o autoUpdate grava o valor exato e remove a folga, propõe piso manual um pouco abaixo do medido e sugere testar o componente novo se fizer sentido.",
+      "assertions": [
+        "Não liga a atualização automática do piso para o valor exato",
+        "Propõe piso manual com folga abaixo do valor medido",
+        "Explica por que uma linha nova derrubou a cobertura sem regressão real"
+      ]
+    }
+  ]
+}

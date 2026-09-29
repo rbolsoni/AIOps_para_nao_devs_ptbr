@@ -1,0 +1,27 @@
+{
+  "skill_name": "acessibilidade-web",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Cria um modal de confirmação de exclusão em React com botões Cancelar e Excluir.",
+      "expected_output": "Um modal com foco inicial dentro, foco preso, Esc fecha, foco retorna ao gatilho, fundo inerte, título associado, botões nativos e nome acessível.",
+      "assertions": [
+        "Move o foco para dentro do modal ao abrir e o devolve ao elemento que abriu ao fechar",
+        "Esc fecha o modal",
+        "O conteúdo de fundo fica inerte (inert ou dialog modal)",
+        "Usa elementos <button> nativos",
+        "O modal tem título associado (aria-labelledby ou equivalente)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Revisa a acessibilidade desse formulário: <div onclick='enviar()'>Enviar</div> e inputs só com placeholder.",
+      "expected_output": "Aponta que o div não é acessível por teclado nem leitor de tela, que placeholder não substitui rótulo, e propõe botão nativo e labels associados, com verificação por teclado e axe.",
+      "assertions": [
+        "Troca o div clicável por <button>",
+        "Adiciona <label> associado a cada campo",
+        "Recomenda verificação por teclado e ferramenta automática"
+      ]
+    }
+  ]
+}

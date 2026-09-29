@@ -1,0 +1,10 @@
+[
+  { "query": "cria um workflow do GitHub Actions que roda lint e testes nos PRs", "should_trigger": true },
+  { "query": "o deploy pra produção tá subindo mesmo com teste vermelho, como bloqueio isso?", "should_trigger": true },
+  { "query": "meu job do actions fica eternamente em 'Waiting for a runner'", "should_trigger": true },
+  { "query": "quero versionamento semântico automático com changelog a cada merge", "should_trigger": true },
+  { "query": "configura o pipeline do GitLab para publicar em homologação e depois em produção", "should_trigger": true },
+  { "query": "escreve testes unitários para a função de cálculo de frete", "should_trigger": false },
+  { "query": "faz o commit dessas alterações com uma mensagem boa", "should_trigger": false },
+  { "query": "cria a migração que adiciona a coluna telefone na tabela clientes", "should_trigger": false }
+]

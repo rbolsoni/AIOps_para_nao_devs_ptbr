@@ -1,0 +1,27 @@
+{
+  "skill_name": "guardrails-e-avaliacao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Nosso chatbot de suporte responde com base nos manuais e às vezes inventa coisa ou revela instruções internas. Coloca guardrails e um jeito de medir se melhorou.",
+      "expected_output": "Guardrails nas camadas de recuperação e saída (fundamentação com fonte, bloqueio de vazamento do prompt), conjunto de avaliação com casos reais e adversariais, asserções por código e juiz com rubrica e evidência, comparação com linha de base e execução na esteira.",
+      "assertions": [
+        "Propõe guardrail de saída contra vazamento do prompt de sistema",
+        "Exige fundamentação/citação de fonte nas respostas baseadas em manuais",
+        "Cria conjunto de avaliação com casos adversariais",
+        "Compara contra linha de base antes de aceitar a mudança",
+        "Mede também falsos positivos (recusas indevidas)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Como sei se a minha skill de deploy está sendo ativada nas horas certas?",
+      "expected_output": "Explica o arquivo de gatilhos com positivos e quase-acertos negativos, execução repetida por consulta, taxa de ativação com limiar, separação treino/validação e como detectar a ativação no cliente.",
+      "assertions": [
+        "Propõe consultas positivas e negativas do tipo quase-acerto",
+        "Recomenda rodar cada consulta várias vezes e medir taxa de ativação",
+        "Recomenda separar consultas de ajuste e de validação"
+      ]
+    }
+  ]
+}

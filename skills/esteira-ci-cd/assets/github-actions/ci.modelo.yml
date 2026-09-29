@@ -1,0 +1,136 @@
+# Modelo de CI — valida todo PR e publica na homologação a cada merge na branch base.
+#
+# Como usar: copie para .github/workflows/ci.yml e substitua cada __MARCADOR__ pelo comando
+# real do projeto (os mesmos listados no AGENTS.md). Remova as etapas que não se aplicam —
+# nunca deixe um marcador para trás: o passo falharia com "command not found".
+#
+# Fluxo com promoção (staging -> main): __BRANCH_BASE__ = staging.
+# Fluxo em tronco único: __BRANCH_BASE__ = main e apague o job "homologacao".
+
+name: CI
+
+on:
+  pull_request:
+    branches: [__BRANCH_BASE__, main]
+  push:
+    branches: [__BRANCH_BASE__]
+
+# Menor privilégio: o token só lê o repositório. Todo escopo não declarado vira "none".
+permissions:
+  contents: read
+
+# Um push novo na mesma branch cancela o run anterior, que ficou obsoleto.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    name: Validar (formatação, lint, tipos, testes, segredos, licenças)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Actions fixadas por SHA completo (a tag pode ser movida; o SHA não). O comentário
+      # guarda a versão legível; o Dependabot atualiza os dois juntos.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # __SETUP_DA_LINGUAGEM__ — troque pelo setup da stack, fixado por SHA. Exemplo Node:
+      # - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      #   with:
+      #     node-version: 22
+      #     cache: npm
+
+      - name: Instalar dependências
+        run: __COMANDO_INSTALAR__
+
+      - name: Formatação
+        run: __COMANDO_FORMATAR__
+
+      - name: Lint
+        run: __COMANDO_LINT__
+
+      - name: Tipos
+        run: __COMANDO_TIPOS__
+
+      - name: Testes com cobertura
+        run: __COMANDO_TESTES__
+
+      - name: Varredura de segredos
+        run: __COMANDO_SEGREDOS__
+
+      - name: Licenças das dependências
+        run: __COMANDO_LICENCAS__
+
+      - name: Vulnerabilidades das dependências
+        run: __COMANDO_VULNERABILIDADES__
+
+  build:
+    name: Build
+    needs: validar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # __SETUP_DA_LINGUAGEM__
+      - name: Instalar dependências
+        run: __COMANDO_INSTALAR__
+      - name: Build de produção
+        run: __COMANDO_BUILD__
+      # Testes de ponta a ponta locais (contra o build), quando o projeto tiver.
+      # PRs em rascunho podem pular esta etapa para economizar minutos.
+      - name: Testes de ponta a ponta
+        if: github.event_name == 'push' || github.event.pull_request.draft == false
+        run: __COMANDO_E2E__
+
+  # Só roda depois do merge na branch base: é aqui que migrações e checagens de banco
+  # acontecem de verdade. Por isso, PR verde NÃO prova que a migração aplica — documente
+  # isso no CONTRIBUTING.md para ninguém promover achando que prova.
+  homologacao:
+    name: Publicar na homologação
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/__BRANCH_BASE__'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Os segredos da homologação ficam no environment "staging" (Settings → Environments).
+    # Um job sem "environment:" não enxerga segredos de environment.
+    environment: staging
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # __SETUP_DA_LINGUAGEM__
+      - name: Instalar dependências
+        run: __COMANDO_INSTALAR__
+
+      # Segredo ausente precisa FALHAR. Um "if: segredo != ''" pularia o passo em silêncio
+      # e o run terminaria verde sem ter publicado nada.
+      - name: Conferir segredos obrigatórios
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          faltando=""
+          [ -n "${DATABASE_URL:-}" ] || faltando="$faltando DATABASE_URL"
+          [ -n "${DEPLOY_TOKEN:-}" ] || faltando="$faltando DEPLOY_TOKEN"
+          if [ -n "$faltando" ]; then
+            echo "::error::Segredos ausentes no environment 'staging':$faltando. Cadastre em Settings → Environments → staging."
+            exit 1
+          fi
+
+      - name: Aplicar migrações na homologação
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: __COMANDO_MIGRAR__
+
+      # Checagens que exercitam o comportamento real no banco já migrado: tentar a escrita
+      # proibida e exigir recusa, conferir paridade de migrações, etc. (skill mudancas-de-banco)
+      - name: Checagens de banco na homologação
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: __COMANDO_CHECAGENS_DE_BANCO__
+
+      - name: Deploy na homologação
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: __COMANDO_DEPLOY_HOMOLOGACAO__
+
+      - name: Teste de fumaça contra a homologação
+        run: __COMANDO_FUMACA__

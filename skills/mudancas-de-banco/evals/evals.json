@@ -1,0 +1,36 @@
+{
+  "skill_name": "mudancas-de-banco",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Cria uma tabela de endereços dos usuários no Supabase. Os usuários acessam direto pelo app.",
+      "expected_output": "Uma migração versionada que cria a tabela com RLS habilitado na mesma migração, políticas de leitura/escrita restritas ao próprio usuário (escrita exigindo usuário ativo), sem USING (true), e uma checagem empírica que tenta ler endereço de outro usuário.",
+      "assertions": [
+        "Cria arquivo de migração versionado em vez de SQL manual",
+        "Habilita RLS na mesma migração que cria a tabela",
+        "Nenhuma política usa USING (true) ou WITH CHECK (true)",
+        "Propõe checagem que tenta o acesso proibido e exige a recusa"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "renomeia a coluna fone para telefone na tabela clientes",
+      "expected_output": "O agente não faz o rename direto em uma migração; propõe expandir -> migrar -> contrair em releases separadas para não quebrar o código em execução.",
+      "assertions": [
+        "Não propõe ALTER TABLE RENAME como passo único em produção",
+        "Divide em etapas: coluna nova, escrita dupla/cópia em lotes, remoção posterior",
+        "Explica o risco para o código que está rodando durante o deploy"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "O linter do Supabase tá com 12 alertas de segurança. Corrige todos.",
+      "expected_output": "O agente faz triagem alerta a alerta, separando defeito real de decisão deliberada, registra a triagem em ADR e não converte funções em lote.",
+      "assertions": [
+        "Analisa cada alerta individualmente",
+        "Não aplica conversão em lote de SECURITY DEFINER para INVOKER",
+        "Propõe registrar a triagem em ADR"
+      ]
+    }
+  ]
+}

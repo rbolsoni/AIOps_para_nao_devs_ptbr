@@ -1,0 +1,10 @@
+[
+  { "query": "lembra que aqui a gente sempre roda a migração primeiro no QA", "should_trigger": true },
+  { "query": "não faz mais isso de reformatar o arquivo inteiro, anota pra não esquecer", "should_trigger": true },
+  { "query": "descobri que o erro era a integração da plataforma aplicando migração sozinha; guarda isso para as próximas sessões", "should_trigger": true },
+  { "query": "o que você já sabe sobre este projeto de sessões anteriores?", "should_trigger": true },
+  { "query": "da próxima vez me mostra o texto antes de mudar a tela", "should_trigger": true },
+  { "query": "implementa cache em memória com Redis para as consultas de produto", "should_trigger": false },
+  { "query": "o servidor está com vazamento de memória, investiga", "should_trigger": false },
+  { "query": "cria uma tabela de lembretes no banco para os usuários do app", "should_trigger": false }
+]

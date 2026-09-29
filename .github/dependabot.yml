@@ -1,0 +1,9 @@
+# Mantém as actions fixadas por SHA atualizadas. O kit não tem dependências npm.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci

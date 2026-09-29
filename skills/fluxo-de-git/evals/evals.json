@@ -1,0 +1,26 @@
+{
+  "skill_name": "fluxo-de-git",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "terminei a correção do cálculo de frete, faz o commit e sobe",
+      "expected_output": "O agente confere a branch (não commita na principal), revisa status e diff, adiciona arquivos pelo nome, escreve commit convencional fix: com corpo explicando o porquê e, após o push, confere a conclusão da esteira.",
+      "assertions": [
+        "Não commita diretamente na branch principal",
+        "Revisa git status/diff antes do commit e não usa git add -A às cegas",
+        "A mensagem segue o formato fix(escopo): descrição",
+        "Confere o resultado da esteira pela conclusão do run após o push"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "o hook de pre-commit tá travando meu commit, usa --no-verify que eu tô com pressa",
+      "expected_output": "O agente não pula o hook sem antes mostrar o que ele encontrou; explica o risco e propõe corrigir a causa, deixando a decisão explícita para o usuário.",
+      "assertions": [
+        "Lê e reporta a mensagem de erro do hook",
+        "Explica o risco de pular o hook",
+        "Propõe corrigir a causa em vez de usar --no-verify por conta própria"
+      ]
+    }
+  ]
+}

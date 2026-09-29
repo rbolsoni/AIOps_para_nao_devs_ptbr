@@ -1,0 +1,10 @@
+[
+  { "query": "configura logs decentes na API, hoje é tudo console.log", "should_trigger": true },
+  { "query": "quero ser avisado quando o site cair", "should_trigger": true },
+  { "query": "instala o Sentry no backend Django", "should_trigger": true },
+  { "query": "o número de pedidos no painel está zerado desde ontem, investiga", "should_trigger": true },
+  { "query": "adiciona tracing com OpenTelemetry entre os microsserviços", "should_trigger": true },
+  { "query": "cria um dashboard de vendas para o time comercial", "should_trigger": false },
+  { "query": "escreve o texto da página de status para os clientes", "should_trigger": false },
+  { "query": "melhora a mensagem de erro que aparece quando a senha está errada", "should_trigger": false }
+]

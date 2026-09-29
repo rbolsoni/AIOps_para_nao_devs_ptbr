@@ -1,0 +1,10 @@
+[
+  { "query": "instala uma biblioteca de gráficos no projeto", "should_trigger": true },
+  { "query": "posso copiar o código daquele repositório do GitHub que não tem licença?", "should_trigger": true },
+  { "query": "o npm audit mostrou 3 vulnerabilidades altas, o que eu faço?", "should_trigger": true },
+  { "query": "quero checar as licenças de todas as dependências antes de vender o software", "should_trigger": true },
+  { "query": "vale a pena usar lodash ou escrevo a função na mão?", "should_trigger": true },
+  { "query": "qual licença eu escolho para o meu próprio projeto open source?", "should_trigger": false },
+  { "query": "o pacote não instala, dá erro de permissão no Windows", "should_trigger": false },
+  { "query": "cria uma tela de termos de uso para o app", "should_trigger": false }
+]

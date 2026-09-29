@@ -1,0 +1,27 @@
+{
+  "skill_name": "seguranca-de-aplicacao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Cria a rota GET /api/pedidos/:id que retorna o pedido. Só usuário logado pode acessar.",
+      "expected_output": "Uma rota que além de exigir login confere que o pedido pertence ao usuário (ou que ele tem papel autorizado), valida o id, retorna 404/403 sem vazar detalhes e tem teste que tenta acessar pedido de outro usuário.",
+      "assertions": [
+        "Confere a posse do pedido pelo usuário, não apenas a autenticação",
+        "Valida o formato do id recebido",
+        "Inclui teste em que um usuário tenta ler o pedido de outro e é recusado",
+        "A resposta de erro não expõe stack trace nem detalhes internos"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Faz uma revisão de segurança do nosso upload de documentos: salva em public/uploads com o nome original do arquivo.",
+      "expected_output": "Relatório que aponta exposição pública, nome controlado pelo usuário (path traversal/sobrescrita), falta de validação de tipo/tamanho, e propõe bucket privado com URL assinada curta, cada achado com cenário, impacto e prioridade.",
+      "assertions": [
+        "Aponta que arquivos em public/ ficam acessíveis sem login",
+        "Aponta o risco de usar o nome original do arquivo",
+        "Propõe armazenamento privado e download por URL assinada de curta duração",
+        "Cada achado tem cenário de exploração e prioridade"
+      ]
+    }
+  ]
+}
