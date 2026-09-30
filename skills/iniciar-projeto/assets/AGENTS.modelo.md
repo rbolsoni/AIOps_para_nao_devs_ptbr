@@ -116,6 +116,7 @@ Se as skills de boas práticas estiverem instaladas, use-as nestas situações:
 | Lentidão, carga, escala | `desempenho-e-escalabilidade` |
 | Senhas, chaves, `.env` | `segredos-e-credenciais` |
 | Login, permissões, formulários, APIs | `seguranca-de-aplicacao`, `headers-de-seguranca` |
+| Pagamento, cobrança, assinatura, webhook de pagamento | `pagamentos-e-webhooks` |
 | Dependência nova | `dependencias-e-licencas` |
 | Dados pessoais | `privacidade-e-lgpd` |
 | Interface web | `acessibilidade-web` |

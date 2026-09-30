@@ -123,6 +123,7 @@ A skill `iniciar-projeto` pergunta o estágio e dimensiona o plano a ele
 | [`seguranca-de-aplicacao`](skills/seguranca-de-aplicacao/SKILL.md) | login, permissões, APIs, uploads, revisão de segurança (OWASP) |
 | [`headers-de-seguranca`](skills/headers-de-seguranca/SKILL.md) | CSP, HSTS e demais headers; inclui verificador de URL |
 | [`segredos-e-credenciais`](skills/segredos-e-credenciais/SKILL.md) | senhas, chaves, `.env`, vazamentos; inclui varredor de segredos |
+| [`pagamentos-e-webhooks`](skills/pagamentos-e-webhooks/SKILL.md) | cobrança, checkout, Pix, boleto e assinatura: valor no servidor, confirmação só por aviso verificado, sem cobrança em dobro |
 | [`dependencias-e-licencas`](skills/dependencias-e-licencas/SKILL.md) | adicionar pacote, checar licenças e vulnerabilidades, copiar código de terceiros |
 | [`privacidade-e-lgpd`](skills/privacidade-e-lgpd/SKILL.md) | dados pessoais, consentimento, exclusão de conta, incidentes |
 | [`acessibilidade-web`](skills/acessibilidade-web/SKILL.md) | interfaces: teclado, leitor de tela, contraste (WCAG 2.2 AA) |
