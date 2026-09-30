@@ -16,10 +16,15 @@ por cópia de pastas e por um servidor MCP somente leitura. Sem dependências de
 | Validar as skills | `npm run validar` |
 | Testes | `npm test` |
 | Varredura de segredos | `npm run verificar:segredos` |
+| Conferir se as skills alteradas subiram de versão | `npm run conferir:versoes` |
+| Testes com cobertura mínima (catraca) | `npm run test:cobertura` |
 | Rodar o servidor MCP | `npm run mcp` |
 
-Rode os três primeiros antes de abrir PR. A esteira (`.github/workflows/ci.yml`) roda os
-mesmos, em Node 20, 22 e 24.
+Antes de abrir PR, rode `validar`, `test`, `verificar:segredos` e `conferir:versoes`. A
+esteira (`.github/workflows/ci.yml`) roda os mesmos no Ubuntu (Node 20, 22 e 24) e no
+Windows (Node 24), a cobertura com piso, a conferência de versões nos PRs e a auditoria dos
+workflows com o zizmor. O piso de cobertura fica no script `test:cobertura`: suba-o à mão
+quando a cobertura subir de verdade, nunca para o valor exato medido.
 
 ## Estrutura
 
@@ -45,15 +50,24 @@ mesmos, em Node 20, 22 e 24.
    pelo nome, entre crases.
 7. **Frontmatter**: `name` igual à pasta; `description` no imperativo ("Use quando…/Use
    ao…"), até 1024 caracteres, cobrindo pedidos que não usam o termo técnico; `license: MIT`;
-   `metadata.categoria` e `metadata.versao` como strings entre aspas.
+   `metadata.categoria` (uma das seções do catálogo) e `metadata.versao` (`X.Y.Z`) como
+   strings entre aspas. O validador lê o frontmatter num subconjunto **estrito** de YAML e
+   recusa o que o YAML real leria diferente: valor com `: ` ou ` #` precisa de aspas ou de
+   bloco `>-`. Descrição acima de 360 caracteres gera aviso (orçamento de contexto: o agente
+   carrega a descrição de toda skill em toda sessão).
 8. **Avaliações obrigatórias**: `evals/evals.json` (casos com asserções verificáveis) e
    `evals/gatilhos.json` (ao menos 3 consultas que devem ativar e 2 quase-acertos que não
    devem).
 9. **Modelos em `assets/`** usam marcadores `<descrição>` ou `__NOME_EM_MAIUSCULAS__`, que o
    agente substitui ao copiar.
-10. Mudança relevante numa skill sobe `metadata.versao` dela.
+10. Mudança relevante numa skill sobe `metadata.versao` dela: correção → patch; conteúdo
+    novo → minor. Mudança só em `evals/` não conta. A esteira confere
+    (`npm run conferir:versoes`).
 11. Nenhum dado real: sem credenciais, identificadores de projetos, e-mails ou caminhos de
     máquina local.
+12. **Nenhum caractere Unicode invisível** (largura zero, controle de direção do texto,
+    caracteres de tag): são usados para esconder instruções em arquivos que agentes leem. O
+    validador recusa em qualquer arquivo da skill.
 
 ## Regras para scripts
 
