@@ -13,6 +13,12 @@ painel. Serve para quem programa e para quem não programa.
 > Escrito do zero a partir de estudo de referências abertas e de lições de uma esteira real
 > em produção. Veja [docs/inspiracoes.md](docs/inspiracoes.md).
 
+## Comece aqui
+
+- **Não programa?** Leia o [guia para começar](docs/comece-aqui.md): o que é, como instalar em
+  3 passos, os primeiros pedidos e o mínimo de segurança.
+- **Programa?** Vá direto para a [instalação](#instalação) e o [catálogo](#catálogo).
+
 ## Como funciona
 
 Cada skill é uma pasta com um `SKILL.md` no [padrão aberto Agent Skills](https://agentskills.io).
@@ -70,6 +76,17 @@ A skill `iniciar-projeto` faz um diagnóstico sem alterar nada, pergunta só o q
 plano, mostra o que vai criar e, depois do seu OK, monta a base: `AGENTS.md` com as regras do
 projeto, README, `.gitignore` que protege segredos, esteira de CI, checagens de segurança e
 a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, banco).
+
+## Conforme o estágio do projeto
+
+A skill `iniciar-projeto` pergunta o estágio e dimensiona o plano a ele
+([níveis de maturidade](skills/iniciar-projeto/references/niveis-de-maturidade.md)):
+
+| Estágio | Foco | Skills que mais pesam |
+|---|---|---|
+| Protótipo (só você usa) | segredos, agente seguro, limite de gasto, 2FA, "desfazer" | `uso-seguro-de-agentes`, `segredos-e-credenciais`, `controle-de-custos`, `depuracao-guiada` |
+| Primeiros usuários (dados reais) | CI no PR, login e RLS, headers, backup, erros monitorados | `esteira-ci-cd`, `seguranca-de-aplicacao`, `mudancas-de-banco`, `backup-e-recuperacao`, `observabilidade` |
+| Produto (pagamentos, equipe) | homologação e trava, catraca de cobertura, LGPD, runbooks, desempenho | `esteira-ci-cd`, `testes-e-qualidade`, `privacidade-e-lgpd`, `incidente-vira-checagem`, `desempenho-e-escalabilidade` |
 
 ## Catálogo
 

@@ -39,6 +39,57 @@ não mostra como fixar uma versão. Por padrão ele cria links para uma cópia c
 `--copy`, copia as pastas. Se você precisa de uma versão fixa e auditável (empresa, projeto com
 revisão de dependências), use o caminho 2 com o arquivo de uma release.
 
+### Perfis: instalar só o que faz sentido
+
+Instalar tudo funciona — as descrições das skills cabem no orçamento de contexto dos agentes
+([ADR 0005](adr/0005-orcamento-de-contexto-das-skills.md)). Para começar enxuto, use um perfil
+(os perfis se somam: um app web com banco usa o essencial **e** o de app web).
+
+**Essencial** (qualquer projeto):
+
+```bash
+npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+  -s disciplina-de-codigo \
+  -s uso-seguro-de-agentes \
+  -s depuracao-guiada \
+  -s segredos-e-credenciais \
+  -s fluxo-de-git \
+  -s iniciar-projeto \
+  -s guiar-usuario-em-paineis \
+  -s controle-de-custos \
+  -s memoria-de-projeto
+```
+
+**App web com banco** (junto do essencial):
+
+```bash
+npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+  -s seguranca-de-aplicacao \
+  -s headers-de-seguranca \
+  -s mudancas-de-banco \
+  -s isolamento-de-ambientes \
+  -s privacidade-e-lgpd \
+  -s acessibilidade-web \
+  -s testes-e-qualidade \
+  -s esteira-ci-cd \
+  -s backup-e-recuperacao \
+  -s desempenho-e-escalabilidade \
+  -s observabilidade \
+  -s incidente-vira-checagem \
+  -s dependencias-e-licencas \
+  -s documentacao-viva \
+  -s codigo-limpo-e-solid
+```
+
+**Quem constrói agentes ou apps com LLM** (junto do essencial):
+
+```bash
+npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+  -s arquitetura-de-agentes \
+  -s guardrails-e-avaliacao \
+  -s orquestracao-multiagente
+```
+
 ## 2. Copiar as pastas
 
 Baixe o código de uma release (página
