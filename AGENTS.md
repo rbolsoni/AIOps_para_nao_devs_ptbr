@@ -1,4 +1,4 @@
-# Padrões de Skills para AIOps (PT-BR) — instruções para agentes
+# AIOps para não devs (PT-BR) — instruções para agentes
 
 > Fonte única de regras para qualquer agente (e pessoa) que trabalhe neste repositório.
 > `CLAUDE.md` e `GEMINI.md` apenas apontam para cá.

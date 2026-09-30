@@ -1,4 +1,4 @@
-# Padrões de Skills para AIOps (PT-BR)
+# AIOps para não devs (PT-BR)
 
 Skills em português que fazem **qualquer agente de IA que programa** — Claude Code, Codex,
 Cursor, GitHub Copilot, Gemini CLI, OpenCode e outros — trabalhar com as boas práticas de
