@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.2.0"
+  versao: "1.3.0"
 ---
 
 # Iniciar projeto
@@ -96,6 +96,7 @@ Use os modelos em `assets/`, preenchendo os marcadores `<...>` e `__COMANDO_..._
 | Arquivo no projeto | Modelo | Observação |
 |---|---|---|
 | `AGENTS.md` | [assets/AGENTS.modelo.md](assets/AGENTS.modelo.md) | fonte única de regras para agentes |
+| Instruções fixas da plataforma (Lovable, Bolt, Replit, v0) | [assets/regras-essenciais.modelo.md](assets/regras-essenciais.modelo.md) | projeto mantido numa plataforma que gera o app; onde colar em [references/vindo-de-plataformas.md](references/vindo-de-plataformas.md) |
 | `CLAUDE.md`, `GEMINI.md` | [assets/apontador-agentes.modelo.md](assets/apontador-agentes.modelo.md) | só apontam para o AGENTS.md; crie os que o usuário usa |
 | `README.md` | [assets/README.modelo.md](assets/README.modelo.md) | o que é, como rodar, como contribuir |
 | `CONTRIBUTING.md` | [assets/CONTRIBUTING.modelo.md](assets/CONTRIBUTING.modelo.md) | fluxo de branch, commit e PR |
@@ -107,6 +108,10 @@ Use os modelos em `assets/`, preenchendo os marcadores `<...>` e `__COMANDO_..._
 | `.github/pull_request_template.md` | [assets/pull_request_template.modelo.md](assets/pull_request_template.modelo.md) | ou o equivalente da hospedagem |
 | `docs/adr/0001-registro-de-decisoes.md` | modelo de ADR da skill `documentacao-viva` | primeira decisão: adotar ADRs e estas práticas |
 | `LICENSE` | texto oficial da licença escolhida | nunca "traduza" o texto jurídico |
+
+**Regra que precisa valer sempre vai no `AGENTS.md`** (ou nas instruções fixas da
+plataforma), que o agente lê em toda sessão. Skill só entra quando o pedido combina com a
+descrição dela e pode não ativar: segurança não pode depender disso.
 
 **Atenção com `.gitattributes` em projeto existente:** normalizar as terminações de linha
 reescreve muitos arquivos num commit só. Explique isso ao usuário e faça num commit

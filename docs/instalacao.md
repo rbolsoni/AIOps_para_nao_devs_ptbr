@@ -184,6 +184,28 @@ projeto, inclusive instaladas por link pelo `npx skills`).
 `<pacote>+<impressão do conteúdo>` (ex.: `1.0.0+8a1dfba26d76`), e `listar_skills` mostra a
 versão de cada skill.
 
+## 4. Plataformas que geram o app (Lovable, Bolt, Replit, v0)
+
+Duas camadas: **regras sempre ativas**, que a plataforma manda ao agente em toda mensagem, e
+**skills**, onde a plataforma aceita.
+
+1. **Regras essenciais.** Copie o texto de
+   [regras-essenciais.modelo.md](../skills/iniciar-projeto/assets/regras-essenciais.modelo.md)
+   e cole onde a plataforma guarda instruções fixas do projeto:
+   - **Lovable:** o agente lê o `AGENTS.md` da raiz do repositório. Sem repositório, use
+     **Project settings → Knowledge** (até 10 mil caracteres).
+   - **Bolt:** **Project settings → Knowledge**.
+   - **Replit:** arquivo `replit.md` na raiz do projeto.
+   - **v0:** **Project → Knowledge**.
+2. **Skills (Lovable e Bolt).** As duas importam skills neste formato a partir do GitHub:
+   informe `https://github.com/rbolsoni/IA-skills-para-nao-devs` na tela de skills da
+   plataforma e escolha as do perfil que faz sentido (veja os perfis acima). No Lovable, as
+   skills valem para o workspace inteiro; no Bolt, a importação lista até 100 skills por
+   repositório.
+
+Conferido na documentação de cada plataforma em 2026-09-30. As telas mudam: se o caminho
+estiver diferente, procure "Knowledge" ou "Skills" nas configurações do projeto.
+
 ## Depois de instalar
 
 Peça ao agente: **"Configure este projeto seguindo as boas práticas."** A skill

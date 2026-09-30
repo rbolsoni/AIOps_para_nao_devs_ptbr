@@ -6,5 +6,6 @@
   { "query": "adota as boas práticas de governança nesse projeto existente em Laravel", "should_trigger": true },
   { "query": "cria um endpoint POST /cadastros na API existente", "should_trigger": false },
   { "query": "o deploy de ontem quebrou a tela de login, investiga", "should_trigger": false },
-  { "query": "atualiza a versão do React de 18 para 19", "should_trigger": false }
+  { "query": "atualiza a versão do React de 18 para 19", "should_trigger": false },
+  { "query": "meu app é feito no Lovable, como faço a IA de lá seguir regras de segurança?", "should_trigger": true }
 ]

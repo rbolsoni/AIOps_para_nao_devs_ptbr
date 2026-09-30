@@ -64,7 +64,11 @@ executaria a cada início o que estiver na branch principal):
 }
 ```
 
-Passo a passo para cada agente, inclusive Windows: [docs/instalacao.md](docs/instalacao.md).
+**Opção 4 — Lovable, Bolt, Replit ou v0.** Lovable e Bolt importam as skills direto do GitHub;
+no Replit e no v0, cole as [regras essenciais](skills/iniciar-projeto/assets/regras-essenciais.modelo.md)
+nas instruções fixas do projeto.
+
+Passo a passo para cada agente e plataforma, inclusive Windows: [docs/instalacao.md](docs/instalacao.md).
 
 ## Primeiro uso
 

@@ -32,6 +32,10 @@ pedir e fazer algumas configurações em painéis — que o próprio agente expl
 3. Responda às perguntas: escolha o seu agente e confirme. Pronto — as skills ficam na pasta
    do projeto.
 
+Usa Lovable, Bolt, Replit ou v0? Siga o passo a passo das
+[plataformas](instalacao.md#4-plataformas-que-geram-o-app-lovable-bolt-replit-v0): as regras
+essenciais valem em toda mensagem, e Lovable e Bolt também importam as skills.
+
 Prefere não usar o terminal? Baixe o arquivo da versão mais recente na página
 [Releases](https://github.com/rbolsoni/IA-skills-para-nao-devs/releases) ("Source code"),
 descompacte e copie as pastas de `skills/` para a pasta de skills do seu agente (a tabela está
