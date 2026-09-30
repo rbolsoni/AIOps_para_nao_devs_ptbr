@@ -19,7 +19,7 @@
  * Uso:
  *   node mcp/servidor.mjs                     # usa a pasta skills/ deste pacote
  *   node mcp/servidor.mjs --skills <pasta>    # usa outra pasta de skills
- *   npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#<tag>   # versão fixada numa tag
+ *   npx -y github:rbolsoni/IA-skills-para-nao-devs#<tag>   # versão fixada numa tag
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, realpathSync } from 'node:fs';
@@ -38,7 +38,7 @@ Uso: node mcp/servidor.mjs [--skills <pasta>]
 
 Fala MCP por stdio; configure-o no seu cliente MCP em vez de executá-lo direto.
 Exemplo (JSON de configuração de cliente):
-  { "mcpServers": { "aiops-para-nao-devs-ptbr": { "command": "npx", "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"] } } }`;
+  { "mcpServers": { "ia-skills-para-nao-devs": { "command": "npx", "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"] } } }`;
 
 const INSTRUCOES = [
   'Este servidor entrega skills de boas práticas de engenharia (padrão Agent Skills) em português.',
@@ -175,7 +175,7 @@ export function criarServidor(pastaSkills) {
         return ok({
           protocolVersion: VERSOES_SUPORTADAS.includes(pedida) ? pedida : VERSOES_SUPORTADAS[0],
           capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
-          serverInfo: { name: PACOTE.name, title: 'AIOps para não devs (PT-BR)', version: versao },
+          serverInfo: { name: PACOTE.name, title: 'Kit de skills de agente para não devs (PT-BR)', version: versao },
           instructions: INSTRUCOES,
         });
       }

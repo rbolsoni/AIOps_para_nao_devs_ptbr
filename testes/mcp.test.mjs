@@ -90,7 +90,7 @@ describe('servidor MCP', () => {
     assert.equal(r.result.protocolVersion, '2025-06-18');
     assert.ok(r.result.capabilities.tools);
     assert.ok(r.result.capabilities.prompts);
-    assert.equal(r.result.serverInfo.name, 'aiops-para-nao-devs-ptbr');
+    assert.equal(r.result.serverInfo.name, 'ia-skills-para-nao-devs');
     // O título que o cliente mostra é o do README: se um mudar sem o outro, este teste avisa.
     const tituloDoReadme = readFileSync(path.join(RAIZ, 'README.md'), 'utf8').match(/^# (.+?)\s*$/m)[1];
     assert.equal(r.result.serverInfo.title, tituloDoReadme);
