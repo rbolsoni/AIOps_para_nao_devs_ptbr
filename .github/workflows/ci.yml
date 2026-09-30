@@ -1,5 +1,7 @@
 # CI do próprio kit: valida as skills contra o padrão Agent Skills, roda os testes
-# (validador, servidor MCP e scripts das skills) e varre segredos.
+# (validador, servidor MCP e scripts das skills) e varre segredos, no Linux e no Windows;
+# mede a cobertura com catraca; confere se as skills alteradas subiram de versão; e audita
+# os próprios workflows. O kit ensina essas travas — aqui ele as usa.
 name: CI
 
 on:
@@ -11,6 +13,8 @@ on:
 permissions:
   contents: read
 
+# O CI do kit não publica nada (a release é outro workflow, disparado pelo fim deste), então
+# um push novo pode cancelar o run anterior, que ficou obsoleto.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -25,6 +29,9 @@ jobs:
         node: [20, 22, 24]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Não deixa o token configurado no git para os passos seguintes; nenhum faz push.
+          persist-credentials: false
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -48,3 +55,77 @@ jobs:
             echo "::error::Marcador de modelo encontrado em .github/."
             exit 1
           fi
+
+  # Boa parte de quem usa o kit está no Windows, e os scripts rodam lá (caminhos, junctions,
+  # terminações de linha): a suíte roda também nele.
+  windows:
+    name: Windows — validar, testes e segredos
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validar skills
+        run: npm run validar
+      - name: Testes
+        run: npm test
+      - name: Varredura de segredos
+        run: npm run verificar:segredos
+
+  # Catraca de cobertura (skill testes-e-qualidade): o piso fica um pouco abaixo do medido e
+  # só sobe, à mão, no package.json (script test:cobertura).
+  cobertura:
+    name: Cobertura (catraca)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Testes com cobertura mínima
+        run: npm run test:cobertura
+
+  # Regra 10 do AGENTS.md: skill alterada sobe metadata.versao. Só faz sentido em PR, contra
+  # a branch de destino.
+  versoes:
+    name: Versões das skills alteradas
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # a comparação precisa da branch de destino e do ponto em que as duas se separaram
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Conferir versões
+        # Valores do GitHub entram pelo env: e são usados entre aspas, nunca como ${{ }} no run:.
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: node ferramentas/conferir-versoes.mjs --base "origin/$BASE_REF"
+
+  # Auditoria dos próprios workflows (injeção de expressão, permissões, token persistido,
+  # gatilhos perigosos). Versão fixada; roda pelo pipx que vem no runner, sem dependência no
+  # repositório.
+  workflows:
+    name: Auditoria dos workflows (zizmor)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: zizmor
+        env:
+          # Com o token (só leitura), o zizmor também confere as actions referenciadas por SHA.
+          GH_TOKEN: ${{ github.token }}
+        run: pipx run zizmor==1.30.1 --format=github .

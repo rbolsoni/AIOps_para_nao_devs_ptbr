@@ -46,11 +46,17 @@ que um agente cometeu, uma armadilha que custou horas, uma correção que você 
      verificáveis.
    - `evals/gatilhos.json`: ao menos 3 pedidos que devem ativar (variando forma e
      vocabulário) e 2 quase-acertos que não devem.
-7. **Valide e teste**: `npm run validar && npm test && npm run verificar:segredos`.
-8. **Teste de verdade num agente**: instale a skill a partir do seu clone
+7. **Suba a versão** da skill alterada em `metadata.versao` (correção → patch; conteúdo novo
+   → minor; mudança só em `evals/` não precisa).
+8. **Valide e teste**:
+   `npm run validar && npm test && npm run verificar:segredos && npm run conferir:versoes -- --base main`.
+   O validador cobra também as regras do kit (licença, categoria, versão, frontmatter estrito,
+   caracteres invisíveis) e o teste do catálogo confere que a skill está no README, na seção
+   da categoria dela.
+9. **Teste de verdade num agente**: instale a skill a partir do seu clone
    (`npx skills add ./ -s <nome>`), rode as consultas de gatilho e alguns casos de
    `evals.json` com e sem a skill. Conte no PR o que observou.
-9. **Atualize o catálogo** no README, se a skill for nova.
+10. **Atualize o catálogo** no README, se a skill for nova.
 
 ## Scripts
 

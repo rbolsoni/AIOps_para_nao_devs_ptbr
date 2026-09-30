@@ -1,0 +1,3 @@
+# Quem revisa por padrão. Com um ruleset que exige revisão de code owner, nenhum PR entra
+# sem passar por aqui.
+* @rbolsoni

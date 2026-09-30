@@ -22,85 +22,270 @@ export function separarFrontmatter(texto) {
   return { bruto: m[1], corpo: m[2] };
 }
 
-function lerEscalar(bruto) {
-  const v = bruto.trim();
-  if (v.startsWith('"') && v.endsWith('"') && v.length >= 2) {
-    return { valor: v.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\'), comAspas: true };
+// O parser abaixo precisa ser pelo menos tão rígido quanto um leitor de YAML de verdade: o
+// que ele aceitar e o YAML recusar (ou ler de outro jeito) passaria na CI e não carregaria no
+// agente. Por isso ele recusa, com a linha e uma sugestão, tudo o que tem leitura ambígua.
+
+const DICA_ASPAS = 'use aspas ou bloco `>-`';
+/** Primeiro caractere que o YAML lê como sintaxe, e não como texto, num valor sem aspas. */
+const INDICADORES = '-?:,[]{}#&*!|>\'"%@`';
+/** Valor sem aspas que o YAML lê como número, booleano ou nulo, e não como texto. */
+const NAO_TEXTO = /^(-?\d+(\.\d+)*|true|false|null|~)$/i;
+const ESCAPES_ACEITOS = new Map([
+  ['"', '"'],
+  ['\\', '\\'],
+  ['n', '\n'],
+  ['t', '\t'],
+]);
+
+const erroNaLinha = (n, mensagem) => new Error(`frontmatter, linha ${n + 1}: ${mensagem}`);
+const recuoDe = (linha) => linha.match(/^ */)[0].length;
+// Só o espaço conta como branco: trim() também apagaria espaço rígido (U+00A0) e BOM, que
+// para o YAML são texto.
+const vazia = (linha) => /^ *$/.test(linha);
+/** Linha em branco ou só de comentário (fora de bloco, o YAML ignora as duas). */
+const ignoravel = (linha) => /^ *(#|$)/.test(linha);
+const codigoUnicode = (c) => `U+${c.toString(16).toUpperCase().padStart(4, '0')}`;
+
+/**
+ * Primeiro caractere da linha que o YAML recusa (controle, não-caractere) ou que um leitor de
+ * YAML 1.1 lê como quebra de linha (U+0085, U+2028, U+2029); null se não houver. A tabulação
+ * é tratada à parte.
+ */
+function codigoProibido(linha) {
+  for (const ch of linha) {
+    const c = ch.codePointAt(0);
+    if ((c < 0x20 && c !== 0x09) || (c >= 0x7f && c <= 0x9f) || c === 0x2028 || c === 0x2029 || c === 0xfffe || c === 0xffff) return c;
   }
-  if (v.startsWith("'") && v.endsWith("'") && v.length >= 2) {
-    return { valor: v.slice(1, -1).replace(/''/g, "'"), comAspas: true };
+  return null;
+}
+
+function verificarChaveNova(mapa, chave, n, nome) {
+  if (chave === '__proto__') throw erroNaLinha(n, `a chave "${nome}" não é aceita`);
+  if (Object.hasOwn(mapa, chave)) throw erroNaLinha(n, `chave "${nome}" repetida; o YAML recusa chave duplicada`);
+}
+
+/** Depois da aspa de fechamento só pode haver espaço. */
+function verificarFimDasAspas(resto, aspa, n, nome) {
+  if (resto === '') return;
+  if (resto.includes(aspa)) {
+    throw erroNaLinha(
+      n,
+      aspa === '"'
+        ? `o valor de "${nome}" tem aspas duplas internas sem escape; escreva \\" ou use aspas simples`
+        : `o valor de "${nome}" tem apóstrofo sozinho dentro de aspas simples; escreva '' (dois apóstrofos) ou use aspas duplas`,
+    );
   }
+  throw erroNaLinha(
+    n,
+    `o valor de "${nome}" tem conteúdo depois da aspa de fechamento (${JSON.stringify(resto)}); comentário na mesma linha não é aceito, mova-o para uma linha própria`,
+  );
+}
+
+/** Aspas duplas: escapes \" \\ \n \t, lidos da esquerda para a direita numa única passada. */
+function lerAspasDuplas(v, n, nome) {
+  let valor = '';
+  for (let i = 1; i < v.length; i++) {
+    const c = v[i];
+    if (c === '\\') {
+      const seguinte = v[i + 1];
+      if (!ESCAPES_ACEITOS.has(seguinte)) {
+        throw erroNaLinha(n, `o valor de "${nome}" usa o escape "\\${seguinte ?? ''}", que não é aceito; entre aspas duplas use só \\" \\\\ \\n e \\t`);
+      }
+      valor += ESCAPES_ACEITOS.get(seguinte);
+      i++;
+    } else if (c === '"') {
+      verificarFimDasAspas(v.slice(i + 1), '"', n, nome);
+      return valor;
+    } else {
+      valor += c;
+    }
+  }
+  throw erroNaLinha(n, `o valor de "${nome}" abre aspas duplas e não as fecha na mesma linha; para texto em várias linhas use bloco \`>-\``);
+}
+
+/** Aspas simples: o único escape é '' (apóstrofo). */
+function lerAspasSimples(v, n, nome) {
+  let valor = '';
+  for (let i = 1; i < v.length; i++) {
+    if (v[i] !== "'") {
+      valor += v[i];
+    } else if (v[i + 1] === "'") {
+      valor += "'";
+      i++;
+    } else {
+      verificarFimDasAspas(v.slice(i + 1), "'", n, nome);
+      return valor;
+    }
+  }
+  throw erroNaLinha(n, `o valor de "${nome}" abre aspas simples e não as fecha na mesma linha; para texto em várias linhas use bloco \`>-\``);
+}
+
+/** Motivo pelo qual o YAML leria o valor sem aspas de outro jeito (ou o recusaria), ou null. */
+function problemaSemAspas(v) {
+  if (v.includes('\t')) return 'tem tabulação';
+  if (INDICADORES.includes(v[0])) return `começa com "${v[0]}", que o YAML lê como sintaxe`;
+  if (v.includes(': ')) return 'tem ": " no meio, que o YAML lê como outra chave';
+  if (v.endsWith(':')) return 'termina em ":", que o YAML lê como outra chave';
+  if (v.includes(' #')) return 'tem " #", que o YAML lê como início de comentário';
+  return null;
+}
+
+function lerEscalar(bruto, n, nome) {
+  const v = bruto.replace(/^ +| +$/g, '');
+  if (v.startsWith('"')) return { valor: lerAspasDuplas(v, n, nome), comAspas: true };
+  if (v.startsWith("'")) return { valor: lerAspasSimples(v, n, nome), comAspas: true };
+  const problema = problemaSemAspas(v);
+  if (problema) throw erroNaLinha(n, `o valor de "${nome}" ${problema}; ${DICA_ASPAS}`);
   return { valor: v, comAspas: false };
 }
 
+/**
+ * Bloco `>`, como o YAML: linhas seguidas viram uma só, separadas por espaço; cada linha vazia
+ * entre elas vira uma quebra de linha.
+ */
 function dobrarBloco(linhas) {
-  // Bloco `>`: linhas consecutivas viram uma só, separadas por espaço; linha vazia vira quebra.
-  const paragrafos = [];
-  let atual = [];
+  let texto = '';
+  let vazias = 0;
   for (const l of linhas) {
-    if (l.trim() === '') {
-      if (atual.length) paragrafos.push(atual.join(' '));
-      atual = [];
-    } else {
-      atual.push(l.trim());
+    if (l === '') {
+      vazias++;
+      continue;
     }
+    texto += vazias ? '\n'.repeat(vazias) : texto ? ' ' : '';
+    texto += l;
+    vazias = 0;
   }
-  if (atual.length) paragrafos.push(atual.join(' '));
-  return paragrafos.join('\n');
+  return texto;
+}
+
+/** Bloco `>`/`|` que começa na linha n. Devolve o texto e o índice da primeira linha depois dele. */
+function lerBloco(linhas, n, chave, cabecalho) {
+  const m = cabecalho.match(/^([>|])([+-]?)$/);
+  if (!m) {
+    if (/^[>|](?:[1-9][+-]?|[+-][1-9])$/.test(cabecalho)) {
+      throw erroNaLinha(n, `indicador de indentação em bloco ("${cabecalho}") não é suportado; remova o número e alinhe o texto`);
+    }
+    throw erroNaLinha(n, `cabeçalho de bloco "${cabecalho}" não é suportado; use \`>-\`, \`>\`, \`|\` ou \`|-\` sozinho na linha`);
+  }
+  const [, estilo, corte] = m;
+  let fim = n + 1;
+  while (fim < linhas.length && (vazia(linhas[fim]) || linhas[fim].startsWith(' '))) fim++;
+  const bloco = linhas.slice(n + 1, fim);
+  const primeira = bloco.find((l) => !vazia(l));
+  if (primeira === undefined) return { valor: '', proxima: fim };
+
+  // O recuo do bloco é o da primeira linha com texto; o YAML tira só esse recuo de cada linha.
+  const recuo = recuoDe(primeira);
+  const texto = bloco.map((l, k) => {
+    if (vazia(l)) {
+      if (l.length > recuo) {
+        throw erroNaLinha(n + 1 + k, `linha só de espaços, com mais espaços que o recuo do bloco de "${chave}": o YAML guarda os que sobram como texto; apague-os`);
+      }
+      return '';
+    }
+    const r = recuoDe(l);
+    if (r < recuo) throw erroNaLinha(n + 1 + k, `linha com recuo menor que o da primeira linha do bloco de "${chave}"; alinhe o texto`);
+    if (estilo === '>' && r > recuo) {
+      throw erroNaLinha(n + 1 + k, `linha com recuo maior dentro do bloco \`>\` de "${chave}": o YAML mantém a quebra dessa linha em vez de juntá-la; alinhe o texto`);
+    }
+    return l.slice(recuo);
+  });
+  let vaziasNoFim = 0;
+  while (texto[texto.length - 1] === '') {
+    texto.pop();
+    vaziasNoFim++;
+  }
+  let valor = estilo === '>' ? dobrarBloco(texto) : texto.join('\n');
+  // Indicador de corte: sem nada, fica uma quebra no fim; "-" tira; "+" mantém as linhas vazias.
+  if (corte === '') valor += '\n';
+  else if (corte === '+') valor += '\n'.repeat(1 + vaziasNoFim);
+  return { valor, proxima: fim };
+}
+
+/** Mapa de um nível (como `metadata`) que começa na linha n, com valores de uma linha. */
+function lerMapa(linhas, n, chave, avisos) {
+  const mapa = {};
+  let recuo = null;
+  let j = n + 1;
+  for (;;) {
+    // Linhas em branco e comentários entre as chaves são aceitos, como no YAML.
+    let k = j;
+    while (k < linhas.length && ignoravel(linhas[k])) k++;
+    if (k >= linhas.length || !linhas[k].startsWith(' ')) break;
+    j = k;
+    const linha = linhas[j];
+    recuo ??= recuoDe(linha);
+    if (recuoDe(linha) !== recuo) throw erroNaLinha(j, `recuo diferente do das outras chaves de "${chave}"; alinhe as chaves`);
+    const mm = linha.slice(recuo).match(/^([A-Za-z0-9_.-]+):(?: +(.*))?$/);
+    if (!mm) throw erroNaLinha(j, `esperado "  chave: valor" dentro de "${chave}"`);
+    const nome = `${chave}.${mm[1]}`;
+    verificarChaveNova(mapa, mm[1], j, nome);
+    const resto = (mm[2] ?? '').replace(/ +$/, '');
+    if (resto === '') {
+      throw erroNaLinha(j, `"${nome}" sem valor; dentro de "${chave}" cada chave leva um texto na mesma linha (não há mapa dentro de mapa)`);
+    }
+    if (/^[>|][0-9+-]*$/.test(resto)) throw erroNaLinha(j, `bloco \`${resto}\` dentro de "${chave}" não é suportado; escreva o valor numa linha, entre aspas`);
+    const { valor, comAspas } = lerEscalar(resto, j, nome);
+    if (!comAspas && NAO_TEXTO.test(valor)) avisos.push(`"${nome}: ${valor}" sem aspas não é string em YAML; use "${valor}"`);
+    mapa[mm[1]] = valor;
+    j++;
+  }
+  if (recuo === null) throw erroNaLinha(n, `"${chave}" sem valor; preencha ou remova a linha`);
+  return { mapa, proxima: j };
 }
 
 /**
  * Lê o subconjunto de YAML usado no frontmatter.
- * Devolve { dados, avisos }. Lança erro com o número da linha quando não reconhece a sintaxe.
+ * Devolve { dados, avisos }. Lança erro com o número da linha (contada a partir da primeira
+ * linha depois do `---`) quando não reconhece a sintaxe ou quando o YAML a leria de outro
+ * jeito: valor sem aspas com ": " ou " #", aspas malformadas, chave repetida, tabulação na
+ * indentação, indicador de indentação em bloco e mapa dentro de mapa.
  */
 export function lerYamlSimples(bruto) {
   const linhas = bruto.split(/\r?\n/);
   const dados = {};
   const avisos = [];
+  linhas.forEach((linha, n) => {
+    const proibido = codigoProibido(linha);
+    if (proibido === 0x0d) throw erroNaLinha(n, 'retorno de carro (U+000D) solto no meio da linha, que o YAML lê como quebra de linha; salve com quebras LF');
+    if (proibido !== null) {
+      throw erroNaLinha(n, `caractere ${codigoUnicode(proibido)} não é aceito: é de controle ou vira quebra de linha em alguns leitores de YAML; remova`);
+    }
+    if (/^ *\t/.test(linha)) throw erroNaLinha(n, 'indentação com tabulação; use espaços');
+  });
   let i = 0;
   while (i < linhas.length) {
     const linha = linhas[i];
-    if (linha.trim() === '' || linha.trimStart().startsWith('#')) {
+    if (ignoravel(linha)) {
       i++;
       continue;
     }
-    const m = linha.match(/^([A-Za-z0-9_-]+):(?:\s+(.*))?$/);
-    if (!m) throw new Error(`frontmatter, linha ${i + 1}: esperado "chave: valor", encontrado "${linha}"`);
+    if (linha.startsWith(' ')) throw erroNaLinha(i, 'linha recuada fora de um bloco ou de "metadata"; para texto em várias linhas use bloco `>-`');
+    if (/^[A-Za-z0-9_-]+:\t/.test(linha)) throw erroNaLinha(i, 'tabulação depois de ":"; use espaço');
+    const m = linha.match(/^([A-Za-z0-9_-]+):(?: +(.*))?$/);
+    if (!m) throw erroNaLinha(i, `esperado "chave: valor", encontrado "${linha}"`);
     const chave = m[1];
-    const resto = (m[2] ?? '').trim();
+    verificarChaveNova(dados, chave, i, chave);
+    const resto = (m[2] ?? '').replace(/ +$/, '');
 
-    if (/^[>|][+-]?$/.test(resto)) {
-      const bloco = [];
-      i++;
-      while (i < linhas.length && (linhas[i].trim() === '' || /^\s+\S/.test(linhas[i]))) {
-        bloco.push(linhas[i]);
-        i++;
-      }
-      while (bloco.length && bloco[bloco.length - 1].trim() === '') bloco.pop();
-      const recuo = Math.min(...bloco.filter((l) => l.trim()).map((l) => l.match(/^\s*/)[0].length));
-      const conteudo = bloco.map((l) => l.slice(Number.isFinite(recuo) ? recuo : 0));
-      dados[chave] = resto.startsWith('>') ? dobrarBloco(conteudo) : conteudo.join('\n');
+    if (/^[>|]/.test(resto)) {
+      const { valor, proxima } = lerBloco(linhas, i, chave, resto);
+      dados[chave] = valor;
+      i = proxima;
       continue;
     }
 
     if (resto === '') {
-      const mapa = {};
-      i++;
-      while (i < linhas.length && /^\s+\S/.test(linhas[i])) {
-        const mm = linhas[i].match(/^\s+([A-Za-z0-9_.-]+):\s*(.*)$/);
-        if (!mm) throw new Error(`frontmatter, linha ${i + 1}: esperado "  chave: valor" dentro de "${chave}"`);
-        const { valor, comAspas } = lerEscalar(mm[2]);
-        if (!comAspas && /^(-?\d+(\.\d+)*|true|false|null|~)$/i.test(valor)) {
-          avisos.push(`"${chave}.${mm[1]}: ${valor}" sem aspas não é string em YAML; use "${valor}"`);
-        }
-        mapa[mm[1]] = valor;
-        i++;
-      }
+      const { mapa, proxima } = lerMapa(linhas, i, chave, avisos);
       dados[chave] = mapa;
+      i = proxima;
       continue;
     }
 
-    dados[chave] = lerEscalar(resto).valor;
+    const { valor, comAspas } = lerEscalar(resto, i, chave);
+    if (!comAspas && NAO_TEXTO.test(valor)) avisos.push(`"${chave}: ${valor}" sem aspas não é string em YAML; use "${valor}"`);
+    dados[chave] = valor;
     i++;
   }
   return { dados, avisos };
