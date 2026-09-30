@@ -78,13 +78,16 @@ Se as skills de boas práticas estiverem instaladas, use-as nestas situações:
 | Branch, commit, PR | `fluxo-de-git` |
 | Esteira, release, deploy | `esteira-ci-cd`, `isolamento-de-ambientes` |
 | Banco de dados | `mudancas-de-banco` |
+| Lentidão, carga, escala | `desempenho-e-escalabilidade` |
 | Senhas, chaves, `.env` | `segredos-e-credenciais` |
 | Login, permissões, formulários, APIs | `seguranca-de-aplicacao`, `headers-de-seguranca` |
 | Dependência nova | `dependencias-e-licencas` |
 | Dados pessoais | `privacidade-e-lgpd` |
 | Interface web | `acessibilidade-web` |
 | Algo deu errado | `incidente-vira-checagem` |
+| Backup, restauração, voltar a versão | `backup-e-recuperacao` |
 | Configuração em painel externo | `guiar-usuario-em-paineis` |
+| Plano, custo, limite de gasto | `controle-de-custos` |
 | Configurar o agente, instalar MCP ou skill, ler conteúdo de terceiros | `uso-seguro-de-agentes` |
 
 ## Nunca sem pedido explícito

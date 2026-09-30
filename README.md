@@ -93,6 +93,7 @@ a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, ban
 | [`isolamento-de-ambientes`](skills/isolamento-de-ambientes/SKILL.md) | desenvolvimento, homologação e produção; nada de teste apontando para produção |
 | [`mudancas-de-banco`](skills/mudancas-de-banco/SKILL.md) | migrações, políticas de acesso (RLS), mudanças sem interrupção |
 | [`testes-e-qualidade`](skills/testes-e-qualidade/SKILL.md) | testes, cobertura, testes instáveis; todo bug ganha um teste |
+| [`desempenho-e-escalabilidade`](skills/desempenho-e-escalabilidade/SKILL.md) | sistema lento ou que precisa crescer: medir antes, banco (N+1, índices, paginação), cache, filas, Core Web Vitals e onde rodar |
 
 ### Segurança e conformidade
 
@@ -112,6 +113,8 @@ a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, ban
 | [`observabilidade`](skills/observabilidade/SKILL.md) | logs, monitoramento de erros, métricas, alertas |
 | [`incidente-vira-checagem`](skills/incidente-vira-checagem/SKILL.md) | algo deu errado: registro sem culpados e checagem automática que impede a volta |
 | [`guiar-usuario-em-paineis`](skills/guiar-usuario-em-paineis/SKILL.md) | tarefas em GitHub, Vercel, Supabase, DNS…: passo a passo à prova de leigo |
+| [`controle-de-custos`](skills/controle-de-custos/SKILL.md) | nuvem, hospedagem ou IA paga: teto de gasto e alertas (e qual deles só avisa), chave paga só no servidor, limite por usuário |
+| [`backup-e-recuperacao`](skills/backup-e-recuperacao/SKILL.md) | backup testado, restauração ensaiada, recuperar dado apagado e voltar o site para a versão anterior |
 
 ### Agentes de IA
 
