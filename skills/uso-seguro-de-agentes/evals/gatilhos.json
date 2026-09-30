@@ -1,0 +1,10 @@
+[
+  { "query": "como deixo o agente de IA mais seguro nesse projeto?", "should_trigger": true },
+  { "query": "posso deixar o Cursor aprovar tudo sozinho sem me perguntar?", "should_trigger": true },
+  { "query": "instala esse servidor MCP do Postgres pra mim", "should_trigger": true },
+  { "query": "acho que o agente leu meu .env com as senhas, e agora?", "should_trigger": true },
+  { "query": "configura o Claude Code pra ele nunca mexer em produção", "should_trigger": true },
+  { "query": "cria um chatbot com a API da OpenAI no meu site", "should_trigger": false },
+  { "query": "como protejo a API do meu app com login e senha?", "should_trigger": false },
+  { "query": "divide essa migração grande entre vários agentes em paralelo", "should_trigger": false }
+]
