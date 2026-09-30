@@ -22,9 +22,9 @@ Conferido na documentação oficial em 2026-09-30; confira a da sua versão.
 
 **Idade mínima de versão** (espera antes de adotar versão recém-publicada):
 
-- Dependabot: `cooldown` (ex.: `default-days: 7`) na entrada do ecossistema. Vale para
-  atualização de versão, não para atualização de segurança, e não é oferecido para o
-  ecossistema `github-actions`.
+- Dependabot: `cooldown` (ex.: `default-days: 7`) na entrada de cada ecossistema, inclusive
+  `github-actions`. Vale para atualização de versão, não para atualização de segurança. Em
+  `github-actions` só o `default-days` se aplica (os prazos por tipo de versão, não).
 - Renovate: `minimumReleaseAge` (ex.: `"7 days"`).
 - pnpm (10.16+): `minimumReleaseAge`, em minutos, no `pnpm-workspace.yaml` — a partir da
   v11 o padrão já é 1440 (um dia); exceções em `minimumReleaseAgeExclude`.
