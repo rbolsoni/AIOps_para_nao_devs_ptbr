@@ -38,7 +38,7 @@ Uso: node mcp/servidor.mjs [--skills <pasta>]
 
 Fala MCP por stdio; configure-o no seu cliente MCP em vez de executá-lo direto.
 Exemplo (JSON de configuração de cliente):
-  { "mcpServers": { "ia-skills-para-nao-devs": { "command": "npx", "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"] } } }`;
+  { "mcpServers": { "ia-skills-para-nao-devs": { "command": "npx", "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"] } } }`;
 
 const INSTRUCOES = [
   'Este servidor entrega skills de boas práticas de engenharia (padrão Agent Skills) em português.',
