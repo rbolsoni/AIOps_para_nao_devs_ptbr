@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Arquitetura de agentes
@@ -20,6 +20,9 @@ central desta skill:
 > **O modelo sugere; o código decide.** O modelo *propõe* uma ação. O programa ao redor (o
 > *harness*) valida os argumentos, confere a permissão, executa, registra e devolve a
 > observação ao modelo. Nada que o modelo escreve é executado sem passar por essas etapas.
+
+Para usar ou configurar com segurança o agente que programa (Claude Code, Codex, Cursor…), a
+skill é `uso-seguro-de-agentes`; esta é para construir agentes.
 
 ## Divisão de trabalho
 

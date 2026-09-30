@@ -162,3 +162,75 @@ certificado HTTPS emitido; eu rodo o verificador de headers no endereço.
 
 **Não faça:** não apague registros `MX` ou `TXT` existentes — eles cuidam do e-mail e de
 verificações de outros serviços.
+
+---
+
+### Ativar a verificação em duas etapas (2FA) nas contas — bloqueante
+
+**Por quê:** quem entra na sua conta do repositório, da hospedagem ou do provedor de IA
+controla o projeto inteiro — código, deploy, dados e fatura. Senha vaza; a segunda etapa segura.
+
+**Onde:** nas configurações de segurança de cada conta. No GitHub: foto do perfil →
+"Settings" → "Password and authentication".
+
+**Passos:**
+1. Comece pelo **e-mail**: é ele que recupera todas as outras contas.
+2. Em cada conta (repositório, hospedagem, banco, registro de domínio, provedores de IA),
+   ative a verificação em duas etapas. Prefira chave de acesso (*passkey*) ou aplicativo
+   autenticador; SMS é a opção mais fraca.
+3. Guarde os códigos de recuperação fora do computador (impressos ou num gerenciador de
+   senhas).
+
+**Como confirmar:** ao entrar de novo, a conta pede a segunda etapa.
+
+**Não faça:** não guarde os códigos de recuperação junto da senha.
+
+**Se a tela estiver diferente:** procure "Two-factor", "2FA" ou "Passkeys" nas configurações
+de segurança da conta.
+
+---
+
+### Criar token com validade e permissão mínima — recomendado
+
+**Por quê:** token vazado vale até expirar e faz tudo o que a permissão dele deixa. Validade
+curta e escopo mínimo limitam o estrago.
+
+**Onde (GitHub):** foto do perfil → "Settings" → "Developer settings" → "Personal access
+tokens" → "Fine-grained tokens".
+
+**Passos:**
+1. Clique em "Generate new token".
+2. Em "Expiration", escolha uma data (ex.: 90 dias) — evite "No expiration".
+3. Em "Repository access", escolha "Only select repositories" e marque só os necessários.
+4. Em "Permissions", dê só o que a tarefa exige (ex.: leitura de conteúdo).
+5. Gere e copie o token direto para onde ele vai ser usado (secret da esteira, variável de
+   ambiente da ferramenta) — não cole na conversa nem num arquivo do projeto.
+
+**Como confirmar:** o token aparece na lista com a data de expiração e os repositórios
+escolhidos.
+
+**Não faça:** não use token clássico com acesso a todos os repositórios.
+
+**Se a tela estiver diferente:** procure "fine-grained personal access tokens" na
+documentação do GitHub. Em outras plataformas (hospedagem, banco), procure as opções de escopo
+(projeto ou time) e de validade na hora de criar o token.
+
+---
+
+### Definir limite de gasto e alertas — bloqueante antes de ir ao ar
+
+**Por quê:** cobrança por uso não tem teto por padrão: um robô, um laço ou uma chave vazada
+vira fatura.
+
+**Onde:** no faturamento de cada provedor pago. Onde fica em cada um, e se o limite corta ou só
+avisa: skill `controle-de-custos`.
+
+**Passos:**
+1. Defina o valor máximo por mês.
+2. Ative alertas em 50%, 80% e 100% para um e-mail que alguém lê.
+3. Se o provedor oferece corte automático, ligue-o; se só avisa, combine com limite no código.
+
+**Como confirmar:** o painel mostra o limite e os alertas; o primeiro alerta chega ao e-mail
+certo.
+
+**Não faça:** não trate alerta como teto.
