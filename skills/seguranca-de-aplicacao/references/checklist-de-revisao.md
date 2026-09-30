@@ -63,7 +63,8 @@ problema, registre: local, cenário de exploração, impacto, correção e prior
 ## Integridade de software e dados
 
 - [ ] Deploy só pela esteira; nenhuma integração paralela publicando em produção.
-- [ ] Webhooks verificam assinatura e rejeitam repetição (timestamp/nonce).
+- [ ] Webhooks verificam assinatura e rejeitam repetição (timestamp/nonce). Pagamento: skill
+  `pagamentos-e-webhooks`.
 - [ ] Nada de desserializar dado não confiável em formato que executa código.
 
 ## Registro e monitoramento

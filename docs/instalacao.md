@@ -65,6 +65,7 @@ npx skills add rbolsoni/IA-skills-para-nao-devs \
 ```bash
 npx skills add rbolsoni/IA-skills-para-nao-devs \
   -s seguranca-de-aplicacao \
+  -s pagamentos-e-webhooks \
   -s headers-de-seguranca \
   -s mudancas-de-banco \
   -s isolamento-de-ambientes \

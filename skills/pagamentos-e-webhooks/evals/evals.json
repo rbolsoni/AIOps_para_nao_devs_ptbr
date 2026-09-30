@@ -1,0 +1,38 @@
+{
+  "skill_name": "pagamentos-e-webhooks",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Meu SaaS de agendamento tem o plano Pro. Integra o Stripe: o cliente paga e o acesso ao Pro é liberado. É Next.js com Supabase.",
+      "expected_output": "Checkout criado no servidor a partir do preço cadastrado (nunca do valor vindo do navegador), acesso liberado só pelo webhook com assinatura verificada sobre o corpo bruto, eventos gravados com id único para ignorar repetidos, estado da assinatura seguindo os avisos do provedor e chaves de teste separadas das de produção.",
+      "assertions": [
+        "O preço vem do servidor (id do preço ou catálogo), não de um valor enviado pelo navegador",
+        "O acesso é liberado pelo webhook, não pela página de sucesso",
+        "A assinatura do webhook é verificada com o corpo bruto da requisição",
+        "Eventos repetidos são ignorados por id gravado com restrição de unicidade",
+        "Separa chaves e segredo de webhook de teste e de produção"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "No meu app de cursos, cobro por Pix com Mercado Pago. Hoje eu libero a aula quando a pessoa volta para a página de 'pagamento aprovado'. Tá certo?",
+      "expected_output": "O agente explica que qualquer pessoa abre a página de retorno sem pagar, move a liberação para o processamento do webhook com o x-signature verificado e a consulta ao pagamento pela API, trata Pix expirado e aviso repetido, e sugere testar com o simulador de notificações.",
+      "assertions": [
+        "Explica que a página de retorno não prova pagamento",
+        "Libera o acesso só depois de verificar o x-signature e consultar o pagamento pela API",
+        "Trata Pix expirado e aviso repetido sem liberar duas vezes",
+        "Sugere testar com notificações simuladas antes de ir ao ar"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "O formulário de doação manda o valor escolhido e eu crio a cobrança com esse valor direto. Às vezes a requisição dá timeout e eu repito. Revisa isso.",
+      "expected_output": "O agente mantém o valor escolhido pelo doador mas valida no servidor (mínimo, máximo, inteiro em centavos), envia chave de idempotência derivada do pedido para a repetição não cobrar duas vezes e grava o pedido antes de chamar o provedor.",
+      "assertions": [
+        "Valida no servidor o valor recebido (limites e tipo) em vez de confiar no formulário",
+        "Usa chave de idempotência que se repete na nova tentativa do mesmo pedido",
+        "Grava o pedido antes de criar a cobrança, com referência para o aviso encontrar"
+      ]
+    }
+  ]
+}

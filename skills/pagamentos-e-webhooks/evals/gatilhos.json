@@ -1,0 +1,9 @@
+[
+  { "query": "integra o Stripe no meu app para cobrar a assinatura mensal", "should_trigger": true },
+  { "query": "como eu sei que o Pix foi pago de verdade antes de liberar o pedido?", "should_trigger": true },
+  { "query": "o webhook do Mercado Pago está chegando duplicado e o cliente recebe dois e-mails", "should_trigger": true },
+  { "query": "quero liberar o curso só depois que o boleto for compensado", "should_trigger": true },
+  { "query": "cria um webhook que avisa no Slack quando alguém se cadastra", "should_trigger": false },
+  { "query": "gera um relatório em PDF com o faturamento do mês", "should_trigger": false },
+  { "query": "coloca teto de gasto na conta da OpenAI do projeto", "should_trigger": false }
+]
