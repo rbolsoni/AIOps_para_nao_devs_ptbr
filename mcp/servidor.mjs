@@ -11,6 +11,9 @@
  * Nada é escrito nem executado: o servidor só lê arquivos de dentro da pasta de cada skill,
  * recusando caminhos que saiam dela, links simbólicos, binários e arquivos grandes.
  *
+ * A versão informada ao cliente (serverInfo.version) é a do pacote mais uma impressão do
+ * conteúdo das skills (ex.: 1.0.0+3f2a9c1b7d4e): identifica exatamente o que está sendo servido.
+ *
  * Transporte: stdio, JSON-RPC 2.0, uma mensagem por linha. Logs vão para stderr.
  *
  * Uso:
@@ -18,6 +21,7 @@
  *   node mcp/servidor.mjs --skills <pasta>    # usa outra pasta de skills
  *   npx -y github:rbolsoni/Padroes_skill_para_AIOps_ptbr
  */
+import { createHash } from 'node:crypto';
 import { readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
@@ -47,7 +51,7 @@ const FERRAMENTAS = [
   {
     name: 'listar_skills',
     title: 'Listar skills',
-    description: 'Lista as skills disponíveis com nome, categoria e descrição de quando usar cada uma. Chame no início da tarefa para escolher quais seguir.',
+    description: 'Lista as skills disponíveis com nome, categoria, versão e descrição de quando usar cada uma. Chame no início da tarefa para escolher quais seguir.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
@@ -90,6 +94,26 @@ function comoObjeto(valor) {
   return typeof valor === 'object' && !Array.isArray(valor) ? valor : null;
 }
 
+/**
+ * Impressão do conteúdo servido: sha256 do caminho relativo e dos bytes de cada arquivo das
+ * skills (menos evals/, que não é entregue), em ordem fixa. Vai na versão informada ao
+ * cliente, porque a do package.json não muda a cada release das skills.
+ */
+function impressaoDoConteudo(skills) {
+  const hash = createHash('sha256');
+  // Ordem por código de caractere, não por idioma: a mesma em qualquer máquina.
+  const porPasta = [...skills].sort((a, b) => (a.pasta < b.pasta ? -1 : a.pasta > b.pasta ? 1 : 0));
+  for (const s of porPasta) {
+    for (const rel of ['SKILL.md', ...listarArquivosDaSkill(s.dir).filter((a) => !a.startsWith('evals/'))]) {
+      const bytes = readFileSync(path.join(s.dir, rel));
+      // Caminho entre aspas e tamanho delimitam cada arquivo sem ambiguidade.
+      hash.update(`${JSON.stringify(`${s.pasta}/${rel}`)} ${bytes.length}\n`);
+      hash.update(bytes);
+    }
+  }
+  return hash.digest('hex').slice(0, 12);
+}
+
 function lerOpcoes(argv) {
   if (argv.includes('--help') || argv.includes('-h')) return { ajuda: true };
   const i = argv.indexOf('--skills');
@@ -100,6 +124,7 @@ function lerOpcoes(argv) {
 export function criarServidor(pastaSkills) {
   const skills = carregarSkills(pastaSkills).filter((s) => s.frontmatter?.name && s.frontmatter?.description);
   const porNome = new Map(skills.map((s) => [s.frontmatter.name, s]));
+  const versao = `${PACOTE.version}+${impressaoDoConteudo(skills)}`;
 
   const texto = (t) => ({ content: [{ type: 'text', text: t }] });
   const erroDeFerramenta = (t) => ({ content: [{ type: 'text', text: t }], isError: true });
@@ -115,7 +140,10 @@ export function criarServidor(pastaSkills) {
   function chamarFerramenta(nome, args = {}) {
     try {
       if (nome === 'listar_skills') {
-        const linhas = skills.map((s) => `- **${s.frontmatter.name}** (${s.frontmatter.metadata?.categoria ?? 'sem categoria'}): ${s.frontmatter.description}`);
+        const linhas = skills.map((s) => {
+          const { categoria = 'sem categoria', versao: v } = s.frontmatter.metadata ?? {};
+          return `- **${s.frontmatter.name}** (${v ? `${categoria}, v${v}` : categoria}): ${s.frontmatter.description}`;
+        });
         return texto(`${skills.length} skills disponíveis:\n\n${linhas.join('\n')}`);
       }
       if (nome === 'ler_skill') {
@@ -147,7 +175,7 @@ export function criarServidor(pastaSkills) {
         return ok({
           protocolVersion: VERSOES_SUPORTADAS.includes(pedida) ? pedida : VERSOES_SUPORTADAS[0],
           capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
-          serverInfo: { name: PACOTE.name, title: 'Padrões de Skills para AIOps (PT-BR)', version: PACOTE.version },
+          serverInfo: { name: PACOTE.name, title: 'Padrões de Skills para AIOps (PT-BR)', version: versao },
           instructions: INSTRUCOES,
         });
       }
@@ -219,7 +247,7 @@ export function criarServidor(pastaSkills) {
     }
   }
 
-  return { skills, processarLinha };
+  return { skills, versao, processarLinha };
 }
 
 function main() {
@@ -239,7 +267,7 @@ function main() {
     console.error(`erro: nenhuma skill encontrada em ${opcoes.pastaSkills}`);
     process.exit(2);
   }
-  console.error(`[${PACOTE.name}] ${servidor.skills.length} skills carregadas de ${opcoes.pastaSkills}`);
+  console.error(`[${PACOTE.name}] ${servidor.skills.length} skills carregadas de ${opcoes.pastaSkills} (versão ${servidor.versao})`);
   const entrada = createInterface({ input: process.stdin, crlfDelay: Infinity });
   entrada.on('line', (linha) => {
     const resposta = servidor.processarLinha(linha);

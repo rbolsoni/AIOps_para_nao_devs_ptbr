@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
@@ -94,6 +94,14 @@ describe('servidor MCP', () => {
     s.enviarBruto(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }));
   });
 
+  it('informa como versão a do pacote mais a impressão do conteúdo servido', async () => {
+    const r = await s.pedir('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'teste', version: '0' } });
+    const doPacote = JSON.parse(readFileSync(path.join(RAIZ, 'package.json'), 'utf8')).version;
+    // SemVer com metadado de build: <versão do pacote>+<12 hex do sha256 do conteúdo>.
+    assert.match(r.result.serverInfo.version, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?\+[0-9a-f]{12}$/);
+    assert.ok(r.result.serverInfo.version.startsWith(`${doPacote}+`), r.result.serverInfo.version);
+  });
+
   it('oferece a versão mais recente quando a pedida não é suportada', async () => {
     const r = await s.pedir('initialize', { protocolVersion: '1999-01-01' });
     assert.match(r.result.protocolVersion, /^\d{4}-\d{2}-\d{2}$/);
@@ -106,10 +114,10 @@ describe('servidor MCP', () => {
     assert.ok(r.result.tools.every((t) => t.annotations.readOnlyHint === true));
   });
 
-  it('listar_skills traz as skills com descrição', async () => {
+  it('listar_skills traz cada skill com categoria, versão e descrição', async () => {
     const r = await s.pedir('tools/call', { name: 'listar_skills', arguments: {} });
     const texto = r.result.content[0].text;
-    assert.match(texto, /segredos-e-credenciais/);
+    assert.match(texto, /^- \*\*segredos-e-credenciais\*\* \(seguranca-e-conformidade, v\d+\.\d+\.\d+\): Use /m);
     assert.match(texto, /esteira-ci-cd/);
   });
 
@@ -210,6 +218,21 @@ describe('servidor MCP: erro inesperado', () => {
     const resposta = servidor.processarLinha(JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'prompts/list' }));
     assert.deepEqual(resposta, { jsonrpc: '2.0', id: 7, error: { code: -32603, message: 'erro interno do servidor' } });
     assert.ok(stderr.mock.calls.some((c) => String(c.arguments[0]).includes('falha simulada')));
+  });
+});
+
+describe('servidor MCP: versão do conteúdo', () => {
+  const versaoDe = (pasta) =>
+    criarServidor(pasta).processarLinha(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} })).result.serverInfo.version;
+
+  it('é a mesma para o mesmo conteúdo, ignora evals/ e muda quando um arquivo servido muda', () => {
+    const [a, b] = [mkdtempSync(path.join(tmpdir(), 'mcp-versao-')), mkdtempSync(path.join(tmpdir(), 'mcp-versao-'))];
+    for (const base of [a, b]) criarSkill(base, 'exemplo', { 'references/ref.md': '# Ref\n', 'evals/evals.json': '{}' });
+    assert.equal(versaoDe(a), versaoDe(b), 'mesmo conteúdo em pastas diferentes');
+    writeFileSync(path.join(b, 'exemplo', 'evals', 'evals.json'), '{"mudou": true}');
+    assert.equal(versaoDe(a), versaoDe(b), 'evals/ não é servido e não entra na versão');
+    writeFileSync(path.join(b, 'exemplo', 'references', 'ref.md'), '# Ref alterada\n');
+    assert.notEqual(versaoDe(a), versaoDe(b));
   });
 });
 
