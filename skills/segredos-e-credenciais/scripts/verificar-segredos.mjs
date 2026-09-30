@@ -73,7 +73,7 @@ const NOME_SENSIVEL = /(SECRET|PASSWORD|PASSWD|SENHA|TOKEN|PRIVATE_?KEY|API_?KEY
 const NOME_PUBLICO = /^(NEXT_PUBLIC_|VITE_|PUBLIC_|EXPO_PUBLIC_|REACT_APP_|NUXT_PUBLIC_|GATSBY_)|ANON|PUBLISHABLE|PUBLIC_?KEY/i;
 /** Valores que são claramente marcadores, não credenciais. */
 const MARCADORES = [
-  /exemplo|example|placeholder|changeme|troque|dummy|fake|sample|your[-_]|seu[-_]|sua[-_]|xxx+|<[^>]*>|\*{3,}|\.{3}/i,
+  /exemplo|example|placeholder|changeme|troque|dummy|fake|sample|your[-_]|seu[-_]|sua[-_]|x{4,}|<[^>]*>|\*{3,}|\.{3}/i,
   /^\$\{?[A-Za-z_]/,
   /^(test|teste|mock|local|localhost|development|production|staging|password|senha|secret|segredo|postgres|root|admin)$/i,
 ];
