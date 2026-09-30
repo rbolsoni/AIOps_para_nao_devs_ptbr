@@ -1,15 +1,14 @@
 ---
 name: memoria-de-projeto
 description: >-
-  Use quando o usuário corrigir sua forma de trabalhar, pedir para "lembrar", "anotar",
-  "não esquecer" ou "da próxima vez", quando você descobrir um fato não óbvio do projeto
-  que valerá em sessões futuras (decisão, restrição, armadilha, onde algo fica, quem
-  decide o quê), e no início de tarefas para consultar o que já foi aprendido. Define uma
-  memória persistente em arquivos Markdown, independente de ferramenta ou modelo de IA.
+  Use quando o usuário corrigir seu jeito de trabalhar ou pedir para "lembrar", "anotar"
+  ou "da próxima vez", quando descobrir um fato não óbvio que vale para sessões futuras, e
+  ao consultar o que já foi aprendido. Mantém memória em arquivos Markdown, para qualquer
+  agente.
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Memória de projeto

@@ -1,17 +1,14 @@
 ---
 name: arquitetura-de-agentes
 description: >-
-  Use ao projetar, construir, depurar ou revisar um agente de IA ou aplicação com LLM —
-  loop de agente, chamada de ferramentas (tool calling/function calling), servidores e
-  clientes MCP, permissões e aprovações, memória, gestão de contexto e custos, escolha e
-  troca de provedor/modelo, planejamento de tarefas longas, agentes que aprendem ou
-  modificam o próprio código/prompt — independente de provedor (OpenAI, Anthropic,
-  Google, modelos abertos) ou framework (LangGraph, NeMo Agent Toolkit, SDKs próprios).
-  Não use para programação comum que não envolve LLM.
+  Use ao projetar, construir ou depurar um agente de IA ou app com LLM: laço do agente,
+  tool calling, servidor ou cliente MCP, permissões, memória, contexto e custo, troca de
+  modelo ou provedor, agente que melhora o próprio prompt. Não use para programação comum
+  sem LLM.
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Arquitetura de agentes

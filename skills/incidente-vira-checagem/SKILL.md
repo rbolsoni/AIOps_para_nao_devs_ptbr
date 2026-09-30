@@ -2,15 +2,13 @@
 name: incidente-vira-checagem
 description: >-
   Use quando algo der errado — bug em produção, deploy quebrado, segredo vazado,
-  regressão, incidente de segurança, dado corrompido, erro repetido de um agente — e,
-  depois de conter e corrigir, para transformar a lição em proteção permanente: um
-  registro curto do incidente, uma checagem automática que roda na esteira e falha alto se
-  o problema voltar, e uma nota na memória do projeto. Também use quando o usuário disser
-  "isso não pode acontecer de novo" ou "como garanto que não repete".
+  regressão, erro repetido do agente — para escrever o registro (postmortem) sem culpados
+  e criar a checagem automática que impede a volta, e quando pedirem "isso não pode
+  acontecer de novo".
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Incidente vira checagem

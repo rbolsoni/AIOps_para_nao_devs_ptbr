@@ -12,13 +12,13 @@ import { acharInvisiveis, validarSkill } from '../ferramentas/validar-skills.mjs
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VALIDADOR = path.join(RAIZ, 'ferramentas', 'validar-skills.mjs');
 
-// Orçamento de contexto. O agente carrega o nome e a descrição de todas as skills instaladas em
-// toda sessão, antes de qualquer pedido. No Claude Code, essa lista tem um orçamento que escala
-// com 1% da janela de contexto do modelo; quando passa dele, descrições são descartadas (a partir
-// das skills menos usadas) e a skill perde as palavras que a fazem ativar. O teto é uma catraca:
-// só desce. Ao encurtar descrições, baixe-o para perto do novo total — nunca o suba para fazer
-// um PR passar.
-const TETO_SOMA_DESCRICOES = 11000;
+// Orçamento de contexto (ADR 0005). O agente carrega o nome e a descrição de todas as skills
+// instaladas em toda sessão, antes de qualquer pedido. No Claude Code, essa lista tem um
+// orçamento que escala com 1% da janela de contexto do modelo; quando passa dele, descrições são
+// descartadas (a partir das skills menos usadas) e a skill perde as palavras que a fazem ativar.
+// O teto é uma catraca: só desce. 8000 cabe cerca de 27 skills com o alvo de 300 caracteres —
+// skill nova cabe encurtando outras, nunca subindo o teto para um PR passar.
+const TETO_SOMA_DESCRICOES = 8000;
 
 /** Seção "### …" do catálogo do README → `metadata.categoria`. */
 const SECOES_DO_CATALOGO = new Map([
@@ -108,15 +108,22 @@ describe('regras do kit no validador', () => {
     }
   });
 
-  it('avisa, sem erro, quando a description passa de 360 caracteres (só no modo kit)', () => {
+  it('description até 300 passa; acima de 300 é aviso; acima de 360 é erro (só no modo kit)', () => {
     const base = novaBase();
-    criarSkill(base, 'no-limite', { frontmatter: frontmatterDoKit('no-limite', { descricao: `Use ${'x'.repeat(356)}` }) });
-    criarSkill(base, 'acima', { frontmatter: frontmatterDoKit('acima', { descricao: `Use ${'x'.repeat(357)}` }) });
+    const com = (nome, tamanho) => criarSkill(base, nome, { frontmatter: frontmatterDoKit(nome, { descricao: `Use ${'x'.repeat(tamanho - 4)}` }) });
+    com('no-alvo', 300);
+    com('acima-do-alvo', 301);
+    com('no-limite', 360);
+    com('acima-do-limite', 361);
     const comKit = validarPasta(base, { kit: true });
-    assert.deepEqual(comKit['no-limite'], { erros: [], avisos: [] });
-    assert.deepEqual(comKit.acima.erros, []);
-    assert.ok(comKit.acima.avisos.some((a) => a.startsWith('"description" com 361 caracteres (acima de 360)')));
-    assert.deepEqual(validarPasta(base).acima.avisos, []);
+    assert.deepEqual(comKit['no-alvo'], { erros: [], avisos: [] });
+    assert.deepEqual(comKit['acima-do-alvo'].erros, []);
+    assert.ok(comKit['acima-do-alvo'].avisos.some((a) => a.startsWith('"description" com 301 caracteres (alvo: até 300)')));
+    assert.deepEqual(comKit['no-limite'].erros, []);
+    assert.ok(comKit['acima-do-limite'].erros.some((e) => e.startsWith('"description" com 361 caracteres (máximo 360)')));
+    const semKit = validarPasta(base);
+    assert.deepEqual(semKit['acima-do-limite'].erros, []);
+    assert.deepEqual(semKit['acima-do-limite'].avisos, []);
   });
 });
 

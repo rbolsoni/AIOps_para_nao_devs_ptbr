@@ -1,17 +1,14 @@
 ---
 name: privacidade-e-lgpd
 description: >-
-  Use ao coletar, armazenar, exibir, exportar, compartilhar, registrar em log ou apagar
-  dados pessoais (nome, CPF, e-mail, telefone, endereço, localização, documentos, fotos,
-  dados de saúde, financeiros ou de crianças), ao criar cadastro, perfil, formulário,
-  relatório, analytics, integração que envia dados a terceiros ou exclusão de conta, e
-  quando o usuário mencionar LGPD, GDPR, privacidade, consentimento, política de
-  privacidade, direitos do titular ou vazamento de dados. Aplica minimização, base legal,
-  controle de acesso, retenção e resposta a incidentes.
+  Use ao coletar, guardar, exibir, exportar, compartilhar, registrar em log ou apagar
+  dados pessoais (CPF, e-mail, telefone, endereço, saúde, dados de crianças), inclusive ao
+  enviá-los a terceiros ou a uma IA, e quando falarem em LGPD, privacidade, consentimento
+  ou vazamento.
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Privacidade e LGPD

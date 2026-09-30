@@ -1,16 +1,14 @@
 ---
 name: codigo-limpo-e-solid
 description: >-
-  Use ao projetar, escrever, revisar ou refatorar código em qualquer linguagem —
-  funções, classes, módulos, serviços, APIs — e quando o usuário pedir "código limpo",
-  "boas práticas", "refatorar", "organizar o código", "SOLID", "arquitetura" ou disser
-  que o código está confuso, difícil de mudar ou cheio de repetição. Dá critérios
-  práticos de nomes, funções, erros, acoplamento e SOLID, e diz quando NÃO aplicar um
-  padrão para não complicar o que é simples.
+  Use ao projetar, revisar ou refatorar código — organizar, reduzir repetição, separar
+  responsabilidades, aplicar SOLID — e quando o código estiver confuso ou difícil de
+  mudar. Diz também quando não aplicar um padrão. Correção pontual não precisa desta
+  skill.
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Código limpo e SOLID

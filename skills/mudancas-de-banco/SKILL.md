@@ -1,17 +1,14 @@
 ---
 name: mudancas-de-banco
 description: >-
-  Use ao criar ou alterar tabelas, colunas, índices, políticas de acesso (RLS),
-  funções, views, triggers ou dados por migração, ao escrever SQL que muda o banco, ao
-  mexer em schema de ORM (Prisma, Django, Rails, Alembic, EF, Flyway, Liquibase,
-  Supabase), ou quando o usuário pedir para "mexer no banco", "criar tabela" ou "corrigir
-  os alertas do linter do banco". Garante migrações versionadas aplicadas só pela esteira,
-  compatíveis com o código em execução, autorização no próprio banco e prova em
-  homologação antes da produção.
+  Use ao criar ou alterar tabelas, colunas, índices, políticas de acesso (RLS), funções,
+  views, operações atômicas ou dados por migração, em SQL ou ORM, e quando pedirem para
+  "mexer no banco" ou corrigir alertas do linter do banco. Garante migração versionada e
+  provada em homologação.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Mudanças de banco

@@ -1,17 +1,14 @@
 ---
 name: segredos-e-credenciais
 description: >-
-  Use sempre que o trabalho envolver senhas, chaves de API, tokens, certificados,
-  strings de conexão, arquivos .env, variáveis de ambiente, secrets da esteira ou da
-  plataforma de deploy — ao escrever código que lê configuração, integrar um serviço
-  externo, montar Dockerfile, commitar, ou quando um segredo possa ter vazado (commit,
-  log, print, conversa). Garante que nenhum segredo fique no código, na imagem ou no
-  histórico, e conduz a rotação quando vazar. Inclui varredor de segredos sem instalação.
+  Use ao lidar com senhas, chaves de API, tokens, strings de conexão, .env e secrets da
+  esteira ou da hospedagem — ao ler configuração, integrar serviço, montar Dockerfile ou
+  commitar — e quando um segredo puder ter vazado. Inclui varredor de segredos.
 license: MIT
 compatibility: O script de varredura requer Node.js 20+; usa o git quando disponível.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Segredos e credenciais

@@ -1,16 +1,13 @@
 ---
 name: orquestracao-multiagente
 description: >-
-  Use ao dividir uma tarefa grande entre vários agentes ou sessões (subagentes, agentes
-  em paralelo, equipes de agentes, worktrees), ao delegar trabalho a outro agente, ao
-  revisar ou auditar o trabalho de outro agente, ou quando o usuário pedir "revisão
-  adversarial", "segunda opinião" ou "valide o que foi feito". Define papéis (explorador,
-  executor, revisor, desafiante, auditor), um protocolo em arquivos (briefing, pedido,
-  progresso, entrega) e revisão com verificação empírica — nunca confiando em relato.
+  Use ao dividir uma tarefa entre vários agentes ou sessões (subagentes, agentes em
+  paralelo, worktrees), ao delegar a outro agente ou ao revisar o trabalho de um agente, e
+  quando pedirem "revisão adversarial", "segunda opinião" ou "valide o que foi feito".
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Orquestração multiagente

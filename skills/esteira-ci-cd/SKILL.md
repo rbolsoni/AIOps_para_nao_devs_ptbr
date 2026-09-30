@@ -1,16 +1,13 @@
 ---
 name: esteira-ci-cd
 description: >-
-  Use ao criar, alterar ou depurar pipelines de CI/CD (GitHub Actions, GitLab CI e
-  similares), configurar deploy, release, versionamento semântico, homologação e
-  produção, ou quando um workflow falhar, "passar sem rodar", ficar preso na fila,
-  publicar algo indevido ou deixar passar código sem teste. Monta a esteira como trava:
-  nada chega à produção sem ter passado verde, no mesmo commit, pela homologação — e
-  deploy só acontece pela esteira.
+  Use ao criar, alterar ou depurar pipelines de CI/CD (GitHub Actions, GitLab CI e afins),
+  deploy, release e versão semântica, homologação e produção, ou quando um workflow
+  falhar, passar sem rodar, travar na fila ou deixar código sem teste chegar à produção.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Esteira de CI/CD

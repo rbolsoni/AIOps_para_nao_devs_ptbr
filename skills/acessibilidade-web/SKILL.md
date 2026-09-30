@@ -1,15 +1,14 @@
 ---
 name: acessibilidade-web
 description: >-
-  Use ao criar ou alterar interfaces web ou mobile — páginas, formulários, botões, links,
-  modais, menus, abas, tabelas, gráficos, imagens, cores e textos — e quando o usuário
-  mencionar acessibilidade, WCAG, leitor de tela, contraste, navegação por teclado,
-  inclusão ou a Lei Brasileira de Inclusão. Garante semântica, teclado, foco, rótulos,
-  contraste e alternativas em texto, com verificação automática e manual.
+  Use ao criar ou alterar interfaces — páginas, formulários, botões, menus, modais,
+  tabelas, gráficos, cores — e quando falarem em acessibilidade, WCAG, leitor de tela,
+  contraste, teclado ou Lei Brasileira de Inclusão. Garante interface usável por todos,
+  com verificação.
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Acessibilidade web

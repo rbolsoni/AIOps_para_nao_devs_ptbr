@@ -1,16 +1,14 @@
 ---
 name: observabilidade
 description: >-
-  Use ao adicionar ou revisar logs, monitoramento de erros (Sentry e similares),
-  métricas, rastreamento (tracing, OpenTelemetry), health checks, alertas e tarefas
-  agendadas, ao investigar erro ou comportamento estranho em produção, ou ao configurar
-  ferramentas de telemetria no build e no deploy. Garante logs estruturados sem dados
-  pessoais nem segredos, erros acionáveis, alertas que chegam a alguém e telemetria que
-  nunca derruba a aplicação nem a release.
+  Use ao adicionar ou revisar logs, monitoramento de erros (Sentry e afins), métricas,
+  tracing (OpenTelemetry), health checks e alertas, e ao investigar erro ou número
+  estranho em produção. Garante logs sem dado pessoal nem segredo e alertas que chegam a
+  alguém.
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Observabilidade

@@ -18,7 +18,9 @@ painel. Serve para quem programa e para quem não programa.
 Cada skill é uma pasta com um `SKILL.md` no [padrão aberto Agent Skills](https://agentskills.io).
 O agente carrega só o nome e a descrição de cada skill; quando o seu pedido combina com uma
 delas, ele lê as instruções completas e segue. Arquivos de apoio (referências, modelos,
-scripts) só são lidos quando a skill manda. Assim, 22 skills cabem no contexto sem pesar.
+scripts) só são lidos quando a skill manda. As descrições de todas as skills somam menos de
+8 mil caracteres — um teto testado ([ADR 0005](docs/adr/0005-orcamento-de-contexto-das-skills.md)) —,
+para caberem no contexto do agente junto com as suas outras skills.
 
 ```
 você: "coloca a chave do gateway de pagamento no projeto"

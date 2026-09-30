@@ -1,16 +1,14 @@
 ---
 name: disciplina-de-codigo
 description: >-
-  Use em toda tarefa que escreva, altere, corrija ou refatore código, scripts ou
-  configuração — inclusive pedidos curtos como "arruma isso", "adiciona um botão" ou
-  "faz funcionar". Define como agir antes, durante e depois da mudança: explicitar
-  premissas e perguntar quando houver ambiguidade, escolher a solução mais simples,
-  mexer só no necessário, transformar o pedido em critério verificável e provar que
-  funcionou antes de dizer que está pronto.
+  Use em toda tarefa que escreva, altere ou corrija código, script ou configuração,
+  inclusive pedidos curtos ("arruma isso", "adiciona um botão", "faz funcionar"). Define o
+  método: premissas explícitas, solução simples, mudança cirúrgica e prova de que
+  funcionou.
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Disciplina de código

@@ -1,16 +1,13 @@
 ---
 name: testes-e-qualidade
 description: >-
-  Use ao escrever, corrigir ou planejar testes (unitários, integração, ponta a ponta,
-  contrato), configurar cobertura e seus limites, investigar teste instável (flaky) ou
-  quebrado, e sempre que corrigir um bug — o bug ganha um teste que o reproduz antes da
-  correção. Também use quando o usuário perguntar "como testar", "está testado?", pedir
-  mais confiabilidade ou quando a esteira falhar por cobertura. Serve para qualquer
-  linguagem e framework de testes.
+  Use ao escrever, corrigir ou planejar testes (unitário, integração, ponta a ponta),
+  configurar cobertura, investigar teste instável, e ao corrigir um bug — o bug ganha um
+  teste que o reproduz. Também quando perguntarem "como testar" ou "está testado?".
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Testes e qualidade

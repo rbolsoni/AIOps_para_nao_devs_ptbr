@@ -1,17 +1,14 @@
 ---
 name: seguranca-de-aplicacao
 description: >-
-  Use ao implementar ou revisar autenticação, login, cadastro, recuperação de senha,
-  permissões e papéis, painéis administrativos, formulários, APIs, uploads, pagamentos,
-  consultas ao banco ou qualquer ponto que receba dados do usuário ou de outro sistema — e
-  quando o usuário pedir "deixar seguro", "revisar segurança", "pentest", "OWASP",
-  "auditoria" ou corrigir uma vulnerabilidade. Aplica defesa em camadas: autorização no
-  servidor e no banco, validação de entrada, menor privilégio, erros sem vazamento,
-  arquivos públicos sob controle e triagem de alertas de ferramentas.
+  Use ao implementar ou revisar login, cadastro, recuperação de senha, permissões, painel
+  admin, formulários, APIs, uploads e pagamentos, e quando pedirem para "deixar seguro",
+  revisar segurança, pentest ou OWASP. Aplica defesa em camadas, com autorização no
+  servidor e no banco.
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Segurança de aplicação

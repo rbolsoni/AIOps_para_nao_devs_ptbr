@@ -1,16 +1,14 @@
 ---
 name: dependencias-e-licencas
 description: >-
-  Use ao adicionar, atualizar ou remover dependências (npm, pip, Maven, Gradle, Go,
-  NuGet, Cargo, Composer, gems), escolher uma biblioteca, copiar código de outro projeto,
-  configurar verificação de licenças ou de vulnerabilidades, publicar ou distribuir
-  software (imagem Docker, app, pacote) ou quando o usuário perguntar se "pode usar" um
-  pacote, repositório ou trecho de código de terceiros. Aplica política de licenças com
-  exceções justificadas por pacote e cuidados de cadeia de suprimentos.
+  Use ao adicionar, atualizar ou remover pacotes e bibliotecas, decidir entre usar um
+  pacote ou escrever o código, copiar código de outro projeto, tratar alerta de
+  vulnerabilidade, conferir licenças ou distribuir software, e quando perguntarem se "pode
+  usar" algo de terceiros.
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Dependências e licenças

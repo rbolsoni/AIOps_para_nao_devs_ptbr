@@ -1,16 +1,13 @@
 ---
 name: documentacao-viva
 description: >-
-  Use ao criar ou atualizar README, AGENTS.md, CONTRIBUTING, CHANGELOG, ADR (registro de
-  decisão de arquitetura), guias, runbooks, comentários de código ou descrição de pull
-  request — e sempre que uma mudança alterar comportamento, comando, configuração,
-  variável de ambiente, fluxo de deploy ou decisão técnica, mesmo que o usuário não peça
-  documentação. Mantém a documentação junto do código, com uma única fonte da verdade e
-  registrando o porquê das decisões.
+  Use ao criar ou atualizar README, AGENTS.md, ADR, CONTRIBUTING, runbook, comentário de
+  código ou descrição de PR, e quando uma mudança alterar comando, configuração, variável
+  de ambiente ou fluxo de deploy. Mantém uma fonte única da verdade e registra o porquê.
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Documentação viva
