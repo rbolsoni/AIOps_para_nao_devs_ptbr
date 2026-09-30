@@ -30,11 +30,11 @@ agente: ativa segredos-e-credenciais → lê a chave de variável obrigatória, 
 
 ## Instalação
 
-**Opção 1 — `npx skills` (recomendado).** Requer Node.js. Instala nos agentes que você
-escolher:
+**Opção 1 — `npx skills` (recomendado).** Requer Node.js (use 22 ou 24, com suporte ativo).
+Instala nos agentes que você escolher:
 
 ```bash
-npx skills add rbolsoni/Padroes_skill_para_AIOps_ptbr
+npx skills add rbolsoni/AIOps_para_nao_devs_ptbr
 ```
 
 Variações úteis: `-g` instala para o seu usuário (todos os projetos); `-a claude-code` escolhe
@@ -43,14 +43,16 @@ o agente; `-s segredos-e-credenciais` instala uma skill só; `-l` apenas lista.
 **Opção 2 — copiar as pastas.** Copie as pastas de `skills/` para a pasta de skills do seu
 agente (ex.: `.claude/skills/` no Claude Code, `.agents/skills/` em vários outros).
 
-**Opção 3 — servidor MCP** (para agentes que ainda não leem skills). Configure no cliente MCP:
+**Opção 3 — servidor MCP** (para agentes que ainda não leem skills). Configure no cliente MCP,
+com a versão fixada numa tag (troque pela mais recente em Releases; sem tag, o cliente
+executaria a cada início o que estiver na branch principal):
 
 ```json
 {
   "mcpServers": {
-    "padroes-skill": {
+    "aiops-para-nao-devs-ptbr": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/Padroes_skill_para_AIOps_ptbr"]
+      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.1.1"]
     }
   }
 }
@@ -127,7 +129,7 @@ a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, ban
   esteira.
 - **O usuário no controle**: nada é publicado, implantado ou apagado sem pedido; tarefas de
   painel são explicadas, e segredos nunca passam pela conversa.
-- **Sem dependências**: validador, scripts das skills e servidor MCP usam só Node.js 20+.
+- **Sem dependências**: validador, scripts das skills e servidor MCP usam só Node.js (20 ou mais novo; recomendado 22 ou 24).
 
 ## Estrutura
 

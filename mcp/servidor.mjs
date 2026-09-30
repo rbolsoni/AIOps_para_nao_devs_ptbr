@@ -19,7 +19,7 @@
  * Uso:
  *   node mcp/servidor.mjs                     # usa a pasta skills/ deste pacote
  *   node mcp/servidor.mjs --skills <pasta>    # usa outra pasta de skills
- *   npx -y github:rbolsoni/Padroes_skill_para_AIOps_ptbr
+ *   npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#<tag>   # versão fixada numa tag
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, realpathSync } from 'node:fs';
@@ -38,7 +38,7 @@ Uso: node mcp/servidor.mjs [--skills <pasta>]
 
 Fala MCP por stdio; configure-o no seu cliente MCP em vez de executá-lo direto.
 Exemplo (JSON de configuração de cliente):
-  { "mcpServers": { "padroes-skill": { "command": "npx", "args": ["-y", "github:rbolsoni/Padroes_skill_para_AIOps_ptbr"] } } }`;
+  { "mcpServers": { "aiops-para-nao-devs-ptbr": { "command": "npx", "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.1.1"] } } }`;
 
 const INSTRUCOES = [
   'Este servidor entrega skills de boas práticas de engenharia (padrão Agent Skills) em português.',

@@ -90,7 +90,7 @@ describe('servidor MCP', () => {
     assert.equal(r.result.protocolVersion, '2025-06-18');
     assert.ok(r.result.capabilities.tools);
     assert.ok(r.result.capabilities.prompts);
-    assert.equal(r.result.serverInfo.name, 'padroes-skill-aiops-ptbr');
+    assert.equal(r.result.serverInfo.name, 'aiops-para-nao-devs-ptbr');
     s.enviarBruto(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }));
   });
 
