@@ -10,7 +10,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Esteira de CI/CD
@@ -37,7 +37,8 @@ a migração prova que aplica.
 2. **Build** e testes de ponta a ponta locais.
 3. **Homologação** (push na `staging`): migrações no banco de homologação, checagens de
    banco que exercitam o comportamento real, deploy de homologação, teste de fumaça.
-4. **Trava de promoção** (push na `main`): exige CI verde na `staging` para o mesmo commit.
+4. **Trava de promoção** (push na `main`): exige CI verde na `staging` para o mesmo commit e
+   que a árvore publicada seja idêntica à dele.
 5. **Versão**: calculada pelos Commits Convencionais
    ([scripts/proxima-versao.sh](scripts/proxima-versao.sh)); sem `feat`/`fix`/breaking, não há
    release nem deploy.
@@ -59,8 +60,10 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
    de hospedagem e qualquer integração que aplique migração ao detectar merge. Dois atores
    publicando em produção é indistinguível de um no log — e o segundo não passa pela trava.
 3. **Produção recebe o commit que foi homologado.** Promoção por merge commit (não
-   squash); a release confere o segundo pai do merge. Squash cria um commit novo, que nunca
-   rodou na homologação.
+   squash); a release confere o segundo pai do merge e também que a árvore publicada é
+   idêntica à dele. Squash cria um commit novo, que nunca rodou na homologação; e um commit
+   que entrou direto na `main` iria junto na promoção seguinte se a release conferisse só o
+   commit.
 4. **Falhe alto.** Segredo ausente faz a etapa falhar com mensagem dizendo onde cadastrar.
    Nunca `if: segredo != ''` — isso termina verde sem ter feito nada.
 5. **Não verificar ≠ reprovado.** Separe "não consegui consultar" (permissão, rede, API) de
@@ -107,7 +110,9 @@ Uma trava que nunca foi vista barrando não é uma trava. Em um PR de teste (ou 
    que diz onde cadastrar.
 3. Simule a promoção de um commit sem run verde na homologação → a release precisa abortar
    antes de calcular versão.
-4. Mescle só `docs:` → nenhuma tag e nenhum deploy.
+4. Num fork, faça um commit direto na `main` e depois uma promoção normal → a release
+   precisa abortar mostrando o arquivo que difere da homologação.
+5. Mescle só `docs:` → nenhuma tag e nenhum deploy.
 
 Registre o resultado no PR que introduziu a esteira.
 
