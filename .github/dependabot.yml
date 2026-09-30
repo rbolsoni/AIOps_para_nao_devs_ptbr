@@ -1,13 +1,16 @@
 # Mantém as actions fixadas por SHA atualizadas. O kit não tem dependências npm.
 #
-# Sem "cooldown" (período de espera para versões novas): o Dependabot não oferece a opção
-# para o ecossistema github-actions. A proteção aqui é a fixação por SHA, a revisão do PR do
-# Dependabot e a auditoria dos workflows na CI (zizmor).
+# cooldown: espera 7 dias antes de propor uma versão nova de action. Versões maliciosas
+# publicadas em projetos legítimos costumam ser descobertas e retiradas nesse intervalo. Não
+# atrasa atualização de segurança. Para actions, só o default-days vale (os prazos por tipo
+# de versão, semver-*-days, não se aplicam).
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ci
