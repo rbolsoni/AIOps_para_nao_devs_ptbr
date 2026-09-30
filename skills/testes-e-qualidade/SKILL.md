@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.1.0"
 ---
 
 # Testes e qualidade
@@ -46,6 +46,10 @@ Priorize pelo risco: o que, se quebrar, causa prejuízo ou vaza dado, tem teste 
    mecanismo oficial de bypass da plataforma, guardado como segredo da esteira.
 8. **Falhou? Leia o erro específico.** Analise a pilha do teste que falhou antes de rodar a
    suíte inteira de novo.
+9. **Teste não se ajusta ao código quebrado.** Não apague, não pule (`skip`, `only`, `xit` e
+   afins), não afrouxe a asserção, não troque o valor esperado nem baixe o piso de cobertura
+   para a esteira passar — e nada de código que detecta que está rodando em teste. Se o teste
+   estiver errado, mostre por quê e peça aprovação antes de mudá-lo.
 
 ## Cobertura: catraca manual com folga
 
@@ -97,5 +101,7 @@ sem perceber.
   real para E2E. Registre a escolha num ADR para ninguém refazer a discussão.
 - **Dados de homologação vindos de seed** dão falsa confiança: o fluxo real que grava o
   dado precisa de teste próprio.
+- **"Consertar" a esteira mexendo no teste**: a esteira fica verde e o defeito vai para
+  produção. Agente pressionado a "fazer passar" tende a isso; a regra 9 existe por isso.
 - **Segredo realista em fixture**: tokens "falsos" no formato real disparam scanners e
   bloqueios de push. Gere valores de teste em tempo de execução ou use marcadores óbvios.

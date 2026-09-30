@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.1.0"
 ---
 
 # Acessibilidade web
@@ -43,6 +43,22 @@ com sede ou representação no país. A referência técnica é a WCAG 2.2, nív
 11. **Tabelas de dados** com `<th>` e `scope`; **gráficos** com resumo em texto ou tabela
     equivalente.
 12. **Zoom de 200%** sem perder conteúdo nem exigir rolagem horizontal em telas estreitas.
+
+## Estados da interface
+
+Toda tela que busca dados tem quatro estados, e cada um precisa ser percebido também por
+quem não enxerga a tela:
+
+- **Carregando**: indicador com texto ("Carregando pedidos…"), não só um ícone girando; a
+  região que atualiza leva `aria-busy="true"` enquanto carrega.
+- **Vazio**: mensagem que explica e aponta a próxima ação ("Nenhum pedido ainda. Criar
+  pedido").
+- **Erro**: o que houve e como resolver, em texto, anunciado com `role="alert"` (ou numa
+  região `aria-live`); nunca só a borda vermelha.
+- **Sucesso**: confirmação anunciada (`aria-live="polite"`) que não some antes de dar tempo de
+  ler.
+
+Botão desabilitado diz por quê, em texto; nenhum estado é comunicado só por cor ou animação.
 
 ## Verificação
 

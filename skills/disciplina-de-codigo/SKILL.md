@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.1"
+  versao: "1.1.0"
 ---
 
 # Disciplina de código
@@ -35,6 +35,8 @@ se comportar em qualquer um deles.
    (`docs/adr/`). Leia só os trechos necessários, não arquivos inteiros sem motivo.
 5. **Em tarefas com várias etapas, mostre um plano curto**, uma linha por etapa:
    `1. [etapa] -> verificar: [como saberei que deu certo]`.
+6. **Garanta um ponto de retorno** antes de mudança grande ou arriscada: o trabalho atual
+   salvo (commit ou branch). Se piorar, volta-se ao ponto em vez de empilhar correções.
 
 Quem pede pode não ser programador. Explique em linguagem simples o que vai fazer, o que
 pode dar errado e o que a pessoa vai precisar fazer do lado dela (por exemplo, configurar
@@ -90,7 +92,7 @@ Pare e confirme com o usuário antes de:
 - qualquer coisa que toque produção (veja `isolamento-de-ambientes`);
 - seguir quando o pedido contradiz uma regra do `AGENTS.md` do projeto;
 - continuar depois de duas tentativas falhas com a mesma abordagem — diga o que tentou e
-  o que observou, em vez de insistir.
+  o que observou, em vez de insistir (siga `depuracao-guiada`).
 
 Aprovação dada para uma ação não vale para a próxima: um "pode fazer o deploy" de ontem
 não autoriza o deploy de hoje.
