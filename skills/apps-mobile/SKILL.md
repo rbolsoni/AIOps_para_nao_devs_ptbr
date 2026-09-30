@@ -3,12 +3,12 @@ name: apps-mobile
 description: >-
   Use ao criar ou publicar app mobile (React Native, Expo, Flutter, Swift, Kotlin): chave
   dentro do app, login, onde guardar token, deep link, permissões, atualização pelo ar e
-  publicação na App Store ou no Google Play. Evita segredo exposto no pacote e reprovação
-  nas lojas.
+  exigências e formulários da App Store e do Google Play (Data safety, privacidade). Evita
+  segredo no pacote e reprovação.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Apps mobile
