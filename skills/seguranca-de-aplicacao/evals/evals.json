@@ -33,6 +33,18 @@
         "Confere no servidor que o perfil pertence ao usuário autenticado",
         "Propõe um teste que envia papel de administrador e exige que seja ignorado ou recusado"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Meu app de delivery de marmitas manda um código por SMS no cadastro. A conta do provedor de SMS veio alta e tem muito cadastro que ninguém usa. O que faço?",
+      "expected_output": "O agente identifica disparo de SMS por robô (SMS pumping), manda liberar no provedor só os países atendidos, põe captcha conferido no servidor antes do envio e limite por número, IP e sessão com contador compartilhado, liga alerta de gasto e de pico de cadastros e sugere confirmar outro dado antes de liberar o que custa.",
+      "assertions": [
+        "Reconhece o padrão de SMS disparado por robô para números de alto custo",
+        "Restringe no provedor os países de destino aos que o app atende",
+        "Põe captcha verificado no servidor antes do envio do SMS",
+        "Limita por número, por IP e por sessão, com contador compartilhado entre instâncias",
+        "Configura alerta de gasto e de pico de cadastros"
+      ]
     }
   ]
 }

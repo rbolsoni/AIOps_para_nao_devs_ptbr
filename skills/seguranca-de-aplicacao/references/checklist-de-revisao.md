@@ -30,7 +30,11 @@ problema, registre: local, cenário de exploração, impacto, correção e prior
 ## Design inseguro e lógica de negócio
 
 - [ ] Operações sobre saldo (dinheiro, créditos, vagas, estoque) atômicas, com trava, no servidor.
-- [ ] Limites de taxa em autenticação e endpoints caros.
+- [ ] Limites de taxa em autenticação e endpoints caros, com contador compartilhado entre
+      instâncias.
+- [ ] Cadastro, recuperação de senha, envio de SMS e cupons resistem a abuso em volume
+      (captcha conferido no servidor, limite por conta, IP e destinatário; veja
+      [abuso-e-fraude.md](abuso-e-fraude.md)).
 - [ ] Fluxos de várias etapas não podem ser pulados chamando a última etapa direto.
 - [ ] Valores calculados no servidor (preço, desconto, taxa, total), nunca aceitos do cliente.
 - [ ] Nenhuma rota grava o corpo da requisição inteiro: campos permitidos listados (sem
