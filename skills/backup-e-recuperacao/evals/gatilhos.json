@@ -1,0 +1,10 @@
+[
+  { "query": "como faço backup do banco de dados?", "should_trigger": true },
+  { "query": "apaguei dados sem querer, dá pra recuperar?", "should_trigger": true },
+  { "query": "volta o site pra versão anterior, a nova quebrou", "should_trigger": true },
+  { "query": "se o servidor der pau eu perco tudo?", "should_trigger": true },
+  { "query": "preciso restaurar o backup de ontem à noite", "should_trigger": true },
+  { "query": "desfaz o último commit que eu ainda não subi", "should_trigger": false },
+  { "query": "exporta os dados do usuário em CSV para ele baixar", "should_trigger": false },
+  { "query": "cria uma lixeira no app de notas para o usuário recuperar notas", "should_trigger": false }
+]

@@ -1,0 +1,79 @@
+# Modelo: voltar a produção para uma versão anterior (tag), pela esteira.
+#
+# Quando usar: o deploy de uma versão quebrou algo e é preciso voltar rápido. Roda à mão
+# (Actions → "Voltar versão" → "Run workflow"), informando a tag da versão boa (ex.: v1.4.2).
+#
+# O que NÃO faz: desfazer migrações de banco. O banco se corrige para a frente, com uma
+# migração nova; por isso as migrações seguem "expandir → migrar → contrair" (skill
+# mudancas-de-banco): a versão anterior do código continua funcionando com o banco novo.
+#
+# Substitua cada __MARCADOR__ e remova o que não se aplica. Ensaie num fork ou na homologação
+# antes de precisar — caminho de volta nunca usado é hipótese.
+
+name: Voltar versão
+
+on:
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: "Tag da versão para republicar (ex.: v1.4.2)"
+        required: true
+        type: string
+
+# Menor privilégio: só lê o repositório; os segredos vêm do environment production.
+permissions:
+  contents: read
+
+# Mesmo grupo da release de produção: voltar versão nunca roda junto de uma release, e
+# nenhuma das duas é cancelada no meio.
+concurrency:
+  group: release-producao
+  cancel-in-progress: false
+
+jobs:
+  voltar:
+    name: Republicar a versão escolhida
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: __URL_DE_PRODUCAO__
+    steps:
+      # A entrada vem de quem disparou: valide o formato antes de usar, e sempre pelo env:.
+      - name: Validar a versão pedida
+        env:
+          VERSAO: ${{ inputs.versao }}
+        run: |
+          if ! printf '%s' "$VERSAO" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Versão inválida: use o formato vX.Y.Z (ex.: v1.4.2)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.versao }}
+          # O token não fica configurado no git para os passos seguintes; nenhum faz push.
+          persist-credentials: false
+
+      # __SETUP_DA_LINGUAGEM__ — o mesmo da release, fixado por SHA.
+      - name: Instalar dependências
+        run: __COMANDO_INSTALAR__
+
+      # Segredo ausente precisa FALHAR: sem isto, o run terminaria verde sem ter publicado.
+      - name: Conferir segredos obrigatórios
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          if [ -z "${DEPLOY_TOKEN:-}" ]; then
+            echo "::error::Segredo DEPLOY_TOKEN ausente no environment 'production'. Nada foi publicado."
+            exit 1
+          fi
+
+      - name: Publicar a versão anterior
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          VERSAO: ${{ inputs.versao }}
+        run: __COMANDO_DEPLOY_PRODUCAO__
+
+      - name: Teste de fumaça em produção
+        run: __COMANDO_FUMACA__

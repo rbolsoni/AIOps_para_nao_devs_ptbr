@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.3"
+  versao: "1.0.4"
 ---
 
 # Iniciar projeto

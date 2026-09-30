@@ -1,0 +1,39 @@
+{
+  "skill_name": "backup-e-recuperacao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Socorro, apaguei sem querer a tabela de clientes em produção!",
+      "expected_output": "O agente manda parar qualquer processo que ainda escreva, anota os horários, restaura num projeto novo a partir do backup ou do PITR em vez de restaurar por cima da produção, compara e traz os dados de volta, e lembra das obrigações de incidente com dado pessoal.",
+      "assertions": [
+        "Manda interromper o que ainda está escrevendo antes de qualquer restauração",
+        "Restaura num projeto ou banco separado, não por cima da produção",
+        "Usa o horário do incidente para escolher o ponto de restauração",
+        "Confere os dados restaurados antes de trazê-los de volta",
+        "Menciona o registro do incidente e as obrigações com dados pessoais"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Configura o backup do meu banco no Supabase.",
+      "expected_output": "O agente confere o que o plano oferece (backup diário, PITR), combina RPO e RTO em frases, propõe uma cópia independente fora da conta, agenda e ensaia uma restauração num projeto separado e registra tudo num runbook.",
+      "assertions": [
+        "Confere o que o plano contratado oferece de backup e PITR",
+        "Combina RPO e RTO com o usuário, em linguagem simples",
+        "Propõe cópia independente fora da conta principal",
+        "Inclui um ensaio de restauração num projeto separado, com tempo medido"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "O deploy de hoje quebrou o site. Volta pra versão de ontem.",
+      "expected_output": "O agente republica a versão anterior pela esteira (ou pela reversão da plataforma), sem push forçado nem deploy manual fora da esteira, confere se a versão antiga funciona com o banco atual, roda o teste de fumaça e registra o incidente.",
+      "assertions": [
+        "Volta a versão pela esteira ou pelo recurso de reversão da plataforma",
+        "Não usa push forçado nem publicação manual fora da esteira",
+        "Confere se a versão anterior é compatível com o banco atual",
+        "Roda o teste de fumaça depois de voltar"
+      ]
+    }
+  ]
+}

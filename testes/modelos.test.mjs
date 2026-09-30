@@ -23,10 +23,17 @@ const aleatorio = (n, alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrst
 const linhasDe = (texto) => texto.split(/\r?\n/);
 const recuo = (linha) => linha.match(/^ */)[0].length;
 
-const modelos = readdirSync(PASTA_WORKFLOWS)
-  .filter((nome) => nome.endsWith('.yml'))
-  .sort()
-  .map((nome) => ({ nome, texto: readFileSync(path.join(PASTA_WORKFLOWS, nome), 'utf8') }));
+// Modelos de workflow de outras skills entram nas mesmas regras.
+const OUTROS_MODELOS = [path.join(RAIZ, 'skills', 'backup-e-recuperacao', 'assets', 'rollback.modelo.yml')];
+
+const modelos = [
+  ...readdirSync(PASTA_WORKFLOWS)
+    .filter((nome) => nome.endsWith('.yml'))
+    .map((nome) => path.join(PASTA_WORKFLOWS, nome)),
+  ...OUTROS_MODELOS,
+]
+  .map((arquivo) => ({ nome: path.basename(arquivo), texto: readFileSync(arquivo, 'utf8') }))
+  .sort((a, b) => a.nome.localeCompare(b.nome));
 const modelo = (nome) => modelos.find((m) => m.nome === nome).texto;
 
 /**
@@ -373,5 +380,22 @@ describe('modelo de .gitignore (iniciar-projeto)', () => {
       assert.ok(linhas.includes(padrao), `falta ${padrao}`);
     }
     assert.ok(!linhas.includes('*.sql'), '*.sql ignoraria as migrações');
+  });
+});
+
+describe('modelo de voltar versão (backup-e-recuperacao)', () => {
+  const texto = modelo('rollback.modelo.yml');
+
+  it('valida o formato da versão pedida antes do checkout', () => {
+    const validacao = texto.indexOf('Validar a versão pedida');
+    const checkout = texto.search(/uses:\s*actions\/checkout@/);
+    assert.ok(validacao >= 0 && checkout > validacao, 'a entrada vem de quem disparou: valide antes de usá-la');
+    assert.match(texto, /grep -qE '\^v\[0-9\]\+\\.\[0-9\]\+\\.\[0-9\]\+\$'/);
+  });
+
+  it('usa o mesmo grupo de concorrência da release de produção, sem cancelar', () => {
+    const grupo = (t) => t.match(/^concurrency:\s*\n\s+group:\s*(\S+)/m)?.[1];
+    assert.equal(grupo(texto), grupo(modelo('release-promocao.modelo.yml')));
+    assert.match(texto, /^\s*cancel-in-progress:\s*false\b/m);
   });
 });

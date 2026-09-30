@@ -1,0 +1,39 @@
+{
+  "skill_name": "desempenho-e-escalabilidade",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A listagem de pedidos demora uns 8 segundos pra abrir. Deixa mais rápido.",
+      "expected_output": "O agente mede antes (tempo da rota, plano de execução), procura N+1, falta de índice e ausência de paginação, corrige uma coisa por vez e mostra o número antes e depois.",
+      "assertions": [
+        "Mede o tempo antes de mudar o código",
+        "Usa EXPLAIN (ou equivalente) para confirmar falta de índice antes de criar um",
+        "Procura N+1 e resolve com carregamento em lote",
+        "Pagina a listagem",
+        "Mostra o número antes e depois, medido do mesmo jeito"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Meu site tá muito lento no celular.",
+      "expected_output": "O agente mede os Core Web Vitals (campo e laboratório) nas páginas principais, identifica a métrica ruim e a causa (imagem grande, JS pesado, fonte, layout que pula), corrige e mede de novo.",
+      "assertions": [
+        "Mede LCP, INP e CLS nas páginas principais, no celular",
+        "Relaciona a métrica ruim a uma causa concreta antes de corrigir",
+        "Propõe correções específicas (imagem, JS por rota, dimensões declaradas, fontes)",
+        "Mede de novo depois da correção"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Vamos colocar Kubernetes desde o começo pra aguentar muita gente?",
+      "expected_output": "O agente pergunta ou estima a carga real, compara serverless, contêiner gerenciado e servidor pelo formato da carga e pelo custo de operar, recomenda a opção mais simples que atende, deixa a aplicação sem estado para poder escalar depois e registra a decisão num ADR.",
+      "assertions": [
+        "Parte da carga real ou estimada, não da ferramenta",
+        "Compara opções pelo formato da carga e pelo custo de operar",
+        "Recomenda a opção mais simples que atende agora",
+        "Registra a decisão num ADR"
+      ]
+    }
+  ]
+}
