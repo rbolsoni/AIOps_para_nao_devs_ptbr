@@ -11,6 +11,10 @@
  *
  * Nunca imprime o segredo: só os primeiros caracteres e o tamanho.
  *
+ * Lê UTF-8 e UTF-16 com BOM (o ">" do Windows PowerShell 5.1 grava UTF-16). Não varre arquivo
+ * acima de 1 MB nem arquivo binário — e lista esses arquivos no resultado, porque "não
+ * verifiquei" não pode parecer "verifiquei e está limpo".
+ *
  * Uso:
  *   node verificar-segredos.mjs                 # arquivos do git (versionados + novos não ignorados)
  *   node verificar-segredos.mjs caminho/        # outra pasta
@@ -29,10 +33,14 @@ import { fileURLToPath } from 'node:url';
 
 const AJUDA = `Uso: node verificar-segredos.mjs [pasta] [--todos] [--json]
 
-Procura segredos escritos em arquivos (chaves, tokens, senhas, chaves privadas).
+Procura segredos escritos em arquivos: chaves privadas, tokens de provedores conhecidos
+(GitHub, GitLab, npm, AWS, Google, Stripe, Slack, Discord, Telegram, SendGrid, Hugging Face,
+Supabase, provedores de LLM), JWT de serviço, URL com senha, credencial literal (inclusive
+em JSON) e valor padrão literal para variável de ambiente sensível.
   pasta      onde varrer (padrão: pasta atual)
   --todos    percorre a pasta inteira sem usar o git
   --json     saída em JSON
+Arquivos acima de 1 MB e binários não são varridos, e aparecem listados no resultado.
 Para aceitar um falso positivo, comente na linha: verificar-segredos: ignorar (motivo)
 Código de saída: 0 limpo, 1 achados, 2 uso incorreto ou erro.`;
 
@@ -50,9 +58,10 @@ const EXTENSOES_CODIGO = new Set([
 ]);
 const EXTENSOES_CONFIG = new Set(['.yml', '.yaml', '.properties', '.ini', '.toml', '.cfg', '.conf', '.env']);
 const LOCKFILES = /(^|\/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|poetry\.lock|uv\.lock|Cargo\.lock|composer\.lock|Gemfile\.lock|go\.sum|packages\.lock\.json)$/;
+// Sem bin/: em Rails e em pacotes Node, bin/ é código (e script com credencial esquecida).
 const PASTAS_IGNORADAS = new Set([
   '.git', 'node_modules', 'dist', 'build', 'out', 'coverage', '.next', '.nuxt', '.venv', 'venv',
-  '__pycache__', 'target', 'vendor', '.terraform', 'bin', 'obj',
+  '__pycache__', 'target', 'vendor', '.terraform', 'obj',
 ]);
 
 /** Nome que denuncia credencial. */
@@ -61,7 +70,7 @@ const NOME_SENSIVEL = /(SECRET|PASSWORD|PASSWD|SENHA|TOKEN|PRIVATE_?KEY|API_?KEY
  * Nome de configuração pública por construção (vai para o navegador). Acusar esses valores
  * ensinaria a equipe a ignorar o scanner — que é como uma checagem de segurança morre.
  */
-const NOME_PUBLICO = /^(NEXT_PUBLIC_|VITE_|PUBLIC_|EXPO_PUBLIC_|REACT_APP_|NUXT_PUBLIC_|GATSBY_)|ANON|PUBLISHABLE/i;
+const NOME_PUBLICO = /^(NEXT_PUBLIC_|VITE_|PUBLIC_|EXPO_PUBLIC_|REACT_APP_|NUXT_PUBLIC_|GATSBY_)|ANON|PUBLISHABLE|PUBLIC_?KEY/i;
 /** Valores que são claramente marcadores, não credenciais. */
 const MARCADORES = [
   /exemplo|example|placeholder|changeme|troque|dummy|fake|sample|your[-_]|seu[-_]|sua[-_]|xxx+|<[^>]*>|\*{3,}|\.{3}/i,
@@ -133,6 +142,44 @@ const REGRAS = [
     padroes: [/\bsb_secret_[A-Za-z0-9_-]{12,}/g],
   },
   {
+    id: 'gitlab-token',
+    descricao: 'token de acesso do GitLab',
+    padroes: [/\bglpat-[A-Za-z0-9_-]{20,}/g],
+  },
+  {
+    id: 'npm-token',
+    descricao: 'token do npm (publica pacotes em seu nome)',
+    padroes: [/\bnpm_[A-Za-z0-9]{36}\b/g],
+  },
+  {
+    id: 'huggingface-token',
+    descricao: 'token do Hugging Face',
+    padroes: [/\bhf_[A-Za-z0-9]{30,}\b/g],
+  },
+  {
+    id: 'sendgrid-key',
+    descricao: 'chave de API do SendGrid',
+    padroes: [/\bSG\.[A-Za-z0-9_-]{16,32}\.[A-Za-z0-9_-]{30,64}\b/g],
+  },
+  {
+    id: 'stripe-webhook-secret',
+    descricao: 'segredo de assinatura de webhook do Stripe',
+    padroes: [/\bwhsec_[A-Za-z0-9+/=]{24,}/g],
+  },
+  {
+    id: 'webhook-de-chat',
+    descricao: 'URL de webhook do Slack ou do Discord (quem tem a URL publica no canal)',
+    padroes: [
+      /https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]{6,}\/B[A-Z0-9]{6,}\/[A-Za-z0-9]{20,}/g,
+      /https:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/api\/webhooks\/\d{15,22}\/[A-Za-z0-9_-]{50,}/g,
+    ],
+  },
+  {
+    id: 'telegram-bot-token',
+    descricao: 'token de bot do Telegram',
+    padroes: [/\b\d{6,12}:[A-Za-z0-9_-]{35}(?![A-Za-z0-9_-])/g],
+  },
+  {
     id: 'jwt-privilegiado',
     descricao: 'JWT com papel de serviço/administração (ignora as regras de acesso)',
     padroes: [/\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}/g],
@@ -187,6 +234,17 @@ const REGRAS = [
     aceita: (_t, m) =>
       NOME_SENSIVEL.test(m[1]) && !NOME_PUBLICO.test(m[1]) && !ehMarcador(m[2]) && entropia(m[2]) >= 3.5 && !/^(https?:)?\/\//.test(m[2]),
   },
+  {
+    // Chave entre aspas: JSON (config de app, appsettings.json, arquivos de configuração de MCP)
+    // e objetos em código escritos no mesmo formato.
+    id: 'literal-de-credencial',
+    descricao: 'valor longo e aleatório atribuído a um nome de credencial',
+    onde: ['json', 'codigo', 'config'],
+    padroes: [/"([A-Za-z_][A-Za-z0-9_.-]*)"\s*:\s*"([^"\\\s]{20,})"/g],
+    segredo: (m) => m[2],
+    aceita: (_t, m) =>
+      NOME_SENSIVEL.test(m[1]) && !NOME_PUBLICO.test(m[1]) && !ehMarcador(m[2]) && entropia(m[2]) >= 3.5 && !/^(https?:)?\/\//.test(m[2]),
+  },
 ];
 
 function tipoDoArquivo(rel) {
@@ -195,7 +253,24 @@ function tipoDoArquivo(rel) {
   if (/^\.env(\..+)?$/.test(base)) return 'config';
   if (EXTENSOES_CODIGO.has(ext)) return 'codigo';
   if (EXTENSOES_CONFIG.has(ext)) return 'config';
+  if (ext === '.json' || ext === '.jsonc') return 'json';
   return 'outro';
+}
+
+/**
+ * Texto do arquivo, ou null se for binário. UTF-16 com BOM (FF FE ou FE FF) é decodificado:
+ * sem isso, o byte 0 dos caracteres ASCII faria o arquivo parecer binário e ele nunca seria
+ * varrido.
+ */
+function lerTexto(bruto) {
+  if (bruto.length >= 2 && bruto[0] === 0xff && bruto[1] === 0xfe) return bruto.subarray(2).toString('utf16le');
+  if (bruto.length >= 2 && bruto[0] === 0xfe && bruto[1] === 0xff) {
+    const trocado = Buffer.from(bruto.subarray(2));
+    trocado.swap16();
+    return trocado.toString('utf16le');
+  }
+  if (bruto.includes(0)) return null;
+  return bruto.toString('utf8');
 }
 
 const ehEnvReal = (rel) => /^\.env(\..+)?$/.test(path.posix.basename(rel)) && !/\.(example|sample|template|exemplo|modelo)$/i.test(rel);
@@ -233,6 +308,7 @@ function listarPercorrendo(raiz) {
 export function varrer(raiz, { usarGit = true } = {}) {
   const arquivos = usarGit ? listarPeloGit(raiz) : listarPercorrendo(raiz);
   const achados = [];
+  const naoVarridos = [];
   let varridos = 0;
   for (const rel of arquivos) {
     if (LOCKFILES.test(rel) || EXTENSOES_BINARIAS.has(path.posix.extname(rel).toLowerCase())) continue;
@@ -243,16 +319,22 @@ export function varrer(raiz, { usarGit = true } = {}) {
     } catch {
       continue; // listado pelo git mas apagado da árvore de trabalho
     }
-    if (!info.isFile() || info.size > LIMITE_BYTES) continue;
-    const bruto = readFileSync(completo);
-    if (bruto.includes(0)) continue;
-    varridos++;
+    if (!info.isFile()) continue;
 
     if (usarGit && ehEnvReal(rel)) {
       achados.push({ arquivo: rel, linha: 1, regra: 'arquivo-env-versionado', descricao: 'arquivo .env no repositório — deveria estar no .gitignore (e as chaves dele, rotacionadas)', trecho: path.posix.basename(rel) });
     }
+    if (info.size > LIMITE_BYTES) {
+      naoVarridos.push({ arquivo: rel, motivo: `acima de ${LIMITE_BYTES / (1024 * 1024)} MB` });
+      continue;
+    }
+    const texto = lerTexto(readFileSync(completo));
+    if (texto === null) {
+      naoVarridos.push({ arquivo: rel, motivo: 'binário' });
+      continue;
+    }
+    varridos++;
 
-    const texto = bruto.toString('utf8');
     const linhas = texto.split(/\r?\n/);
     const inicioDaLinha = [];
     let pos = 0;
@@ -273,7 +355,7 @@ export function varrer(raiz, { usarGit = true } = {}) {
 
     const tipo = tipoDoArquivo(rel);
     for (const regra of REGRAS) {
-      if (regra.onde && regra.onde !== tipo) continue;
+      if (regra.onde && ![].concat(regra.onde).includes(tipo)) continue;
       for (const padrao of regra.padroes) {
         padrao.lastIndex = 0;
         for (const m of texto.matchAll(padrao)) {
@@ -295,7 +377,15 @@ export function varrer(raiz, { usarGit = true } = {}) {
       return true;
     })
     .sort((a, b) => a.arquivo.localeCompare(b.arquivo) || a.linha - b.linha);
-  return { arquivosVarridos: varridos, achados: unicos };
+  return { arquivosVarridos: varridos, achados: unicos, arquivosNaoVarridos: naoVarridos.sort((a, b) => a.arquivo.localeCompare(b.arquivo)) };
+}
+
+/** Uma linha com o que ficou de fora, para "não verifiquei" não passar por "está limpo". */
+function resumirNaoVarridos(lista) {
+  if (lista.length === 0) return null;
+  const nomes = lista.slice(0, 5).map((a) => `${a.arquivo} (${a.motivo})`).join(', ');
+  const resto = lista.length > 5 ? ` e mais ${lista.length - 5}` : '';
+  return `${lista.length} arquivo(s) não varrido(s): ${nomes}${resto}. Confira-os de outra forma se puderem conter segredo.`;
 }
 
 function main() {
@@ -319,13 +409,16 @@ function main() {
     console.error(semGit ? `erro: ${raiz} não é um repositório git (ou o git não está instalado). Use --todos para varrer a pasta sem o git.` : `erro: ${e.message}`);
     process.exit(2);
   }
+  const avisoNaoVarridos = resumirNaoVarridos(resultado.arquivosNaoVarridos);
   if (json) {
     console.log(JSON.stringify(resultado, null, 2));
   } else if (resultado.achados.length === 0) {
     console.log(`Nenhum segredo encontrado em ${resultado.arquivosVarridos} arquivo(s).`);
+    if (avisoNaoVarridos) console.log(avisoNaoVarridos);
   } else {
     for (const a of resultado.achados) console.log(`${a.arquivo}:${a.linha}  [${a.regra}] ${a.descricao} — ${a.trecho}`);
     console.log(`\n${resultado.achados.length} possível(is) segredo(s) em ${resultado.arquivosVarridos} arquivo(s).`);
+    if (avisoNaoVarridos) console.log(avisoNaoVarridos);
     console.log('Segredo real: rotacione a credencial primeiro; remover do código não a invalida.');
   }
   process.exit(resultado.achados.length > 0 ? 1 : 0);

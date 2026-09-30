@@ -5,13 +5,15 @@
  * Confere Content-Security-Policy (diretivas essenciais e fontes perigosas), HSTS,
  * X-Content-Type-Options, proteção contra clickjacking (frame-ancestors/X-Frame-Options),
  * Referrer-Policy, Permissions-Policy, vazamento de versão (X-Powered-By, Server),
- * atributos de cookies e CORS com credenciais.
+ * atributos de cookies e CORS (credenciais com "*" e origem refletida).
  *
- * Nunca imprime valor de cookie nem de header enviado com --cabecalho: só nomes.
+ * Nunca imprime valor de cookie nem de header extra: só nomes. Header extra (ex.: token de
+ * bypass de prévia protegida) vai só para a origem da URL pedida: os redirecionamentos são
+ * seguidos aqui, e um redirecionamento para outro domínio não leva o token junto.
  *
  * Uso:
  *   node verificar-headers.mjs https://exemplo.com.br
- *   node verificar-headers.mjs https://preview.exemplo.com --cabecalho "x-bypass-token: <token>"
+ *   PREVIA_TOKEN=... node verificar-headers.mjs https://previa.exemplo.com --cabecalho-env "x-bypass-token=PREVIA_TOKEN"
  *   node verificar-headers.mjs https://exemplo.com.br --json
  *
  * Requer Node.js 20+ (fetch nativo). Sem dependências.
@@ -20,17 +22,27 @@
 import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const AJUDA = `Uso: node verificar-headers.mjs <url> [--json] [--cabecalho "Nome: valor"]...
+const AJUDA = `Uso: node verificar-headers.mjs <url> [--json] [--cabecalho-env "Nome=VARIAVEL"]...
 
 Audita os headers de segurança da resposta HTTP da URL.
-  --json         saída em JSON (para automação)
-  --cabecalho    header extra na requisição (ex.: token de bypass de prévia protegida);
-                 pode repetir. O valor nunca é impresso.
+  --json            saída em JSON (para automação)
+  --cabecalho-env   header extra com o valor lido da variável de ambiente VARIAVEL (ex.:
+                    token de bypass de prévia protegida); pode repetir. Variável ausente ou
+                    vazia: saída 2. O valor nunca é impresso.
+  --cabecalho       header extra com o valor escrito no próprio comando ("Nome: valor").
+                    Evite para segredo: o valor fica no histórico do terminal, na lista de
+                    processos e, se um agente montou o comando, na conversa.
+Headers extras vão só para a origem da URL pedida (não seguem redirecionamento para outro
+domínio).
 Código de saída: 0 sem erros, 1 com erros, 2 uso incorreto ou falha de rede.`;
 
 const SEIS_MESES = 15552000;
+const MAX_REDIRECIONAMENTOS = 10;
+// Origem que nenhum site legítimo autoriza (o domínio .invalid é reservado): se a resposta a
+// devolve em Access-Control-Allow-Origin, o servidor reflete qualquer origem.
+const ORIGEM_DE_TESTE = 'https://origem-de-teste.invalid';
 
-function lerArgumentos(argv) {
+function lerArgumentos(argv, ambiente = process.env) {
   const opcoes = { json: false, cabecalhos: {}, url: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -41,6 +53,13 @@ function lerArgumentos(argv) {
       const m = valor?.match(/^([^:]+):\s*(.*)$/);
       if (!m) throw new Error('--cabecalho espera "Nome: valor"');
       opcoes.cabecalhos[m[1].trim()] = m[2];
+    } else if (a === '--cabecalho-env') {
+      const valor = argv[++i];
+      const m = valor?.match(/^([^=]+)=([A-Za-z_][A-Za-z0-9_]*)$/);
+      if (!m) throw new Error('--cabecalho-env espera "Nome=VARIAVEL", ex.: "x-bypass-token=PREVIA_TOKEN"');
+      const conteudo = ambiente[m[2]];
+      if (!conteudo) throw new Error(`a variável de ambiente ${m[2]} (para o header ${m[1].trim()}) está ausente ou vazia`);
+      opcoes.cabecalhos[m[1].trim()] = conteudo;
     } else if (a.startsWith('--')) throw new Error(`opção desconhecida: ${a}`);
     else opcoes.url = a;
   }
@@ -168,18 +187,69 @@ function avaliarDemais(h, https, r) {
   }
 }
 
+const REDIRECIONAMENTOS = new Set([301, 302, 303, 307, 308]);
+
+/**
+ * GET que segue os redirecionamentos aqui mesmo, em vez de deixar o fetch segui-los: os
+ * headers extras só vão para a origem da URL pedida. Seguindo sozinho, o fetch os repassaria
+ * a qualquer domínio para onde o site redirecionasse — e com eles o token de bypass.
+ */
+async function buscar(url, cabecalhos) {
+  const origemPedida = new URL(url).origin;
+  let atual = url;
+  for (let saltos = 0; saltos <= MAX_REDIRECIONAMENTOS; saltos++) {
+    const resposta = await fetch(atual, {
+      redirect: 'manual',
+      headers: new URL(atual).origin === origemPedida ? cabecalhos : {},
+      signal: AbortSignal.timeout(15000),
+    });
+    const destino = resposta.headers.get('location');
+    if (!REDIRECIONAMENTOS.has(resposta.status) || !destino) return { resposta, urlFinal: atual };
+    await resposta.body?.cancel();
+    atual = new URL(destino, atual).href;
+  }
+  throw new Error(`mais de ${MAX_REDIRECIONAMENTOS} redirecionamentos`);
+}
+
+/**
+ * CORS que devolve qualquer origem em Access-Control-Allow-Origin: com credenciais, qualquer
+ * site lê as respostas autenticadas dos usuários. Pergunta com uma origem que ninguém
+ * autoriza e vê se ela volta.
+ */
+async function avaliarCorsRefletido(urlFinal, cabecalhos, origemPedida, r) {
+  let resposta;
+  try {
+    const extras = new URL(urlFinal).origin === origemPedida ? cabecalhos : {};
+    resposta = await fetch(urlFinal, { redirect: 'manual', headers: { ...extras, Origin: ORIGEM_DE_TESTE }, signal: AbortSignal.timeout(15000) });
+  } catch (e) {
+    r('info', 'cors', `não foi possível testar o CORS com uma origem de fora (${e.cause?.code ?? e.message}).`);
+    return;
+  }
+  const origem = resposta.headers.get('access-control-allow-origin');
+  const credenciais = (resposta.headers.get('access-control-allow-credentials') ?? '').toLowerCase() === 'true';
+  await resposta.body?.cancel();
+  if (origem !== ORIGEM_DE_TESTE) return;
+  if (credenciais) {
+    r('erro', 'cors', 'devolve qualquer origem em Access-Control-Allow-Origin, com credenciais: qualquer site lê as respostas autenticadas dos seus usuários. Use uma lista de origens permitidas.');
+  } else {
+    r('aviso', 'cors', 'devolve qualquer origem em Access-Control-Allow-Origin: confira se a rota é mesmo pública; API autenticada usa uma lista de origens permitidas.');
+  }
+}
+
 export async function verificar(url, cabecalhos = {}) {
-  const resposta = await fetch(url, { redirect: 'follow', headers: cabecalhos, signal: AbortSignal.timeout(15000) });
-  const https = new URL(resposta.url).protocol === 'https:';
+  const origemPedida = new URL(url).origin;
+  const { resposta, urlFinal } = await buscar(url, cabecalhos);
+  const https = new URL(urlFinal).protocol === 'https:';
   const resultados = [];
   const r = (nivel, header, mensagem) => resultados.push({ nivel, header, mensagem });
   avaliarCsp(resposta.headers, r);
   avaliarHsts(resposta.headers, https, r);
   avaliarDemais(resposta.headers, https, r);
   await resposta.body?.cancel();
+  await avaliarCorsRefletido(urlFinal, cabecalhos, origemPedida, r);
   return {
     url,
-    urlFinal: resposta.url,
+    urlFinal,
     status: resposta.status,
     resultados,
     resumo: {
@@ -213,16 +283,20 @@ async function main() {
     console.log(AJUDA);
     return;
   }
+  // Depois de usar a rede, o código de saída vai em process.exitCode, e o processo termina
+  // sozinho: process.exit() com conexões do fetch ainda fechando derruba o Node no Windows
+  // (saída 0xC0000409 no lugar do código certo).
   let relatorio;
   try {
     relatorio = await verificar(opcoes.url, opcoes.cabecalhos);
   } catch (e) {
     console.error(`erro: não foi possível acessar ${opcoes.url}: ${e.cause?.code ?? e.cause?.message ?? e.message}`);
-    process.exit(2);
+    process.exitCode = 2;
+    return;
   }
   if (opcoes.json) console.log(JSON.stringify(relatorio, null, 2));
   else imprimir(relatorio);
-  process.exit(relatorio.resumo.erros > 0 ? 1 : 0);
+  process.exitCode = relatorio.resumo.erros > 0 ? 1 : 0;
 }
 
 // Executado (e não importado)? Compare o caminho real dos dois lados: o `npx skills` instala

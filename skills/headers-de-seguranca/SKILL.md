@@ -9,7 +9,7 @@ license: MIT
 compatibility: O script de verificação requer Node.js 20+ e acesso à URL verificada.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.2"
+  versao: "1.1.0"
 ---
 
 # Headers de segurança
@@ -67,15 +67,20 @@ Como declarar os headers em cada framework, servidor e plataforma de hospedagem:
 4. Teste os fluxos reais no navegador com o console aberto (login, pagamento, upload,
    mapas, gráficos) e rode os testes E2E.
 5. Rode o verificador de novo no ambiente publicado (homologação e produção). Prévia
-   protegida por login da plataforma: passe o token de bypass com `--cabecalho` — ele
-   nunca é impresso.
+   protegida por login da plataforma: guarde o token de bypass numa variável de ambiente e
+   passe `--cabecalho-env "<nome-do-header>=<VARIAVEL>"` — o valor não aparece no comando,
+   no histórico do terminal nem na conversa com o agente, e não é repassado se o site
+   redirecionar para outro domínio.
 6. Registre num ADR o que foi aceito de propósito (ex.: `'unsafe-inline'` mantido e por quê).
 
 ## Script disponível
 
-- **`scripts/verificar-headers.mjs`** — audita os headers de uma URL. Opções: `--json`,
-  `--cabecalho "Nome: valor"` (repetível), `--help`. Sai com 1 se houver erro, 2 se não
-  conseguir acessar a URL. Pode ser usado na esteira como teste de fumaça depois do deploy.
+- **`scripts/verificar-headers.mjs`** — audita os headers de uma URL, inclusive CORS que
+  devolve qualquer origem (erro quando vem com credenciais). Opções: `--json`,
+  `--cabecalho-env "Nome=VARIAVEL"` (repetível; valor lido do ambiente), `--help`; o antigo
+  `--cabecalho "Nome: valor"` continua aceito, mas expõe o valor. Sai com 1 se houver erro,
+  2 se não conseguir acessar a URL ou faltar a variável. Pode ser usado na esteira como teste
+  de fumaça depois do deploy.
 
 ## Armadilhas
 
