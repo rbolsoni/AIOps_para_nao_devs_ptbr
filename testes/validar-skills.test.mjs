@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { carregarSkills, lerArquivoDaSkill, lerYamlSimples } from '../ferramentas/lib/skills.mjs';
+import { carregarSkills, lerArquivoDaSkill, lerYamlSimples, separarFrontmatter } from '../ferramentas/lib/skills.mjs';
 import { validarSkill } from '../ferramentas/validar-skills.mjs';
 import { criarLinkDeArquivo, criarLinkDePasta } from './links.mjs';
 
@@ -213,5 +213,27 @@ describe('SKILL.md fora dos limites', () => {
     const [skill] = carregarSkills(base);
     assert.equal(skill.erroFrontmatter, null);
     assert.equal(skill.frontmatter.name, 'interna');
+  });
+});
+
+describe('caracteres invisíveis', () => {
+  it('separarFrontmatter ignora o BOM no início do SKILL.md', () => {
+    assert.equal(separarFrontmatter('\uFEFF---\nname: x\n---\ncorpo\n')?.bruto, 'name: x');
+  });
+
+  // BOM, espaço de largura zero e controles de direção do texto não aparecem no editor nem no
+  // diff: numa expressão, mudam o que ela casa sem ninguém ver. No código, use o escape (\uFEFF).
+  const INVISIVEIS = /[\u200B-\u200D\u2060\u202A-\u202E\u2066-\u2069\uFEFF]/;
+  const listarCodigo = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+      if (e.name === '.git' || e.name === 'node_modules') return [];
+      const completo = path.join(dir, e.name);
+      if (e.isDirectory()) return listarCodigo(completo);
+      return /\.(mjs|js|sh)$/.test(e.name) ? [completo] : [];
+    });
+
+  it('o código do kit não tem caractere invisível literal', () => {
+    const comInvisivel = listarCodigo(RAIZ).filter((f) => INVISIVEIS.test(readFileSync(f, 'utf8')));
+    assert.deepEqual(comInvisivel.map((f) => path.relative(RAIZ, f).split(path.sep).join('/')), []);
   });
 });

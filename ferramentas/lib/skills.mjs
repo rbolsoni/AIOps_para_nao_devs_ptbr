@@ -16,7 +16,7 @@ const LIMITE_LEITURA_BYTES = 512 * 1024;
 
 /** Separa o bloco `---` inicial do corpo Markdown. Devolve null se não houver frontmatter. */
 export function separarFrontmatter(texto) {
-  const semBom = texto.replace(/^﻿/, '');
+  const semBom = texto.replace(/^\uFEFF/, '');
   const m = semBom.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!m) return null;
   return { bruto: m[1], corpo: m[2] };
