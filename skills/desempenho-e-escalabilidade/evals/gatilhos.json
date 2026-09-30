@@ -1,0 +1,10 @@
+[
+  { "query": "o sistema tá muito lento", "should_trigger": true },
+  { "query": "a página demora pra carregar no celular", "should_trigger": true },
+  { "query": "como faço o app aguentar mil usuários ao mesmo tempo?", "should_trigger": true },
+  { "query": "essa consulta no banco está pesada demais", "should_trigger": true },
+  { "query": "vale a pena usar serverless ou um servidor pro meu backend?", "should_trigger": true },
+  { "query": "o site caiu e está dando erro 500", "should_trigger": false },
+  { "query": "quanto custa hospedar esse app por mês?", "should_trigger": false },
+  { "query": "cria um índice remissivo no documento do manual", "should_trigger": false }
+]
