@@ -10,7 +10,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Fluxo de git
@@ -100,9 +100,10 @@ Closes #274
 
 ## Tags e versões
 
-Tags seguem SemVer com prefixo `v` (`v1.4.2`), são anotadas e criadas **pela esteira** a
-partir dos commits — não à mão. Tag criada manualmente fora da esteira dessincroniza o
-changelog e a versão publicada.
+Tags seguem SemVer com prefixo `v` (`v1.4.2`) e são criadas **pela esteira** a partir dos
+commits — não à mão (nos modelos da `esteira-ci-cd`, o passo que publica a release cria a
+tag junto). Tag criada manualmente fora da esteira dessincroniza o changelog e a versão
+publicada.
 
 ## Armadilhas
 

@@ -1,12 +1,12 @@
 # Ferramentas por ecossistema
 
-Fixe a versão de toda ferramenta executada sob demanda. As versões abaixo são exemplos:
-confira a mais recente e fixe-a.
+Fixe a versão de toda ferramenta executada sob demanda: troque `<versão>` pela mais recente
+que você conferiu no registro, e mude-a só num PR revisado.
 
 | Ecossistema | Licenças | Vulnerabilidades |
 |---|---|---|
-| npm / pnpm / Yarn | `npx license-checker@25.0.1 --production --json` | `npm audit --omit=dev` |
-| Python | `pip-licenses --format=json` (no ambiente do projeto) | `pip-audit` |
+| npm / pnpm / Yarn / Bun | `npx license-checker-rseidelsohn@<versão> --production --json` | `npm audit --omit=dev` (ou o equivalente do gerenciador) |
+| Python | `uv run --with pip-licenses==<versão> pip-licenses --format=json` | `uv run --with pip-audit==<versão> pip-audit` |
 | Go | `go-licenses report ./...` | `govulncheck ./...` |
 | Maven | `license-maven-plugin` (`license:aggregate-third-party-report`) | OWASP Dependency-Check |
 | Gradle | plugin `gradle-license-report` | OWASP Dependency-Check |
