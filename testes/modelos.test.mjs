@@ -345,6 +345,12 @@ describe('modelos SQL de autorização (mudancas-de-banco)', () => {
     assert.ok(validacao < funcao.indexOf('for update'), 'a quantidade precisa ser validada antes de ler e travar o estoque');
   });
 
+  it('a segunda camada também recusa nulo, que o CHECK sozinho aceita', () => {
+    const camada = blocosSql.find((b) => b.includes('pedidos_quantidade_positiva')) ?? '';
+    assert.match(camada, /^alter table public\.pedidos alter column quantidade set not null;$/m);
+    assert.match(camada, /^alter table public\.itens alter column estoque set not null;$/m);
+  });
+
   it('a view de vitrine declara as permissões de cada papel em vez de herdar o padrão da plataforma', () => {
     const view = blocosSql.find((b) => b.includes('create view public.vitrine_fornecedores')) ?? '';
     assert.match(view, /^revoke all on public\.vitrine_fornecedores from public, anon, authenticated;$/m);

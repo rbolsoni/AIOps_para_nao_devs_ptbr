@@ -118,7 +118,8 @@ as $$
 declare v_estoque int; v_pedido uuid;
 begin
   -- Primeiro os argumentos: o cliente chama a função com o que quiser. Sem esta linha,
-  -- -5 passa pela checagem de estoque, soma 5 ao estoque e cria um pedido negativo.
+  -- -5 passa pela checagem de estoque, soma 5 ao estoque e cria um pedido negativo; nulo
+  -- também passa (comparar com nulo nunca dá verdadeiro) e apaga o estoque do item.
   if p_qtd is null or p_qtd <= 0 then raise exception 'quantidade inválida'; end if;
   if not privado.usuario_ativo() then raise exception 'conta inativa'; end if;
   select estoque into v_estoque from public.itens where id = p_item for update;
@@ -141,10 +142,16 @@ manual) erre a conta.
 ```sql
 alter table public.pedidos add constraint pedidos_quantidade_positiva check (quantidade > 0);
 alter table public.itens add constraint itens_estoque_nao_negativo check (estoque >= 0);
+-- CHECK aceita nulo: sem estas duas, quantidade nula passa pelas restrições acima e apaga o
+-- estoque.
+alter table public.pedidos alter column quantidade set not null;
+alter table public.itens alter column estoque set not null;
 ```
 
 Em tabela grande que já existe, crie a restrição com `not valid` e valide depois
-(`alter table … validate constraint …`), para não travar a escrita durante a varredura.
+(`alter table … validate constraint …`), para não travar a escrita durante a varredura. Para
+o `set not null`, valide antes um `check (coluna is not null)`: com ele validado, o Postgres
+não varre a tabela de novo.
 
 ## Checagem empírica
 
@@ -156,7 +163,7 @@ proibido e exigir a recusa. Modelo de casos:
 | Usuário A lê endereço do usuário B | zero linhas |
 | Usuário bloqueado insere registro | erro de política |
 | Usuário insere direto em `pedidos` (sem a função) | erro de permissão |
-| Usuário chama `fechar_pedido` com quantidade negativa ou zero | recusada, estoque inalterado |
+| Usuário chama `fechar_pedido` com quantidade negativa, zero ou nula | recusada, estoque inalterado |
 | Anônimo escreve na view de vitrine | erro de permissão |
 | Anônimo lê a view de vitrine (quando ela exige login) | erro de permissão |
 | Usuário altera o próprio papel para operador | recusado pela trigger |
