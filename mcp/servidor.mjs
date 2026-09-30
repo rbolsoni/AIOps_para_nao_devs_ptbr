@@ -80,6 +80,16 @@ const FERRAMENTAS = [
   },
 ];
 
+/**
+ * `params` e `arguments` ausentes ou null valem {}; outro valor que não seja objeto é inválido
+ * (devolve null). O padrão `= {}` da desestruturação só cobre undefined: com "params": null, o
+ * acesso a params.name lançava erro fora de qualquer try/catch e derrubava o servidor.
+ */
+function comoObjeto(valor) {
+  if (valor === undefined || valor === null) return {};
+  return typeof valor === 'object' && !Array.isArray(valor) ? valor : null;
+}
+
 function lerOpcoes(argv) {
   if (argv.includes('--help') || argv.includes('-h')) return { ajuda: true };
   const i = argv.indexOf('--skills');
@@ -125,9 +135,11 @@ export function criarServidor(pastaSkills) {
   }
 
   function tratar(mensagem) {
-    const { id, method, params = {} } = mensagem;
+    const { id, method } = mensagem;
     const ok = (result) => ({ jsonrpc: '2.0', id, result });
     const falha = (code, message) => ({ jsonrpc: '2.0', id, error: { code, message } });
+    const params = comoObjeto(mensagem.params);
+    if (!params) return falha(-32602, 'params inválido: esperado um objeto');
 
     switch (method) {
       case 'initialize': {
@@ -144,7 +156,9 @@ export function criarServidor(pastaSkills) {
       case 'tools/list':
         return ok({ tools: FERRAMENTAS });
       case 'tools/call': {
-        const resultado = chamarFerramenta(params.name, params.arguments);
+        const args = comoObjeto(params.arguments);
+        if (!args) return falha(-32602, 'arguments inválido: esperado um objeto');
+        const resultado = chamarFerramenta(params.name, args);
         return resultado ? ok(resultado) : falha(-32602, `ferramenta desconhecida: ${params.name}`);
       }
       case 'prompts/list':
@@ -156,9 +170,11 @@ export function criarServidor(pastaSkills) {
           })),
         });
       case 'prompts/get': {
+        const args = comoObjeto(params.arguments);
+        if (!args) return falha(-32602, 'arguments inválido: esperado um objeto');
         const skill = porNome.get(params.name);
         if (!skill) return falha(-32602, `prompt desconhecido: ${params.name}`);
-        const tarefa = params.arguments?.tarefa ? `\n\nTarefa: ${params.arguments.tarefa}` : '';
+        const tarefa = args.tarefa ? `\n\nTarefa: ${args.tarefa}` : '';
         return ok({
           description: skill.frontmatter.description,
           messages: [
@@ -193,7 +209,14 @@ export function criarServidor(pastaSkills) {
     if (typeof mensagem.method !== 'string') {
       return { jsonrpc: '2.0', id: mensagem.id, error: { code: -32600, message: 'requisição sem "method"' } };
     }
-    return tratar(mensagem);
+    try {
+      return tratar(mensagem);
+    } catch (e) {
+      // Um defeito ao tratar um pedido não pode derrubar o servidor: o cliente perderia todas as
+      // ferramentas. O detalhe vai para o stderr; o stdout é o canal do protocolo.
+      console.error(`[${PACOTE.name}] erro interno ao tratar "${mensagem.method}": ${e?.stack ?? e}`);
+      return { jsonrpc: '2.0', id: mensagem.id, error: { code: -32603, message: 'erro interno do servidor' } };
+    }
   }
 
   return { skills, processarLinha };

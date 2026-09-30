@@ -156,6 +156,63 @@ describe('servidor MCP', () => {
   });
 });
 
+describe('servidor MCP: mensagens malformadas', () => {
+  let s;
+  before(() => {
+    s = iniciarServidor();
+  });
+  after(() => s.processo.kill());
+
+  it('params null ou que não é objeto recebe resposta, e o servidor continua de pé', async () => {
+    for (const method of ['tools/call', 'prompts/get']) {
+      const r = await s.pedir(method, null);
+      assert.equal(r.error?.code, -32602, `${method} com params null: ${JSON.stringify(r)}`);
+    }
+    // Sem params, o initialize já era aceito com a versão mais recente; null vale o mesmo.
+    const inicio = await s.pedir('initialize', null);
+    assert.match(inicio.result?.protocolVersion ?? '', /^\d{4}-\d{2}-\d{2}$/, JSON.stringify(inicio));
+    for (const method of ['initialize', 'tools/call', 'prompts/get']) {
+      for (const params of [42, 'texto', [1, 2]]) {
+        const r = await s.pedir(method, params);
+        assert.equal(r.error?.code, -32602, `${method} com params ${JSON.stringify(params)}: ${JSON.stringify(r)}`);
+      }
+    }
+    const ping = await s.pedir('ping', {});
+    assert.deepEqual(ping.result, {});
+  });
+
+  it('arguments null vale como vazio; arguments que não é objeto é recusado', async () => {
+    const lista = await s.pedir('tools/call', { name: 'listar_skills', arguments: null });
+    assert.match(lista.result.content[0].text, /skills disponíveis/);
+    const semNome = await s.pedir('tools/call', { name: 'ler_skill', arguments: null });
+    assert.equal(semNome.result.isError, true);
+    assert.match(semNome.result.content[0].text, /Disponíveis:/);
+    const prompt = await s.pedir('prompts/get', { name: 'iniciar-projeto', arguments: null });
+    assert.match(prompt.result.messages[0].content.text, /name: iniciar-projeto/);
+    for (const [method, name] of [['tools/call', 'ler_skill'], ['prompts/get', 'iniciar-projeto']]) {
+      const r = await s.pedir(method, { name, arguments: 'texto' });
+      assert.equal(r.error?.code, -32602, `${method}: ${JSON.stringify(r)}`);
+      assert.match(r.error.message, /arguments inválido/);
+    }
+  });
+});
+
+describe('servidor MCP: erro inesperado', () => {
+  it('vira erro -32603 com o detalhe só no stderr, sem derrubar o servidor', (t) => {
+    const servidor = criarServidor(path.join(RAIZ, 'skills'));
+    // Simula um defeito interno: ler a descrição de uma skill lança erro.
+    Object.defineProperty(servidor.skills[0].frontmatter, 'description', {
+      get() {
+        throw new Error('falha simulada');
+      },
+    });
+    const stderr = t.mock.method(console, 'error', () => {});
+    const resposta = servidor.processarLinha(JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'prompts/list' }));
+    assert.deepEqual(resposta, { jsonrpc: '2.0', id: 7, error: { code: -32603, message: 'erro interno do servidor' } });
+    assert.ok(stderr.mock.calls.some((c) => String(c.arguments[0]).includes('falha simulada')));
+  });
+});
+
 describe('servidor MCP chamado por link', () => {
   it('sobe e responde quando chamado por um caminho com link (como o atalho do npx)', async (t) => {
     const link = path.join(mkdtempSync(path.join(tmpdir(), 'link-')), 'mcp');
