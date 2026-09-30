@@ -11,7 +11,10 @@
         "A trava também exige que a árvore publicada seja idêntica à do commit homologado (git diff contra o segundo pai do merge)",
         "Instrui a desligar o deploy automático por git da plataforma",
         "Segredos de produção ficam num environment separado",
-        "Actions fixadas por SHA"
+        "Actions fixadas por SHA",
+        "Permissões só de leitura no nível do workflow; escrita apenas no job que cria a release",
+        "Checkout com persist-credentials: false e valores de expressão passados por env:, nunca escritos dentro do run:",
+        "O CI cancela run em andamento só em PR; o push que migra e publica a homologação nunca é cancelado no meio"
       ]
     },
     {

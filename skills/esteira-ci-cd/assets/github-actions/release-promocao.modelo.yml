@@ -25,9 +25,10 @@ on:
   push:
     branches: [main]
 
+# Menor privilégio: o workflow só lê, e cada job eleva só o que usa. Permissão declarada no
+# job substitui a do workflow — escopo omitido ali vira "none".
 permissions:
-  contents: write # criar tag e GitHub Release
-  actions: read   # a trava consulta os runs do CI; sem isto a API responde 403
+  contents: read
 
 # Nunca cancelar uma release em andamento: interromper migração ou deploy pela metade é pior
 # do que esperar a próxima.
@@ -40,10 +41,16 @@ jobs:
     name: Trava — o commit passou verde na homologação?
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read # checkout
+      actions: read  # a trava consulta os runs do CI; sem isto a API responde 403
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # o segundo pai do merge não existe com profundidade 1
+          # Não deixa o token configurado no git para os passos seguintes, onde qualquer
+          # script poderia lê-lo. Nenhum job deste workflow faz git push: a release usa gh.
+          persist-credentials: false
 
       - name: Exigir CI verde na staging e a mesma árvore do commit promovido
         # Valores do GitHub entram pelo env: e são usados entre aspas. Uma expressão escrita
@@ -101,14 +108,18 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # precisa das tags e do histórico desde a última versão
+          persist-credentials: false
       - id: calculo
         run: bash .github/scripts/proxima-versao.sh >> "$GITHUB_OUTPUT"
       - name: Resumo
+        env:
+          PROXIMA: ${{ steps.calculo.outputs.proxima }}
+          NIVEL: ${{ steps.calculo.outputs.nivel }}
         run: |
-          if [ -z "${{ steps.calculo.outputs.proxima }}" ]; then
+          if [ -z "$PROXIMA" ]; then
             echo "Nenhum commit feat/fix/breaking desde a última versão: sem release e sem deploy." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Próxima versão: ${{ steps.calculo.outputs.proxima }} (${{ steps.calculo.outputs.nivel }})" >> "$GITHUB_STEP_SUMMARY"
+            echo "Próxima versão: $PROXIMA ($NIVEL)" >> "$GITHUB_STEP_SUMMARY"
           fi
 
   producao:
@@ -122,6 +133,8 @@ jobs:
       url: __URL_DE_PRODUCAO__
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # __SETUP_DA_LINGUAGEM__
       - name: Instalar dependências
         run: __COMANDO_INSTALAR__
@@ -169,14 +182,18 @@ jobs:
     needs: [versao, producao]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write # criar tag e GitHub Release: o único job com escrita
     steps:
       - name: Criar tag e release
         env:
           GH_TOKEN: ${{ github.token }}
           VERSAO: ${{ needs.versao.outputs.proxima }}
+          REPO: ${{ github.repository }}
+          ALVO: ${{ github.sha }}
         run: |
           gh release create "$VERSAO" \
-            --repo "${{ github.repository }}" \
-            --target "${{ github.sha }}" \
+            --repo "$REPO" \
+            --target "$ALVO" \
             --title "$VERSAO" \
             --generate-notes

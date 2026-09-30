@@ -50,6 +50,104 @@ function semRecuoComum(linhas) {
   return linhas.map((l) => l.slice(minimo)).join('\n');
 }
 
+/** Linhas do passo (item "- " de uma lista) que contém a linha `i`. */
+function passoDaLinha(linhas, i) {
+  let inicio = i;
+  while (inicio > 0 && !(/^\s*-\s/.test(linhas[inicio]) && recuo(linhas[inicio]) <= recuo(linhas[i]))) inicio--;
+  const recuoDoItem = recuo(linhas[inicio]);
+  let fim = inicio + 1;
+  while (fim < linhas.length && (linhas[fim].trim() === '' || recuo(linhas[fim]) > recuoDoItem)) fim++;
+  return linhas.slice(inicio, fim);
+}
+
+/** Bloco `permissions:` do nível do workflow (sem recuo), ou null. */
+function permissoesDoWorkflow(texto) {
+  const linhas = linhasDe(texto);
+  const inicio = linhas.findIndex((l) => /^permissions:/.test(l));
+  if (inicio < 0) return null;
+  let fim = inicio + 1;
+  while (fim < linhas.length && (linhas[fim].trim() === '' || /^\s/.test(linhas[fim]))) fim++;
+  return linhas.slice(inicio, fim).join('\n');
+}
+
+/** Jobs do workflow: o nome e as linhas de cada um (chaves com dois espaços sob `jobs:`). */
+function blocosDeJob(texto) {
+  const linhas = linhasDe(texto);
+  const jobs = [];
+  for (const linha of linhas.slice(linhas.findIndex((l) => /^jobs:\s*$/.test(l)) + 1)) {
+    const m = linha.match(/^ {2}([A-Za-z0-9_-]+):\s*$/);
+    if (m) jobs.push({ nome: m[1], linhas: [] });
+    else if (jobs.length) jobs.at(-1).linhas.push(linha);
+  }
+  return jobs;
+}
+
+describe('modelos de workflow (esteira-ci-cd)', () => {
+  const workflows = modelos.filter(({ texto }) => /^jobs:/m.test(texto));
+
+  it('todo checkout desliga persist-credentials no próprio passo', () => {
+    let checkouts = 0;
+    for (const { nome, texto } of workflows) {
+      const linhas = linhasDe(texto);
+      linhas.forEach((linha, i) => {
+        if (!/^\s*(-\s+)?uses:\s*actions\/checkout@/.test(linha)) return;
+        checkouts++;
+        const passo = passoDaLinha(linhas, i);
+        assert.ok(
+          passo.some((l) => /^\s*persist-credentials:\s*false\b/.test(l)),
+          `${nome}, linha ${i + 1}: checkout sem "persist-credentials: false" deixa o token no git para os passos seguintes`,
+        );
+      });
+    }
+    assert.ok(checkouts > 0, 'nenhum checkout encontrado: o teste não está lendo os modelos');
+  });
+
+  it('nenhum run: põe expressão ${{ }} direto no script', () => {
+    const runs = workflows.flatMap(({ nome, texto }) => comandosRun(texto).map((r) => ({ nome, ...r })));
+    assert.ok(runs.length > 0, 'nenhum run: encontrado: o teste não está lendo os modelos');
+    for (const { nome, linha, valor, bloco } of runs) {
+      assert.ok(!`${valor}\n${bloco.join('\n')}`.includes('${{'), `${nome}, linha ${linha}: passe o valor por env: e use a variável entre aspas`);
+    }
+  });
+
+  it('nenhum modelo cancela run em andamento de forma incondicional', () => {
+    for (const { nome, texto } of workflows) {
+      assert.doesNotMatch(texto, /^\s*cancel-in-progress:\s*true\s*(#.*)?$/m, `${nome}: cancel-in-progress: true interrompe migração ou deploy pela metade`);
+    }
+  });
+
+  it('o CI modelo só cancela run em andamento em PR, nunca no push que publica a homologação', () => {
+    const m = modelo('ci.modelo.yml').match(/^\s*cancel-in-progress:\s*(.+?)\s*$/m);
+    assert.ok(m, 'cancel-in-progress ausente no CI modelo');
+    assert.equal(m[1], "${{ github.event_name == 'pull_request' }}");
+  });
+
+  it('o workflow só lê; escrita só no job que cria a release, leitura de runs só na trava', () => {
+    for (const { nome, texto } of workflows) {
+      const topo = permissoesDoWorkflow(texto);
+      assert.ok(topo, `${nome}: sem permissions: no nível do workflow`);
+      assert.doesNotMatch(topo, /write|actions:/, `${nome}: permissão elevada no nível do workflow vale para todos os jobs`);
+      for (const job of blocosDeJob(texto)) {
+        const corpo = job.linhas.join('\n');
+        assert.equal(
+          /^\s*contents:\s*write\b/m.test(corpo),
+          corpo.includes('gh release create'),
+          `${nome}, job ${job.nome}: "contents: write" só no job que cria a release`,
+        );
+      }
+    }
+    const trava = blocosDeJob(modelo('release-promocao.modelo.yml')).find((j) => j.nome === 'homologacao');
+    assert.match(trava.linhas.join('\n'), /^\s*actions:\s*read\b/m, 'a trava consulta os runs do CI: sem "actions: read" a API responde 403');
+  });
+
+  it('a release em tronco só roda para CI de push: PR de fork também dispara o workflow_run', () => {
+    const [release] = blocosDeJob(modelo('release-tronco.modelo.yml'));
+    const condicao = release.linhas.find((l) => /^ {4}if:/.test(l)) ?? ''; // o if: do job, não de um passo
+    assert.match(condicao, /github\.event\.workflow_run\.event == 'push'/);
+    assert.match(condicao, /github\.event\.workflow_run\.conclusion == 'success'/);
+  });
+});
+
 describe('trava de promoção (release-promocao.modelo.yml)', () => {
   const texto = modelo('release-promocao.modelo.yml');
   const passoDaTrava = comandosRun(texto).find((r) => r.bloco.some((l) => l.includes('HEAD^2')));

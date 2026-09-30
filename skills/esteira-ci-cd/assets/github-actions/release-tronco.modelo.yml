@@ -16,8 +16,10 @@ on:
     types: [completed]
     branches: [main]
 
+# Menor privilégio: o workflow só lê, e o job que cria a release eleva para escrita. Um job
+# acrescentado depois não herda escrita por engano.
 permissions:
-  contents: write # criar tag e GitHub Release
+  contents: read
 
 concurrency:
   group: release
@@ -26,16 +28,23 @@ concurrency:
 jobs:
   release:
     name: Versão, tag e release
-    # Só CI concluído com sucesso e disparado por push (não por PR).
+    # Só CI concluído com sucesso e disparado por push (não por PR). Esta condição é o que
+    # torna o workflow_run seguro: ele roda com os privilégios deste repositório, e um PR
+    # vindo de fork também dispara o CI — mas push só quem tem escrita consegue fazer.
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write # criar tag e GitHub Release
     steps:
       # Faz checkout exatamente do commit que o CI aprovou, não do topo atual da main.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          # Não deixa o token (com escrita, neste job) configurado no git para os passos
+          # seguintes, onde qualquer script poderia lê-lo. A release usa gh com GH_TOKEN.
+          persist-credentials: false
 
       - id: calculo
         run: bash .github/scripts/proxima-versao.sh >> "$GITHUB_OUTPUT"
@@ -45,16 +54,21 @@ jobs:
         run: echo "Nenhum commit feat/fix/breaking desde a última versão; nada a publicar." >> "$GITHUB_STEP_SUMMARY"
 
       # __PUBLICAR_ARTEFATO__ — se o projeto publica pacote, imagem ou site, faça aqui,
-      # antes da tag, com o segredo vindo de um environment. Ex.: npm publish --provenance.
+      # antes da tag, com o segredo vindo de um environment. Ex.: npm publish --provenance
+      # (a procedência exige também "id-token: write" nas permissions deste job).
 
       - name: Criar tag e release
         if: steps.calculo.outputs.proxima != ''
+        # Valores do GitHub entram pelo env: e são usados entre aspas. Uma expressão escrita
+        # dentro do run: é colada no script antes de ele rodar e pode virar código.
         env:
           GH_TOKEN: ${{ github.token }}
           VERSAO: ${{ steps.calculo.outputs.proxima }}
+          REPO: ${{ github.repository }}
+          ALVO: ${{ github.event.workflow_run.head_sha }}
         run: |
           gh release create "$VERSAO" \
-            --repo "${{ github.repository }}" \
-            --target "${{ github.event.workflow_run.head_sha }}" \
+            --repo "$REPO" \
+            --target "$ALVO" \
             --title "$VERSAO" \
             --generate-notes

@@ -119,10 +119,17 @@ Runner self-hosted não vem com o que a imagem hospedada traz (ex.: `gh`). O pas
 ## Sinais de alerta ao revisar um workflow
 
 - [ ] `if:` que depende de segredo existir.
-- [ ] Workflow sem `permissions:` explícito.
+- [ ] Workflow sem `permissions:` explícito, ou com escrita no nível do workflow em vez de
+      só no job que precisa.
 - [ ] Action referenciada por tag (`@v4`) em vez de SHA.
+- [ ] `actions/checkout` sem `persist-credentials: false` em job que não faz `git push`.
+- [ ] `${{ … }}` escrito dentro de `run:` em vez de passar por `env:`.
+- [ ] `workflow_run` sem exigir que o run de origem seja de `push` (PR de fork também
+      dispara o CI).
 - [ ] `npm install` (ou equivalente que altera lockfile) na esteira.
 - [ ] Job de produção sem `environment:`; segredo de produção no nível do repositório.
-- [ ] `cancel-in-progress: true` em workflow de deploy de produção.
+- [ ] `cancel-in-progress: true` valendo para job que migra banco ou publica — na produção
+      **ou na homologação**. No CI que também publica a homologação, cancele só em PR.
+- [ ] Trava de promoção que confere o commit homologado, mas não a árvore publicada.
 - [ ] Release/tag criada antes do deploy.
 - [ ] Nenhuma etapa que prove que o deploy está de pé (teste de fumaça).

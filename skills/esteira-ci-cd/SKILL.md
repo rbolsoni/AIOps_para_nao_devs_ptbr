@@ -68,9 +68,11 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
    Nunca `if: segredo != ''` — isso termina verde sem ter feito nada.
 5. **Não verificar ≠ reprovado.** Separe "não consegui consultar" (permissão, rede, API) de
    "consultei e não passou". Mensagens diferentes mandam investigar no lugar certo.
-6. **Menor privilégio.** Declare `permissions:` em todo workflow. Ao declarar, todo escopo
-   omitido vira `none` — a trava que consulta runs precisa de `actions: read`, ou a API
-   responde 403.
+6. **Menor privilégio.** Declare `permissions:` em todo workflow, só com leitura; o job que
+   precisa de mais eleva no próprio bloco (`actions: read` na trava, `contents: write` só no
+   job que cria a release). Ao declarar, todo escopo omitido vira `none`, e a lista do job
+   substitui a do workflow: repita `contents: read` no job que faz checkout. A trava sem
+   `actions: read` recebe 403 da API.
 7. **Segredos por ambiente.** Homologação e produção em environments separados. Um job só
    enxerga os segredos do seu `environment:`; tarefa que precisa dos dois ambientes vira dois
    jobs. Nunca promova segredo de produção a segredo do repositório inteiro.
@@ -84,6 +86,13 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
     isso no `CONTRIBUTING.md`.
 11. **Resultado se confere pela conclusão do run.** Comandos que acompanham checks podem
     sair com 0 num run que falhou. Consulte o status final e os jobs.
+12. **Token e expressões longe do script.** Checkout com `persist-credentials: false`: sem
+    isso o token fica configurado no git, ao alcance de qualquer passo seguinte — inclusive
+    script de instalação de dependência (nenhum passo dos modelos faz `git push`). Valor de
+    `${{ … }}` entra no `run:` pelo `env:` e é usado entre aspas (`"$REPO"`); escrito dentro
+    do `run:`, ele é colado no script antes de rodar e pode virar comando.
+13. **Não cancele quem publica.** `cancel-in-progress` só em PR. Run que migra banco ou
+    publica, na homologação ou na produção, nunca é cancelado no meio: o novo espera.
 
 ## 4. Como montar
 
