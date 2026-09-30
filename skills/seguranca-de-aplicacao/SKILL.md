@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.1.0"
 ---
 
 # Segurança de aplicação
@@ -56,6 +56,9 @@ Responda por escrito, no PR ou num ADR:
 
 ### Entrada e saída
 
+- **Atribuição em massa**: nunca passe o corpo da requisição inteiro para o banco ou para o
+  ORM (`update(req.body)`, `create(params)` e equivalentes). Liste os campos que o usuário
+  pode alterar; papel, dono, preço, saldo e status nunca vêm do cliente.
 - **Valide na fronteira** com esquema e lista do que é permitido (tipos, tamanhos,
   formatos, enums). Rejeite o resto com mensagem clara.
 - **Consultas parametrizadas** sempre; nunca concatene entrada em SQL, comando de shell,
@@ -85,6 +88,10 @@ Responda por escrito, no PR ou num ADR:
   endpoints caros.
 - Paginação e limites máximos em toda listagem; nada de "retornar tudo".
 - Timeouts em chamadas externas.
+- Rota que custa dinheiro (IA, e-mail, SMS, API paga) exige login, limite por usuário e teto
+  diário no código (`controle-de-custos`).
+- Resposta de modelo de IA é entrada não confiável: valide antes de usar e escape ao exibir
+  (`guardrails-e-avaliacao`).
 
 ### Erros e configuração
 
@@ -117,4 +124,6 @@ correção proposta e prioridade.
   roda no cliente.
 - **Manual interno ou captura de tela de painel administrativo na pasta pública**: expõe
   a estrutura do sistema a qualquer visitante.
+- **Formulário que grava o objeto inteiro**: o usuário manda `papel: "admin"` junto com o
+  nome e vira administrador.
 - **Documentar a vulnerabilidade com um exemplo real** (token, URL com senha) no relatório.
