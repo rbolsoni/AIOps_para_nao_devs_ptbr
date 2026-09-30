@@ -58,7 +58,7 @@ executaria a cada início o que estiver na branch principal):
   "mcpServers": {
     "ia-skills-para-nao-devs": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.0"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.1"]
     }
   }
 }
