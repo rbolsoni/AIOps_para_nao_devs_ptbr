@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Segurança de aplicação

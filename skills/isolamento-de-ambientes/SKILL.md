@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.2"
+  versao: "1.0.3"
 ---
 
 # Isolamento de ambientes

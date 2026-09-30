@@ -4,7 +4,7 @@
 
 ## Metas
 
-- Quanto dado podemos perder (RPO): <ex.: até 1 hora de pedidos>
+- Quanto dado podemos perder (RPO): <ex.: até 1 hora de cadastros e alterações>
 - Em quanto tempo voltamos ao ar (RTO): <ex.: até 2 horas>
 - Quem decide restaurar ou voltar a versão: <nome ou papel> (substituto: <nome ou papel>)
 

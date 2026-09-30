@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Memória de projeto

@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Privacidade e LGPD
@@ -45,7 +45,7 @@ Referência rápida dos artigos e das resoluções da ANPD:
 1. **Minimização**: colete o mínimo; prefira dado menos identificável (idade em vez de data
    de nascimento, cidade em vez de endereço, quando bastar).
 2. **Acesso restrito por padrão**: tabela com dado pessoal é lida pelo titular e por
-   operadores autorizados. Telas de terceiros (vitrine, contraparte de negócio) leem uma
+   operadores autorizados. Telas de terceiros (perfil público, contraparte de negócio) leem uma
    view só com as colunas necessárias (skill `mudancas-de-banco`).
 3. **Dado sensível** (saúde, biometria, origem racial, religião, opinião política, vida
    sexual, dado genético, filiação sindical) e **dado de criança e adolescente** exigem base

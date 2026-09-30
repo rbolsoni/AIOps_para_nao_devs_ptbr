@@ -20,7 +20,7 @@
 
 | Classe | Exemplos | Política padrão |
 |---|---|---|
-| 0 — leitura interna | ler arquivo do projeto, consultar pedido do próprio usuário | executa |
+| 0 — leitura interna | ler arquivo do projeto, consultar um registro do próprio usuário | executa |
 | 1 — escrita local reversível | editar arquivo no workspace, criar rascunho | executa e registra |
 | 2 — efeito externo reversível | abrir PR, criar issue, enviar para homologação | executa com registro; aprovação conforme contexto |
 | 3 — irreversível ou visível para terceiros | enviar e-mail/mensagem, publicar, deploy em produção, apagar dados | **aprovação humana** a cada vez |

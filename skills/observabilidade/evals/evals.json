@@ -3,13 +3,13 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Adiciona Sentry no nosso app Next.js e loga os erros do checkout com o máximo de detalhe pra facilitar o debug.",
-      "expected_output": "Configuração do Sentry com release e ambiente, usuário pseudonimizado, sem captura de corpo/campos com dados pessoais, source maps pela esteira com envio que não bloqueia a release, CSP liberando a ingestão, e logs estruturados do checkout sem dados sensíveis.",
+      "prompt": "Adiciona Sentry no nosso app Next.js e loga os erros do pagamento da assinatura com o máximo de detalhe pra facilitar o debug.",
+      "expected_output": "Configuração do Sentry com release e ambiente, usuário pseudonimizado, sem captura de corpo/campos com dados pessoais, source maps pela esteira com envio que não bloqueia a release, CSP liberando a ingestão, e logs estruturados do pagamento sem dados sensíveis.",
       "assertions": [
         "Identifica usuário por ID, não por e-mail ou nome",
         "Desliga ou mascara captura de corpo de requisição e campos de formulário",
         "Envio de source maps pela esteira e sem bloquear a release",
-        "Logs do checkout não incluem dados de cartão, token ou dados pessoais completos",
+        "Logs do pagamento não incluem dados de cartão, token ou dados pessoais completos",
         "Menciona liberar o endpoint de ingestão na CSP"
       ]
     },

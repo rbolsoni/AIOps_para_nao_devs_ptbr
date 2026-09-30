@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "terminei a correção do cálculo de frete, faz o commit e sobe",
+      "prompt": "terminei a correção do cálculo de horas extras, faz o commit e sobe",
       "expected_output": "O agente confere a branch (não commita na principal), revisa status e diff, adiciona arquivos pelo nome, escreve commit convencional fix: com corpo explicando o porquê e, após o push, confere a conclusão da esteira.",
       "assertions": [
         "Não commita diretamente na branch principal",

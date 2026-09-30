@@ -4,7 +4,7 @@
   { "query": "instala o Sentry no backend Django", "should_trigger": true },
   { "query": "o número de cadastros no painel está zerado desde ontem, investiga", "should_trigger": true },
   { "query": "adiciona tracing com OpenTelemetry entre os microsserviços", "should_trigger": true },
-  { "query": "cria um dashboard de vendas para o time comercial", "should_trigger": false },
+  { "query": "cria um dashboard de matrículas para a secretaria", "should_trigger": false },
   { "query": "escreve o texto da página de status para os clientes", "should_trigger": false },
   { "query": "melhora a mensagem de erro que aparece quando a senha está errada", "should_trigger": false }
 ]

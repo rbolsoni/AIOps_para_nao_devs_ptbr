@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.2"
+  versao: "1.0.3"
 ---
 
 # Observabilidade

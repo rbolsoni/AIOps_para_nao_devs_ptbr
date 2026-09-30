@@ -6,16 +6,16 @@ usam pseudocódigo para valer em qualquer linguagem.
 ## S — Responsabilidade única
 
 **Sintoma:** um arquivo que muda em quase todo PR, por motivos sem relação entre si.
-`ServicoDePedido` calcula imposto, formata o e-mail de confirmação e grava log de auditoria.
+`ServicoDeInscricao` calcula o valor, formata o e-mail de confirmação e grava log de auditoria.
 
 **Correção mínima:** extraia cada motivo de mudança para uma unidade com nome próprio e
 deixe a original orquestrar:
 
 ```
-funcao confirmarPedido(pedido):
-    total = calculadoraDeImposto.aplicar(pedido)
-    repositorio.salvar(pedido, total)
-    notificador.enviarConfirmacao(pedido)
+funcao confirmarInscricao(inscricao):
+    valor = calculadoraDeValor.aplicar(inscricao)
+    repositorio.salvar(inscricao, valor)
+    notificador.enviarConfirmacao(inscricao)
 ```
 
 **Quando não aplicar:** script curto, de uso único, que ninguém vai manter. Dividir um
@@ -29,14 +29,14 @@ editar todos eles, e sempre um fica para trás.
 **Correção mínima:** um mapa de estratégias (ou polimorfismo) consultado num só lugar:
 
 ```
-calculadorasDeFrete = {
-    "correios": freteCorreios,
-    "transportadora": freteTransportadora,
+canaisDeNotificacao = {
+    "email": enviarPorEmail,
+    "sms": enviarPorSms,
 }
-funcao calcularFrete(pedido):
-    calcular = calculadorasDeFrete[pedido.modalidade]
-    se calcular é nulo: erro("modalidade de frete desconhecida: " + pedido.modalidade)
-    retornar calcular(pedido)
+funcao notificar(mensagem):
+    enviar = canaisDeNotificacao[mensagem.canal]
+    se enviar é nulo: erro("canal de notificação desconhecido: " + mensagem.canal)
+    retornar enviar(mensagem)
 ```
 
 **Quando não aplicar:** um único `switch` com dois ou três casos estáveis. O mapa só se
@@ -86,7 +86,7 @@ e sem efeito colateral (biblioteca de datas, funções puras utilitárias).
 ## Princípios vizinhos que resolvem o mesmo problema
 
 - **Lei de Deméter:** fale com seus colaboradores diretos, não com os colaboradores deles
-  (`pedido.cliente.endereco.cidade.nome` acopla quatro modelos de uma vez).
+  (`fatura.cliente.endereco.cidade.nome` acopla quatro modelos de uma vez).
 - **Diga, não pergunte:** em vez de ler o estado de um objeto para decidir por ele, peça
   que ele faça (`conta.debitar(valor)` em vez de checar saldo e alterar de fora).
 - **YAGNI:** você não vai precisar — até precisar. Aí o código simples é o mais fácil de

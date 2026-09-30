@@ -6,5 +6,5 @@
   { "query": "adiciona upload de foto de perfil", "should_trigger": true },
   { "query": "o site está lento para carregar as imagens, otimiza", "should_trigger": false },
   { "query": "configura o CSP que está bloqueando o script do Google Analytics", "should_trigger": false },
-  { "query": "gera um relatório de vendas em PDF", "should_trigger": false }
+  { "query": "gera um relatório de frequência dos alunos em PDF", "should_trigger": false }
 ]

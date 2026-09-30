@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Código limpo e SOLID
@@ -37,7 +37,7 @@ ele está sendo mal aplicado.
 ## Nomes
 
 - O nome diz **o que é** ou **o que faz**, no vocabulário do negócio: `registrosPendentes`,
-  não `lista2`; `calcularFrete`, não `processa`.
+  não `lista2`; `calcularMensalidade`, não `processa`.
 - Booleanos como pergunta: `estaAtivo`, `temPermissao`.
 - Evite abreviações que só o autor entende e prefixos de tipo (`strNome`).
 - Mantenha o idioma que o projeto já usa; não misture português e inglês no mesmo conceito.

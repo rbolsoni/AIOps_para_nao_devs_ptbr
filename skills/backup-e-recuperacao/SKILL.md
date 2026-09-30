@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Backup e recuperação
@@ -15,7 +15,7 @@ metadata:
 Backup que nunca foi restaurado é uma hipótese. O que importa são duas respostas, combinadas com
 quem responde pelo projeto, em linguagem simples:
 
-- **Quanto dado posso perder?** (RPO) — ex.: "no máximo 1 hora de pedidos".
+- **Quanto dado posso perder?** (RPO) — ex.: "no máximo 1 hora de cadastros e alterações".
 - **Em quanto tempo volto ao ar?** (RTO) — ex.: "em até 2 horas".
 
 ## O que proteger
