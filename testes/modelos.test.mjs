@@ -331,3 +331,23 @@ describe('trava de ambiente (isolamento-de-ambientes)', () => {
     });
   });
 });
+
+// Sem banco (e sem dependências) aqui, o teste guarda as linhas que fecham cada defeito; a
+// prova de comportamento é a checagem empírica que o modelo manda rodar na homologação.
+describe('modelos SQL de autorização (mudancas-de-banco)', () => {
+  const doc = readFileSync(path.join(RAIZ, 'skills', 'mudancas-de-banco', 'references', 'autorizacao-no-banco.md'), 'utf8');
+  const blocosSql = [...doc.matchAll(/```sql\r?\n([\s\S]*?)```/g)].map((m) => m[1]);
+
+  it('fechar_pedido recusa quantidade nula, zero ou negativa antes de tocar no estoque', () => {
+    const funcao = blocosSql.find((b) => b.includes('function public.fechar_pedido')) ?? '';
+    const validacao = funcao.search(/if p_qtd is null or p_qtd <= 0 then raise exception/);
+    assert.ok(validacao >= 0, 'fechar_pedido sem validar a quantidade: -5 soma ao estoque e cria pedido negativo');
+    assert.ok(validacao < funcao.indexOf('for update'), 'a quantidade precisa ser validada antes de ler e travar o estoque');
+  });
+
+  it('a view de vitrine declara as permissões de cada papel em vez de herdar o padrão da plataforma', () => {
+    const view = blocosSql.find((b) => b.includes('create view public.vitrine_fornecedores')) ?? '';
+    assert.match(view, /^revoke all on public\.vitrine_fornecedores from public, anon, authenticated;$/m);
+    assert.match(view, /^grant select on public\.vitrine_fornecedores to authenticated;$/m);
+  });
+});

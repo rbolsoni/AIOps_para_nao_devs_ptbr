@@ -11,7 +11,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Mudanças de banco
@@ -38,10 +38,14 @@ revisado, provado em homologação e aplicada por um único caminho.
    [references/autorizacao-no-banco.md](references/autorizacao-no-banco.md).
 6. **Operação crítica é atômica e acontece no servidor.** Checkout, transferência de saldo,
    baixa de estoque: função/transação no banco (ou serviço) com trava de linha
-   (`SELECT … FOR UPDATE`) — nunca vários `insert`/`update` separados vindos do cliente.
+   (`SELECT … FOR UPDATE`) — nunca vários `insert`/`update` separados vindos do cliente. A
+   função valida os próprios argumentos (quantidade, valores, identificadores) antes de
+   tocar em qualquer linha e nunca confia no cliente: uma quantidade negativa que passa
+   vira estoque somado e pedido negativo.
 7. **Minimize o que é exposto.** Tabela com dados pessoais é lida só pelo titular ou por
    operador autorizado; vitrines e telas de terceiros leem views com apenas as colunas
-   necessárias, somente leitura.
+   necessárias, somente leitura, com a permissão de cada papel declarada na migração — não
+   herdada do padrão da plataforma, que pode liberar leitura para anônimos.
 8. **Prove com checagem empírica.** Depois de aplicar em homologação, uma checagem na
    esteira *tenta* a operação proibida (ler dado de outro usuário, escrever com conta
    bloqueada, inserir pedido direto) e exige a recusa. Ler o SQL não prova que a política
@@ -72,7 +76,7 @@ revisado, provado em homologação e aplicada por um único caminho.
 | `NOT NULL` em coluna existente | falha com dados nulos; trava a tabela | preencher dados em lotes → adicionar a restrição |
 | Índice em tabela grande | trava escrita | criação concorrente (`CREATE INDEX CONCURRENTLY` no PostgreSQL), fora de transação |
 | Atualização em massa | trava longa, log enorme | lotes pequenos, idempotentes, com progresso |
-| Função com privilégio elevado (`SECURITY DEFINER`) | executa como dono, ignora políticas | `search_path` fixo, `REVOKE` do público, conceder só a quem precisa, validar o chamador dentro |
+| Função com privilégio elevado (`SECURITY DEFINER`) | executa como dono, ignora políticas | `search_path` fixo, `REVOKE` do público, conceder só a quem precisa, validar o chamador e os argumentos dentro |
 
 ## Alertas de linter de banco não são achados
 

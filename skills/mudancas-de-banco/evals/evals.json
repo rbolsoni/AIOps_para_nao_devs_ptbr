@@ -31,6 +31,28 @@
         "Não aplica conversão em lote de SECURITY DEFINER para INVOKER",
         "Propõe registrar a triagem em ADR"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Cria a função que fecha o pedido e baixa o estoque do item. O app chama direto pelo Supabase, mandando o item e a quantidade.",
+      "expected_output": "Uma migração com função no banco, atômica e com trava de linha, que recusa quantidade nula, zero ou negativa antes de tocar no estoque, concede execução só a usuários logados, acrescenta restrições check na tabela como segunda camada e propõe uma checagem empírica que tenta quantidade negativa e exige a recusa.",
+      "assertions": [
+        "A operação acontece numa função no banco, atômica, com trava de linha (SELECT ... FOR UPDATE)",
+        "A função recusa quantidade nula, zero ou negativa antes de alterar o estoque",
+        "Propõe restrições check (quantidade > 0 no pedido, estoque >= 0 no item) como segunda camada",
+        "A checagem empírica chama a função com quantidade negativa ou zero e exige a recusa"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Quero mostrar os fornecedores ativos, só nome e cidade, numa tela que apenas usuários logados acessam. A tabela perfis tem CPF e telefone. É Supabase.",
+      "expected_output": "Uma view com só as colunas necessárias, somente leitura, com todas as permissões revogadas e leitura concedida apenas a authenticated — sem depender do padrão da plataforma, que pode dar leitura a anon —, a decisão registrada em ADR e a consulta que confere as permissões efetivas.",
+      "assertions": [
+        "A view lista explicitamente só as colunas necessárias, sem CPF nem telefone",
+        "Revoga as permissões da view e concede apenas select a authenticated",
+        "Trata o papel anon de forma explícita: ele não pode ler a view",
+        "Mostra como conferir as permissões efetivas (ex.: has_table_privilege) e registra a decisão em ADR"
+      ]
     }
   ]
 }
