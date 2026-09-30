@@ -1,0 +1,38 @@
+{
+  "skill_name": "apps-mobile",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fiz um app em Expo de receitas que chama a API da OpenAI direto, com a chave em EXPO_PUBLIC_OPENAI_KEY. Quero publicar no Google Play semana que vem.",
+      "expected_output": "O agente explica que tudo com EXPO_PUBLIC_ vai para dentro do pacote, move a chamada para um backend com login, limite por usuário e teto, manda rotacionar a chave exposta e lista o que a loja vai cobrar (exclusão de conta dentro do app e por link web, se houver cadastro, e a seção Data safety coerente com o que o app coleta).",
+      "assertions": [
+        "Explica que a variável EXPO_PUBLIC_ fica dentro do pacote e pode ser extraída",
+        "Move a chamada à API paga para um backend com login, limite e teto",
+        "Manda rotacionar a chave que já foi exposta",
+        "Cita as exigências do Google Play (exclusão de conta e Data safety)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Meu app Flutter de academia guarda o token de login no SharedPreferences, e o login com Google abre numa WebView dentro do app. Tá ok?",
+      "expected_output": "O agente troca o armazenamento do token pelo cofre do aparelho (flutter_secure_storage, com Keychain e Keystore), leva o login para o navegador do sistema com OAuth e PKCE, usa link verificado para o retorno e lembra que, no iOS, login social exige também uma opção equivalente em privacidade.",
+      "assertions": [
+        "Troca SharedPreferences pelo cofre do aparelho (Keychain/Keystore)",
+        "Leva o login para o navegador do sistema, com PKCE, em vez de WebView",
+        "Usa Universal Links/App Links verificados para o retorno do login",
+        "Cita a diretriz 4.8 da App Store para login social"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "A Apple reprovou meu app de agendamento pela diretriz 5.1.1(v). O que falta?",
+      "expected_output": "O agente implementa a exclusão de conta iniciada de dentro do app, fácil de achar, que apaga a conta e os dados pessoais (não só desativa), revoga os tokens do Sign in with Apple se ele for usado, trata o que a lei obriga a guardar e cria o link web equivalente para o Google Play.",
+      "assertions": [
+        "A exclusão é iniciada de dentro do app e fácil de achar",
+        "Apaga a conta e os dados pessoais, não só desativa",
+        "Revoga os tokens do Sign in with Apple, se usado",
+        "Lembra do link web de exclusão exigido pelo Google Play"
+      ]
+    }
+  ]
+}

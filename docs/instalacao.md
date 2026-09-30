@@ -91,6 +91,13 @@ npx skills add rbolsoni/IA-skills-para-nao-devs \
   -s orquestracao-multiagente
 ```
 
+**App mobile** (junto do essencial e do de app web, que cobre a API do app):
+
+```bash
+npx skills add rbolsoni/IA-skills-para-nao-devs \
+  -s apps-mobile
+```
+
 ## 2. Copiar as pastas
 
 Baixe o código de uma release (página
