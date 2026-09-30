@@ -1,13 +1,23 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { criarServidor } from '../mcp/servidor.mjs';
 import { criarLinkDePasta } from './links.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+/** Skill mínima numa pasta temporária; `arquivos` acrescenta ou substitui arquivos. */
+function criarSkill(base, nome, arquivos = {}) {
+  const todos = { 'SKILL.md': `---\nname: ${nome}\ndescription: Use sempre.\n---\n# ${nome}\n`, ...arquivos };
+  for (const [rel, conteudo] of Object.entries(todos)) {
+    mkdirSync(path.dirname(path.join(base, nome, rel)), { recursive: true });
+    writeFileSync(path.join(base, nome, rel), conteudo);
+  }
+}
 
 /**
  * Sobe o servidor de verdade (processo separado) e conversa por stdio.
@@ -155,5 +165,36 @@ describe('servidor MCP chamado por link', () => {
     t.after(() => s.processo.kill());
     const ping = await s.pedir('ping', {});
     assert.deepEqual(ping.result, {});
+  });
+});
+
+describe('servidor MCP com skill instalada por link', () => {
+  it('lista a skill, entrega os arquivos por ela e continua recusando sair da pasta', async (t) => {
+    // Como o `npx skills` instala: a pasta da skill é um link para uma cópia central.
+    const pasta = mkdtempSync(path.join(tmpdir(), 'mcp-link-'));
+    const motivo = criarLinkDePasta(path.join(RAIZ, 'skills', 'esteira-ci-cd'), path.join(pasta, 'esteira-ci-cd'));
+    if (motivo) return t.skip(motivo);
+    const s = iniciarServidor({ args: ['--skills', pasta] });
+    t.after(() => s.processo.kill());
+
+    const lista = await s.pedir('tools/call', { name: 'listar_skills', arguments: {} });
+    assert.match(lista.result.content[0].text, /^1 skills disponíveis/);
+    assert.match(lista.result.content[0].text, /\*\*esteira-ci-cd\*\*/);
+    const skill = await s.pedir('tools/call', { name: 'ler_skill', arguments: { nome: 'esteira-ci-cd' } });
+    assert.match(skill.result.content[0].text, /references\/licoes-de-esteira\.md/);
+    const ok = await s.pedir('tools/call', { name: 'ler_arquivo_da_skill', arguments: { nome: 'esteira-ci-cd', caminho: 'references/licoes-de-esteira.md' } });
+    assert.match(ok.result.content[0].text, /Lições de esteira/);
+    const fuga = await s.pedir('tools/call', { name: 'ler_arquivo_da_skill', arguments: { nome: 'esteira-ci-cd', caminho: '../../package.json' } });
+    assert.equal(fuga.result.isError, true);
+    assert.match(fuga.result.content[0].text, /sai da pasta/);
+  });
+});
+
+describe('servidor MCP: skill recusada', () => {
+  it('não oferece skill cujo SKILL.md foi recusado (ex.: acima de 512 KB)', () => {
+    const base = mkdtempSync(path.join(tmpdir(), 'mcp-skills-'));
+    criarSkill(base, 'normal');
+    criarSkill(base, 'enorme', { 'SKILL.md': `---\nname: enorme\ndescription: Use sempre.\n---\n${'x'.repeat(520 * 1024)}\n` });
+    assert.deepEqual(criarServidor(base).skills.map((s) => s.pasta), ['normal']);
   });
 });

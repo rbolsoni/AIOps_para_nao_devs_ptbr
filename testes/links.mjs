@@ -28,3 +28,10 @@ function criar(alvo, link, tipo) {
  * Devolve null se criou, ou o motivo para pular o teste.
  */
 export const criarLinkDePasta = (alvo, link) => criar(alvo, link, process.platform === 'win32' ? 'junction' : 'dir');
+
+/**
+ * Link simbólico de arquivo. No Windows, sem modo de desenvolvedor nem administrador, falha
+ * com EPERM e o teste pula; na CI em Linux, roda.
+ * Devolve null se criou, ou o motivo para pular o teste.
+ */
+export const criarLinkDeArquivo = (alvo, link) => criar(alvo, link, 'file');
