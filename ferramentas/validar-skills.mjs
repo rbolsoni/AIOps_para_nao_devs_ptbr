@@ -10,22 +10,31 @@
  *   - `description`: 1–1024 caracteres; `compatibility`: até 500; `metadata`: mapa de strings
  *   - SKILL.md com no máximo 500 linhas
  *
- * Deste repositório:
+ * Portáteis (valem para qualquer pasta de skills):
  *   - links relativos precisam existir e não podem sair da pasta da skill — cada skill é
  *     instalada sozinha, então um link para outra skill quebraria na máquina do usuário
  *   - evals/evals.json (qualidade da saída) e evals/gatilhos.json (quando deve ou não ativar)
  *   - nenhum caminho absoluto de máquina local (C:\Users\..., /Users/...)
+ *   - nenhum caractere Unicode invisível em arquivo da skill: servem para esconder, de quem
+ *     revisa o texto, instruções dirigidas ao agente
+ *
+ * Do kit (AGENTS.md), ligadas ao validar a pasta skills/ deste repositório ou com --kit:
+ *   - license MIT; metadata.categoria da lista do catálogo; metadata.versao X.Y.Z
+ *   - aviso quando a description passa de 360 caracteres (orçamento de contexto)
  *
  * Uso:
- *   node ferramentas/validar-skills.mjs            # valida ./skills
- *   node ferramentas/validar-skills.mjs <pasta>    # valida outra pasta de skills
- *   node ferramentas/validar-skills.mjs --json     # saída para automação
+ *   node ferramentas/validar-skills.mjs                # valida ./skills, com as regras do kit
+ *   node ferramentas/validar-skills.mjs <pasta>        # valida outra pasta de skills
+ *   node ferramentas/validar-skills.mjs <pasta> --kit  # outra pasta, com as regras do kit
+ *   node ferramentas/validar-skills.mjs --json         # saída para automação
  *
- * Código de saída: 0 sem erros, 1 com erros de validação, 2 se a pasta não existir.
+ * Código de saída: 0 sem erros, 1 com erros de validação (ou nenhuma skill), 2 com opção
+ * desconhecida ou pasta inexistente.
  */
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CATEGORIAS, LIMITE_AVISO_DESCRICAO, VERSAO_VALIDA } from './lib/regras-do-kit.mjs';
 import { carregarSkills, listarArquivosDaSkill } from './lib/skills.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -34,12 +43,89 @@ const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const MAX_LINHAS = 500;
 const MIN_GATILHOS_POSITIVOS = 3;
 const MIN_GATILHOS_NEGATIVOS = 2;
+const OPCOES = new Set(['--json', '--kit', '--help', '-h']);
+
+// Caracteres que não aparecem na tela e são usados para esconder instruções em arquivos que
+// agentes leem: espaço e junção de largura zero e marcas de direção (U+200B–U+200F); controles
+// de direção do texto (U+202A–U+202E e U+2066–U+2069), que fazem o texto exibido diferir do
+// lido; junção de palavras e operadores invisíveis (U+2060–U+2064); BOM fora do início do
+// arquivo (U+FEFF); e caracteres de tag (U+E0000–U+E007F), que carregam texto ASCII inteiro
+// sem aparecer.
+const FAIXAS_INVISIVEIS = [
+  [0x200b, 0x200f],
+  [0x202a, 0x202e],
+  [0x2060, 0x2064],
+  [0x2066, 0x2069],
+  [0xfeff, 0xfeff],
+  [0xe0000, 0xe007f],
+];
+const MAX_LINHAS_INVISIVEIS = 10;
 
 function ajuda() {
-  console.log(`Uso: node ferramentas/validar-skills.mjs [pasta-de-skills] [--json]
+  console.log(`Uso: node ferramentas/validar-skills.mjs [pasta-de-skills] [--kit] [--json]
 
-Valida cada subpasta com SKILL.md contra o padrão Agent Skills e as regras do AGENTS.md.
-Sai com 1 se houver erro, 2 se a pasta não existir.`);
+Valida cada subpasta com SKILL.md contra o padrão Agent Skills e as regras portáteis:
+links, evals, caminhos de máquina local e caracteres Unicode invisíveis.
+
+  --kit    aplica também as regras deste kit (AGENTS.md): license MIT, metadata.categoria
+           da lista do catálogo, metadata.versao no formato X.Y.Z e aviso de description
+           acima de ${LIMITE_AVISO_DESCRICAO} caracteres. Ligadas sempre que a pasta validada é a
+           skills/ deste repositório (o padrão).
+  --json   saída para automação
+
+Sai com 0 sem erros, 1 com erros (ou nenhuma skill encontrada), 2 com opção
+desconhecida ou pasta inexistente.`);
+}
+
+const invisivel = (c) => FAIXAS_INVISIVEIS.some(([de, ate]) => c >= de && c <= ate);
+const codigoUnicode = (c) => `U+${c.toString(16).toUpperCase().padStart(4, '0')}`;
+
+/**
+ * Linhas com caracteres Unicode invisíveis: [{ linha, codigos }], com os códigos U+XXXX sem
+ * repetição. O BOM no início do texto não conta aqui (vira aviso à parte).
+ */
+export function acharInvisiveis(texto) {
+  const achados = [];
+  texto.split('\n').forEach((linha, n) => {
+    const codigos = new Set();
+    let primeiroDoTexto = n === 0;
+    for (const ch of linha) {
+      const c = ch.codePointAt(0);
+      if (invisivel(c) && !(primeiroDoTexto && c === 0xfeff)) codigos.add(codigoUnicode(c));
+      primeiroDoTexto = false;
+    }
+    if (codigos.size) achados.push({ linha: n + 1, codigos: [...codigos] });
+  });
+  return achados;
+}
+
+function verificarInvisiveis(rel, texto, erros, avisos) {
+  if (texto.codePointAt(0) === 0xfeff) avisos.push(`${rel}: começa com BOM (U+FEFF); salve em UTF-8 sem BOM`);
+  const achados = acharInvisiveis(texto);
+  for (const { linha, codigos } of achados.slice(0, MAX_LINHAS_INVISIVEIS)) {
+    erros.push(`${rel}:${linha}: caractere invisível ${codigos.join(', ')}, que pode esconder instruções para o agente; remova`);
+  }
+  if (achados.length > MAX_LINHAS_INVISIVEIS) {
+    erros.push(`${rel}: mais ${achados.length - MAX_LINHAS_INVISIVEIS} linha(s) com caracteres invisíveis`);
+  }
+}
+
+function validarRegrasDoKit(fm, erros, avisos) {
+  if (fm.license !== 'MIT') erros.push(fm.license === undefined ? '"license" ausente; use "MIT"' : `"license" deve ser "MIT", não "${fm.license}"`);
+  const meta = fm.metadata !== null && typeof fm.metadata === 'object' ? fm.metadata : {};
+  if (!CATEGORIAS.includes(meta.categoria)) {
+    const problema = meta.categoria === undefined ? 'ausente' : `inválida ("${meta.categoria}")`;
+    erros.push(`"metadata.categoria" ${problema}; use uma de: ${CATEGORIAS.join(', ')}`);
+  }
+  if (!VERSAO_VALIDA.test(meta.versao ?? '')) {
+    const problema = meta.versao === undefined ? 'ausente' : `inválida ("${meta.versao}")`;
+    erros.push(`"metadata.versao" ${problema}; use X.Y.Z entre aspas, ex.: versao: "1.0.0"`);
+  }
+  if (typeof fm.description === 'string' && fm.description.length > LIMITE_AVISO_DESCRICAO) {
+    avisos.push(
+      `"description" com ${fm.description.length} caracteres (acima de ${LIMITE_AVISO_DESCRICAO}); o agente a carrega em toda sessão, encurte mantendo o que faz a skill ativar`,
+    );
+  }
 }
 
 function semBlocosDeCodigo(texto) {
@@ -115,7 +201,8 @@ function validarEvals(skill, nome, erros) {
   }
 }
 
-export function validarSkill(skill) {
+/** Valida uma skill carregada. Com `kit: true`, aplica também as regras deste kit. */
+export function validarSkill(skill, { kit = false } = {}) {
   const erros = [];
   const avisos = [...skill.avisosFrontmatter];
   if (skill.erroFrontmatter) {
@@ -148,6 +235,7 @@ export function validarSkill(skill) {
   if (fm.metadata !== undefined && (typeof fm.metadata !== 'object' || Array.isArray(fm.metadata))) {
     erros.push('"metadata" deve ser um mapa de chave: valor');
   }
+  if (kit) validarRegrasDoKit(fm, erros, avisos);
 
   const linhas = skill.texto.split(/\r?\n/).length;
   if (linhas > MAX_LINHAS) erros.push(`SKILL.md com ${linhas} linhas (máximo ${MAX_LINHAS}); mova detalhes para references/`);
@@ -160,31 +248,57 @@ export function validarSkill(skill) {
     verificarLinks(skill, rel, texto, erros);
   }
   for (const rel of ['SKILL.md', ...listarArquivosDaSkill(skill.dir)]) {
-    const texto = readFileSync(path.join(skill.dir, rel), 'utf8');
+    const bruto = readFileSync(path.join(skill.dir, rel));
+    const texto = bruto.toString('utf8');
     if (/[A-Za-z]:[\\/]Users[\\/]|(^|[\s"'(])\/Users\/[A-Za-z]/m.test(texto)) {
       erros.push(`${rel}: contém caminho absoluto de máquina local`);
     }
+    // Arquivo binário (com byte nulo) não é texto que o agente leia.
+    if (!bruto.includes(0)) verificarInvisiveis(rel, texto, erros, avisos);
   }
 
   if (typeof nome === 'string' && nome) validarEvals(skill, nome, erros);
   return { erros, avisos };
 }
 
+/** Os dois caminhos levam à mesma pasta? No Windows, sem diferenciar maiúsculas. */
+function mesmoCaminho(a, b) {
+  const real = (p) => {
+    try {
+      return realpathSync(p);
+    } catch {
+      return path.resolve(p);
+    }
+  };
+  const [x, y] = [real(a), real(b)];
+  return process.platform === 'win32' ? x.toLowerCase() === y.toLowerCase() : x === y;
+}
+
 function main() {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) return ajuda();
+  // Opção desconhecida é erro: um "--kti" ignorado desligaria as regras do kit em silêncio.
+  const desconhecida = args.find((a) => a.startsWith('-') && !OPCOES.has(a));
+  const pastas = args.filter((a) => !a.startsWith('-'));
+  if (desconhecida || pastas.length > 1) {
+    console.error(desconhecida ? `Opção desconhecida: ${desconhecida} (veja --help)` : 'Informe no máximo uma pasta de skills (veja --help)');
+    process.exit(2);
+  }
   const json = args.includes('--json');
-  const pasta = path.resolve(args.find((a) => !a.startsWith('--')) ?? path.join(RAIZ, 'skills'));
+  const padrao = path.join(RAIZ, 'skills');
+  const pasta = path.resolve(pastas[0] ?? padrao);
   if (!existsSync(pasta)) {
     console.error(`Pasta de skills não encontrada: ${pasta}`);
     process.exit(2);
   }
+  const kit = args.includes('--kit') || mesmoCaminho(pasta, padrao);
   const skills = carregarSkills(pasta);
-  const resultados = skills.map((s) => ({ skill: s.pasta, ...validarSkill(s) }));
+  const resultados = skills.map((s) => ({ skill: s.pasta, ...validarSkill(s, { kit }) }));
   const totalErros = resultados.reduce((n, r) => n + r.erros.length, 0);
+  const totalAvisos = resultados.reduce((n, r) => n + r.avisos.length, 0);
 
   if (json) {
-    console.log(JSON.stringify({ skills: resultados.length, erros: totalErros, resultados }, null, 2));
+    console.log(JSON.stringify({ skills: resultados.length, regrasDoKit: kit, erros: totalErros, avisos: totalAvisos, resultados }, null, 2));
   } else {
     for (const r of resultados) {
       const marca = r.erros.length ? '✗' : '✓';
@@ -192,7 +306,7 @@ function main() {
       for (const e of r.erros) console.log(`    erro:  ${e}`);
       for (const a of r.avisos) console.log(`    aviso: ${a}`);
     }
-    console.log(`\n${resultados.length} skill(s), ${totalErros} erro(s).`);
+    console.log(`\n${resultados.length} skill(s), ${totalErros} erro(s), ${totalAvisos} aviso(s)${kit ? '; regras do kit ligadas' : ''}.`);
     if (resultados.length === 0) console.log('Nenhuma skill encontrada: cada skill é uma subpasta com SKILL.md.');
   }
   process.exit(totalErros > 0 || resultados.length === 0 ? 1 : 0);
