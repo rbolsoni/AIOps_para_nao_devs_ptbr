@@ -34,6 +34,9 @@ function rodarNode(args) {
 const aleatorio = (n, alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') =>
   Array.from({ length: n }, () => alfabeto[Math.floor(Math.random() * alfabeto.length)]).join('');
 const juntar = (...partes) => partes.join('');
+// Valor que as regras genéricas precisam acusar: sem e, x nem y, nenhum marcador ("example",
+// "fake", "dummy", "xxxx"...) se forma por acaso, e o teste não oscila entre execuções.
+const aleatorioSemMarcador = (n) => aleatorio(n, 'ABCDFGHIJKLMNOPQRSTUVWZabcdfghijklmnopqrstuvwz0123456789');
 
 describe('verificar-segredos', () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'segredos-'));
@@ -42,7 +45,7 @@ describe('verificar-segredos', () => {
     path.join(dir, 'app.js'),
     [
       'const url = process.env.DATABASE_URL;',
-      juntar("const chave = process.env.PAGAMENTO_API_KEY || '", aleatorio(32), "';"),
+      juntar("const chave = process.env.PAGAMENTO_API_KEY || '", aleatorioSemMarcador(32), "';"),
       "const publica = process.env.NEXT_PUBLIC_SITE_KEY || 'abcdefghijklmnopqrst';",
       juntar("const gh = '", tokenGithub, "';"),
       juntar("const doc = 'AK", "IAIOSFODNN7EXAMPLE';"),
@@ -50,7 +53,7 @@ describe('verificar-segredos', () => {
       juntar("const aceito = '", juntar('gh', 'p_', aleatorio(36)), "'; // verificar-segredos: ignorar (teste)"),
     ].join('\n'),
   );
-  writeFileSync(path.join(dir, 'config.py'), juntar("import os\nSECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '", aleatorio(30), "')\n"));
+  writeFileSync(path.join(dir, 'config.py'), juntar("import os\nSECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '", aleatorioSemMarcador(30), "')\n"));
   writeFileSync(path.join(dir, 'chave.txt'), juntar('-----BEGIN ', 'PRIVATE KEY', '-----\nabc\n'));
   // Montado em partes para este arquivo de teste não casar com a própria regra.
   writeFileSync(path.join(dir, 'README.md'), juntar('Evite `process.env.API_KEY', " || 'valor-qualquer-aqui'` no código.\n"));
@@ -269,11 +272,30 @@ describe('verificar-segredos — formatos, UTF-16, JSON e o que não foi varrido
       path.join(dir, 'config.json'),
       JSON.stringify(
         {
-          apiKey: aleatorio(32),
+          apiKey: aleatorioSemMarcador(32),
           publicKey: aleatorio(32),
           NEXT_PUBLIC_SITE_KEY: aleatorio(32),
           token: '<seu-token-aqui>',
           descricao: 'um texto comum e comprido, sem nada de segredo nele',
+        },
+        null,
+        2,
+      ),
+    );
+    const { achados } = varrer(dir, { usarGit: false });
+    assert.deepEqual(achados.map((a) => `${a.arquivo}:${a.linha}:${a.regra}`), ['config.json:2:literal-de-credencial']);
+  });
+
+  it('"xxx" por acaso numa credencial não a transforma em marcador; "xxxx" continua sendo', () => {
+    // Uma chave aleatória de 32 caracteres contém "xxx" (maiúsculas ou minúsculas) em ~0,1%
+    // das vezes: tratar isso como marcador deixava passar credencial de verdade.
+    const dir = mkdtempSync(path.join(tmpdir(), 'marcador-'));
+    writeFileSync(
+      path.join(dir, 'config.json'),
+      JSON.stringify(
+        {
+          apiKey: juntar(aleatorioSemMarcador(14), 'xXx', aleatorioSemMarcador(15)),
+          secretKey: juntar(aleatorioSemMarcador(12), 'xxxx', aleatorioSemMarcador(12)),
         },
         null,
         2,
