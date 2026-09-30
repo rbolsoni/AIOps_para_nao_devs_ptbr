@@ -34,18 +34,19 @@
     },
     {
       "id": 4,
-      "prompt": "Cria a função que fecha o pedido e baixa o estoque do item. O app chama direto pelo Supabase, mandando o item e a quantidade.",
-      "expected_output": "Uma migração com função no banco, atômica e com trava de linha, que recusa quantidade nula, zero ou negativa antes de tocar no estoque, concede execução só a usuários logados, acrescenta restrições check na tabela como segunda camada e propõe uma checagem empírica que tenta quantidade negativa e exige a recusa.",
+      "prompt": "Cada relatório gerado com IA gasta créditos do plano do usuário. Cria a função que desconta os créditos; o app chama direto pelo Supabase, mandando quantos créditos gastar.",
+      "expected_output": "Uma migração com função no banco, atômica e com trava de linha, que recusa quantidade nula, zero ou negativa antes de tocar no saldo, só desconta do saldo do próprio usuário da sessão, concede execução só a usuários logados, acrescenta restrições check e not null na tabela como segunda camada e propõe uma checagem empírica que tenta quantidade negativa e nula e exige a recusa.",
       "assertions": [
         "A operação acontece numa função no banco, atômica, com trava de linha (SELECT ... FOR UPDATE)",
-        "A função recusa quantidade nula, zero ou negativa antes de alterar o estoque",
-        "Propõe restrições check (quantidade > 0 no pedido, estoque >= 0 no item) como segunda camada",
-        "A checagem empírica chama a função com quantidade negativa ou zero e exige a recusa"
+        "A função recusa quantidade nula, zero ou negativa antes de alterar o saldo",
+        "O saldo descontado é sempre o do usuário da sessão (auth.uid()), nunca um id de saldo aceito do cliente sem conferir o dono",
+        "Propõe restrições na tabela como segunda camada: check (quantidade > 0, saldo >= 0) e not null",
+        "A checagem empírica chama a função com quantidade negativa e nula e exige a recusa"
       ]
     },
     {
       "id": 5,
-      "prompt": "Quero mostrar os fornecedores ativos, só nome e cidade, numa tela que apenas usuários logados acessam. A tabela perfis tem CPF e telefone. É Supabase.",
+      "prompt": "Quero mostrar os profissionais ativos, só nome e especialidade, numa tela que apenas usuários logados acessam. A tabela perfis tem CPF e telefone. É Supabase.",
       "expected_output": "Uma view com só as colunas necessárias, somente leitura, com todas as permissões revogadas e leitura concedida apenas a authenticated — sem depender do padrão da plataforma, que pode dar leitura a anon —, a decisão registrada em ADR e a consulta que confere as permissões efetivas.",
       "assertions": [
         "A view lista explicitamente só as colunas necessárias, sem CPF nem telefone",

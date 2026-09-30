@@ -338,23 +338,23 @@ describe('modelos SQL de autorização (mudancas-de-banco)', () => {
   const doc = readFileSync(path.join(RAIZ, 'skills', 'mudancas-de-banco', 'references', 'autorizacao-no-banco.md'), 'utf8');
   const blocosSql = [...doc.matchAll(/```sql\r?\n([\s\S]*?)```/g)].map((m) => m[1]);
 
-  it('fechar_pedido recusa quantidade nula, zero ou negativa antes de tocar no estoque', () => {
-    const funcao = blocosSql.find((b) => b.includes('function public.fechar_pedido')) ?? '';
+  it('consumir_saldo recusa quantidade nula, zero ou negativa antes de tocar no saldo', () => {
+    const funcao = blocosSql.find((b) => b.includes('function public.consumir_saldo')) ?? '';
     const validacao = funcao.search(/if p_qtd is null or p_qtd <= 0 then raise exception/);
-    assert.ok(validacao >= 0, 'fechar_pedido sem validar a quantidade: -5 soma ao estoque e cria pedido negativo');
-    assert.ok(validacao < funcao.indexOf('for update'), 'a quantidade precisa ser validada antes de ler e travar o estoque');
+    assert.ok(validacao >= 0, 'consumir_saldo sem validar a quantidade: -5 soma ao saldo e registra consumo negativo');
+    assert.ok(validacao < funcao.indexOf('for update'), 'a quantidade precisa ser validada antes de ler e travar o saldo');
   });
 
   it('a segunda camada também recusa nulo, que o CHECK sozinho aceita', () => {
-    const camada = blocosSql.find((b) => b.includes('pedidos_quantidade_positiva')) ?? '';
-    assert.match(camada, /^alter table public\.pedidos alter column quantidade set not null;$/m);
-    assert.match(camada, /^alter table public\.itens alter column estoque set not null;$/m);
+    const camada = blocosSql.find((b) => b.includes('consumos_quantidade_positiva')) ?? '';
+    assert.match(camada, /^alter table public\.consumos alter column quantidade set not null;$/m);
+    assert.match(camada, /^alter table public\.saldos alter column disponivel set not null;$/m);
   });
 
-  it('a view de vitrine declara as permissões de cada papel em vez de herdar o padrão da plataforma', () => {
-    const view = blocosSql.find((b) => b.includes('create view public.vitrine_fornecedores')) ?? '';
-    assert.match(view, /^revoke all on public\.vitrine_fornecedores from public, anon, authenticated;$/m);
-    assert.match(view, /^grant select on public\.vitrine_fornecedores to authenticated;$/m);
+  it('a view de perfis públicos declara as permissões de cada papel em vez de herdar o padrão da plataforma', () => {
+    const view = blocosSql.find((b) => b.includes('create view public.perfis_publicos')) ?? '';
+    assert.match(view, /^revoke all on public\.perfis_publicos from public, anon, authenticated;$/m);
+    assert.match(view, /^grant select on public\.perfis_publicos to authenticated;$/m);
   });
 });
 
