@@ -1,17 +1,15 @@
 ---
 name: headers-de-seguranca
 description: >-
-  Use ao configurar ou revisar os cabeçalhos HTTP de segurança de um site, app web ou API
-  — Content-Security-Policy (CSP), HSTS, X-Frame-Options/frame-ancestors,
-  X-Content-Type-Options, Referrer-Policy, Permissions-Policy, cookies e CORS — ao
-  publicar um site, quando um scanner apontar headers ausentes, ou quando scripts,
-  estilos, fontes, iframes ou workers forem bloqueados pela CSP no console do navegador.
-  Inclui um script que audita os headers de qualquer URL.
+  Use ao configurar ou revisar cabeçalhos HTTP de segurança — CSP, HSTS, proteção contra
+  iframe (frame-ancestors), nosniff, Referrer-Policy, Permissions-Policy, cookies, CORS —,
+  quando um scanner apontar header ausente ou a CSP bloquear algo no console. Inclui
+  verificador de URL.
 license: MIT
 compatibility: O script de verificação requer Node.js 20+ e acesso à URL verificada.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Headers de segurança

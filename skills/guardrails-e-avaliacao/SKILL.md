@@ -1,16 +1,13 @@
 ---
 name: guardrails-e-avaliacao
 description: >-
-  Use ao proteger ou medir a qualidade de um agente, chatbot ou aplicação com LLM —
-  guardrails de entrada e saída, detecção de prompt injection e jailbreak, filtragem de
-  dados pessoais, controle de tópicos, validação de ações antes da execução, avaliações
-  (evals), testes de regressão de prompts, LLM como juiz, red teaming, rastreamento e
-  métricas de agentes — e ao avaliar se uma skill ativa e funciona. Vale para qualquer
-  provedor e framework (NeMo Guardrails, NeMo Agent Toolkit, soluções próprias).
+  Use ao proteger ou avaliar um agente, chatbot ou app com LLM: prompt injection,
+  jailbreak, vazamento de dados, controle de assunto, validação de ações, evals, regressão
+  de prompt, LLM como juiz, red teaming — e ao testar se uma skill ativa e funciona.
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Guardrails e avaliação

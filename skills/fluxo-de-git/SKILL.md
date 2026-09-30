@@ -1,16 +1,14 @@
 ---
 name: fluxo-de-git
 description: >-
-  Use ao criar branch, fazer commit, escrever mensagem de commit, abrir, descrever ou
-  mesclar pull request, resolver conflito, fazer rebase ou revert, criar tag, ou quando o
-  usuário pedir para "subir", "salvar no GitHub", "versionar", "commitar" ou "publicar"
-  código. Define branches de trabalho, Commits Convencionais ligados ao versionamento
-  semântico, PRs pequenos e revisáveis, e proíbe atalhos perigosos como force push, pular
-  hooks, commitar direto na branch principal ou incluir arquivos de segredo.
+  Use ao criar branch, commitar, escrever mensagem de commit, abrir ou mesclar PR,
+  resolver conflito, fazer rebase, revert ou tag, e quando pedirem para "subir", "salvar
+  no GitHub" ou "versionar" o código. Evita force push, commit direto na principal e
+  segredo no histórico.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Fluxo de git

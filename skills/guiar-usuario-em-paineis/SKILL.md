@@ -1,17 +1,14 @@
 ---
 name: guiar-usuario-em-paineis
 description: >-
-  Use sempre que uma etapa precisar ser feita por uma pessoa num painel ou site externo —
-  GitHub, GitLab, Vercel, Netlify, Supabase, Firebase, AWS, Google Cloud, Azure,
-  Cloudflare, registro de domínio e DNS, lojas de aplicativos, gateways de pagamento,
-  provedores de e-mail — como criar secrets e variáveis de ambiente, gerar chaves de API,
-  configurar domínio, permissões, regras de proteção, integrações ou faturamento, ou
-  quando você não tiver acesso ou permissão para fazer a ação. Produz instruções passo a
-  passo à prova de leigo, com verificação e sem expor segredos.
+  Use sempre que uma etapa depender de uma pessoa num painel externo (GitHub, Vercel,
+  Supabase, nuvem, DNS, loja de apps, pagamento): criar secret ou chave, apontar domínio,
+  dar permissão, ativar proteção ou faturamento, ou quando você não tiver acesso. Gera
+  passo a passo à prova de leigo.
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Guiar o usuário em painéis externos

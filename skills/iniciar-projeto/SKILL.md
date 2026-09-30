@@ -1,17 +1,14 @@
 ---
 name: iniciar-projeto
 description: >-
-  Use quando o usuário quiser começar um projeto, criar ou organizar um repositório,
-  "deixar pronto para produção", "configurar do jeito certo", adotar boas práticas num
-  projeto existente, ou quando o repositório não tiver AGENTS.md, README, .gitignore,
-  licença, testes ou CI. Detecta a linguagem e a stack, cria a base de governança
-  (AGENTS.md, README, SECURITY.md, .gitignore, .gitattributes, .env.example, ADRs,
-  modelo de PR, comandos de qualidade e esteira) e entrega ao usuário, em linguagem
-  simples, a lista do que ele ainda precisa configurar em painéis externos.
+  Use ao começar ou organizar um projeto ou repositório, "deixar pronto para produção",
+  adotar boas práticas num projeto existente, ou quando faltarem AGENTS.md, README,
+  .gitignore, testes ou CI. Cria a base de governança e lista, em linguagem simples, o que
+  configurar nos painéis.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Iniciar projeto

@@ -1,16 +1,14 @@
 ---
 name: isolamento-de-ambientes
 description: >-
-  Use ao configurar ou usar ambientes (desenvolvimento local, homologação/QA/staging,
-  produção), variáveis de ambiente, bancos de teste, seeds, dados fictícios e integrações
-  entre plataformas — e antes de rodar qualquer script, teste, migração, importação ou
-  ferramenta automatizada que possa tocar dados reais. Garante que nada de teste aponte
-  para produção, que produção só mude pela esteira e que cada observação diga de qual
-  ambiente veio.
+  Use ao configurar ou usar ambientes (local, homologação, produção), variáveis de
+  ambiente, bancos de teste, seeds e dados fictícios, e antes de rodar script, teste,
+  migração ou importação que possa tocar dados reais. Garante que nada de teste aponte
+  para produção.
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Isolamento de ambientes
