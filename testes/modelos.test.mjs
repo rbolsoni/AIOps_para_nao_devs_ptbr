@@ -13,6 +13,12 @@ const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PASTA_WORKFLOWS = path.join(RAIZ, 'skills', 'esteira-ci-cd', 'assets', 'github-actions');
 
 const temBash = spawnSync('bash', ['--version']).status === 0;
+const python = ['python3', 'python'].find((p) => spawnSync(p, ['--version']).status === 0);
+
+// Senhas de teste geradas em tempo de execução: uma URL com senha fixa no repositório
+// dispararia os scanners de segredo (os deste kit e os da hospedagem).
+const aleatorio = (n, alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') =>
+  Array.from({ length: n }, () => alfabeto[Math.floor(Math.random() * alfabeto.length)]).join('');
 
 const linhasDe = (texto) => texto.split(/\r?\n/);
 const recuo = (linha) => linha.match(/^ */)[0].length;
@@ -238,6 +244,90 @@ describe('trava de promoção (release-promocao.modelo.yml)', () => {
       const r = rodarTrava(verdes);
       assert.equal(r.status, 0, r.stdout + r.stderr);
       assert.match(r.stdout, /Árvore publicada idêntica à homologada/);
+    });
+  });
+});
+
+describe('trava de ambiente (isolamento-de-ambientes)', () => {
+  const skill = readFileSync(path.join(RAIZ, 'skills', 'isolamento-de-ambientes', 'SKILL.md'), 'utf8');
+  const secao = skill.split(/^## /m).find((s) => s.startsWith('Trava de ambiente (modelo)')) ?? '';
+  const HOST = 'homolog.exemplo.test';
+  const dir = mkdtempSync(path.join(tmpdir(), 'trava-ambiente-'));
+  const senha = `s${aleatorio(23)}`;
+  const urlDoBanco = (host) => `postgres://usuario:${senha}@${host}:5432/app`;
+  const semSenha = (texto) => String(texto).replaceAll(senha, '***');
+
+  /** Grava o bloco de código da seção, com os marcadores trocados pelo host de teste. */
+  function prepararModelo(linguagem, extensao, sinalDeLiberado) {
+    const bloco = secao.match(new RegExp('```' + linguagem + '\\r?\\n([\\s\\S]*?)```'))?.[1];
+    assert.ok(bloco, `bloco ${linguagem} da seção "Trava de ambiente (modelo)" não encontrado`);
+    const arquivo = path.join(dir, `trava.${extensao}`);
+    writeFileSync(arquivo, `${bloco.replace(/<[a-z0-9-]+>/g, HOST)}\n${sinalDeLiberado}\n`);
+    return arquivo;
+  }
+
+  function rodar(comando, arquivo, url) {
+    const env = { ...process.env };
+    delete env.DATABASE_URL;
+    delete env.API_URL;
+    if (url !== undefined) env.DATABASE_URL = url;
+    const r = spawnSync(comando, [arquivo], { env, encoding: 'utf8' });
+    return { ...r, saida: `${r.stdout}${r.stderr}` };
+  }
+
+  describe('modelo Node.js', () => {
+    const arquivo = prepararModelo('javascript', 'mjs', "console.log('TRAVA-LIBEROU');");
+    const node = (url) => rodar(process.execPath, arquivo, url);
+
+    it('host diferente: aborta com saída 1, mostra só o host e não vaza a senha', () => {
+      const r = node(urlDoBanco('producao.exemplo.test'));
+      assert.equal(r.status, 1);
+      assert.ok(!r.saida.includes(senha), `a senha apareceu na saída: ${semSenha(r.saida)}`);
+      assert.match(r.stderr, /producao\.exemplo\.test/);
+      assert.doesNotMatch(r.stdout, /TRAVA-LIBEROU/);
+    });
+
+    it('domínio que só começa igual ao permitido é barrado', () => {
+      const r = node(`https://${HOST}.outro-dominio.test/api`);
+      assert.equal(r.status, 1);
+      assert.doesNotMatch(r.stdout, /TRAVA-LIBEROU/);
+    });
+
+    it('URL ausente ou inválida aborta sem mostrar o valor', () => {
+      assert.equal(node(undefined).status, 1);
+      const r = node(`postgres://usuario:${senha}`); // sem host
+      assert.equal(r.status, 1);
+      assert.ok(!r.saida.includes(senha), `a senha apareceu na saída: ${semSenha(r.saida)}`);
+      assert.match(r.stderr, /vazio ou inválido/);
+    });
+
+    it('host permitido passa, mesmo escrito em maiúsculas na URL', () => {
+      for (const host of [HOST, HOST.toUpperCase()]) {
+        const r = node(urlDoBanco(host));
+        assert.equal(r.status, 0, semSenha(r.saida));
+        assert.match(r.stdout, /TRAVA-LIBEROU/);
+        assert.ok(!r.saida.includes(senha));
+      }
+    });
+  });
+
+  describe('modelo Python', { skip: !python && 'Python indisponível' }, () => {
+    const arquivo = prepararModelo('python', 'py', "print('TRAVA-LIBEROU')");
+    const py = (url) => rodar(python, arquivo, url);
+
+    it('host diferente, domínio parecido, URL ausente ou sem host: aborta sem vazar a senha', () => {
+      for (const url of [urlDoBanco('producao.exemplo.test'), `https://${HOST}.outro-dominio.test/api`, undefined, `postgres://usuario:${senha}`]) {
+        const r = py(url);
+        assert.equal(r.status, 1, `deveria abortar com ${semSenha(url)}: ${semSenha(r.saida)}`);
+        assert.ok(!r.saida.includes(senha), `a senha apareceu na saída: ${semSenha(r.saida)}`);
+        assert.doesNotMatch(r.stdout, /TRAVA-LIBEROU/);
+      }
+    });
+
+    it('host permitido passa', () => {
+      const r = py(urlDoBanco(HOST));
+      assert.equal(r.status, 0, semSenha(r.saida));
+      assert.match(r.stdout, /TRAVA-LIBEROU/);
     });
   });
 });

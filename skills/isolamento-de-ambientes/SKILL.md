@@ -10,7 +10,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Isolamento de ambientes
@@ -58,26 +58,40 @@ e chaves próprias. Esquema ou prefixo diferente dentro do mesmo projeto não é
 
 ## Trava de ambiente (modelo)
 
-Coloque no início de qualquer script que escreve dados, com o identificador do ambiente
-permitido escrito no próprio script (não vindo do mesmo `.env` que pode estar errado):
+Coloque no início de qualquer script que escreve dados, com os hosts permitidos escritos no
+próprio script (não vindos do mesmo `.env` que pode estar errado). A trava extrai o host da
+URL e o compara com a lista exata. Ao abortar, mostra só o host: a URL do banco carrega a
+senha, e a mensagem vai para o terminal, para o log da esteira e para a conversa com a IA.
 
 ```javascript
-// Node.js
-const PERMITIDOS = ['https://<ref-da-homologacao>.exemplo.com'];
-const alvo = process.env.DATABASE_URL ?? process.env.API_URL;
-if (!alvo || !PERMITIDOS.some((p) => alvo.startsWith(p))) {
-  console.error(`Abortado: alvo "${alvo ?? '(vazio)'}" não é um ambiente permitido para escrita.`);
+// Node.js — troque DATABASE_URL pela variável que o script usa para escrever.
+const HOSTS_PERMITIDOS = ['<host-da-homologacao>']; // em minúsculas
+let host = '';
+try {
+  host = new URL(process.env.DATABASE_URL).hostname.toLowerCase();
+} catch {
+  // Ausente ou inválida: host fica vazio e a trava aborta, sem mostrar o valor.
+}
+if (!HOSTS_PERMITIDOS.includes(host)) {
+  console.error(`Abortado: o host "${host || 'vazio ou inválido'}" não é um ambiente permitido para escrita.`);
   process.exit(1);
 }
 ```
 
 ```python
-# Python
-import os, sys
-PERMITIDOS = ("https://<ref-da-homologacao>.exemplo.com",)
-alvo = os.environ.get("DATABASE_URL") or os.environ.get("API_URL")
-if not alvo or not alvo.startswith(PERMITIDOS):
-    sys.exit(f"Abortado: alvo {alvo!r} não é um ambiente permitido para escrita.")
+# Python — troque DATABASE_URL pela variável que o script usa para escrever.
+import os
+import sys
+from urllib.parse import urlsplit
+
+HOSTS_PERMITIDOS = {"<host-da-homologacao>"}  # em minúsculas
+try:
+    host = urlsplit(os.environ.get("DATABASE_URL", "")).hostname or ""
+except ValueError:  # URL inválida: aborta sem mostrar o valor
+    host = ""
+if host not in HOSTS_PERMITIDOS:
+    mostrado = host or "vazio ou inválido"
+    sys.exit(f'Abortado: o host "{mostrado}" não é um ambiente permitido para escrita.')
 ```
 
 Para comandos destrutivos, exija também uma confirmação explícita por argumento
@@ -100,13 +114,21 @@ Para comandos destrutivos, exija também uma confirmação explícita por argume
 
 Antes de rodar migração, seed, importação, script de correção ou teste de integração:
 
-- [ ] Qual é o ambiente alvo? Confirmei pela URL/identificador, não pelo nome do arquivo.
+- [ ] Qual é o ambiente alvo? Confirmei pelo host da URL, não pelo nome do arquivo.
 - [ ] O script tem trava de ambiente?
 - [ ] Existe backup/ponto de restauração, se o alvo tiver dados que importam?
 - [ ] O usuário pediu explicitamente esta escrita?
 
 ## Armadilhas
 
+- **Trava que imprime a URL inteira vaza a senha.** A URL do banco leva usuário e senha;
+  uma mensagem de erro com ela expõe a senha no terminal, no log da esteira e na conversa
+  com a IA. Mostre só o host.
+- **Comparar o começo da URL** aceita domínio parecido
+  (`https://homolog.exemplo.com.outro-dominio.net` começa com
+  `https://homolog.exemplo.com`) e tropeça no esquema: diante de um prefixo `https://`, a
+  URL do banco (`postgres://…`) nunca bate, e a trava barra sempre. Extraia o host e compare
+  com a lista exata.
 - **Seed que esconde bug.** Em homologação, datas e campos vinham preenchidos pelo seed; o
   fluxo real nunca os preenchia. Só a produção revelou. Teste o fluxo real de ponta a ponta
   em homologação, não só telas alimentadas pelo seed.
