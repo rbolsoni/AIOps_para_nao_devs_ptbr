@@ -175,7 +175,7 @@ export function criarServidor(pastaSkills) {
         return ok({
           protocolVersion: VERSOES_SUPORTADAS.includes(pedida) ? pedida : VERSOES_SUPORTADAS[0],
           capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
-          serverInfo: { name: PACOTE.name, title: 'Padrões de Skills para AIOps (PT-BR)', version: versao },
+          serverInfo: { name: PACOTE.name, title: 'AIOps para não devs (PT-BR)', version: versao },
           instructions: INSTRUCOES,
         });
       }

@@ -91,6 +91,9 @@ describe('servidor MCP', () => {
     assert.ok(r.result.capabilities.tools);
     assert.ok(r.result.capabilities.prompts);
     assert.equal(r.result.serverInfo.name, 'aiops-para-nao-devs-ptbr');
+    // O título que o cliente mostra é o do README: se um mudar sem o outro, este teste avisa.
+    const tituloDoReadme = readFileSync(path.join(RAIZ, 'README.md'), 'utf8').match(/^# (.+?)\s*$/m)[1];
+    assert.equal(r.result.serverInfo.title, tituloDoReadme);
     s.enviarBruto(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }));
   });
 
