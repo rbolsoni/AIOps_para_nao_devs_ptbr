@@ -26,14 +26,14 @@ pedir e fazer algumas configurações em painéis — que o próprio agente expl
 2. Rode:
 
    ```bash
-   npx skills add rbolsoni/AIOps_para_nao_devs_ptbr
+   npx skills add rbolsoni/IA-skills-para-nao-devs
    ```
 
 3. Responda às perguntas: escolha o seu agente e confirme. Pronto — as skills ficam na pasta
    do projeto.
 
 Prefere não usar o terminal? Baixe o arquivo da versão mais recente na página
-[Releases](https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/releases) ("Source code"),
+[Releases](https://github.com/rbolsoni/IA-skills-para-nao-devs/releases) ("Source code"),
 descompacte e copie as pastas de `skills/` para a pasta de skills do seu agente (a tabela está
 em [instalacao.md](instalacao.md)).
 
@@ -81,6 +81,6 @@ cartão: onde clicar, o que escrever e como conferir. Leia o "Não faça" de cad
 ## Ajuda
 
 - Dúvida ou sugestão: abra uma issue no
-  [GitHub do projeto](https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/issues).
+  [GitHub do projeto](https://github.com/rbolsoni/IA-skills-para-nao-devs/issues).
 - Encontrou uma falha de segurança: use o relato privado descrito no
   [SECURITY.md](../SECURITY.md) — não abra issue pública.

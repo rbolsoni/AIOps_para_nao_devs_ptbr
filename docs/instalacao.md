@@ -13,19 +13,19 @@ repositório e as instala na pasta certa de cada agente.
 
 ```bash
 # interativo: pergunta em quais agentes instalar
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr
+npx skills add rbolsoni/IA-skills-para-nao-devs
 
 # para o seu usuário, valendo em todos os projetos
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr -g
+npx skills add rbolsoni/IA-skills-para-nao-devs -g
 
 # só para um agente
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr -a claude-code
+npx skills add rbolsoni/IA-skills-para-nao-devs -a claude-code
 
 # só algumas skills
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr -s segredos-e-credenciais -s esteira-ci-cd
+npx skills add rbolsoni/IA-skills-para-nao-devs -s segredos-e-credenciais -s esteira-ci-cd
 
 # ver o que existe, sem instalar
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr -l
+npx skills add rbolsoni/IA-skills-para-nao-devs -l
 ```
 
 Para atualizar depois: `npx skills update`.
@@ -48,7 +48,7 @@ Instalar tudo funciona — as descrições das skills cabem no orçamento de con
 **Essencial** (qualquer projeto):
 
 ```bash
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+npx skills add rbolsoni/IA-skills-para-nao-devs \
   -s disciplina-de-codigo \
   -s uso-seguro-de-agentes \
   -s depuracao-guiada \
@@ -63,7 +63,7 @@ npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
 **App web com banco** (junto do essencial):
 
 ```bash
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+npx skills add rbolsoni/IA-skills-para-nao-devs \
   -s seguranca-de-aplicacao \
   -s headers-de-seguranca \
   -s mudancas-de-banco \
@@ -84,7 +84,7 @@ npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
 **Quem constrói agentes ou apps com LLM** (junto do essencial):
 
 ```bash
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
+npx skills add rbolsoni/IA-skills-para-nao-devs \
   -s arquitetura-de-agentes \
   -s guardrails-e-avaliacao \
   -s orquestracao-multiagente
@@ -93,7 +93,7 @@ npx skills add rbolsoni/AIOps_para_nao_devs_ptbr \
 ## 2. Copiar as pastas
 
 Baixe o código de uma release (página
-[Releases](https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/releases) → "Source code") ou
+[Releases](https://github.com/rbolsoni/IA-skills-para-nao-devs/releases) → "Source code") ou
 clone o repositório, e copie as pastas de `skills/` que quiser para a pasta de skills do seu
 agente. Exemplos:
 
@@ -119,13 +119,13 @@ Ferramentas expostas: `listar_skills`, `ler_skill`, `ler_arquivo_da_skill`.
 baixa e executa o topo da branch principal a cada início — uma mudança com defeito (ou um
 comprometimento do repositório) chegaria a você sem revisão. Para atualizar, troque a tag pela
 mais recente em
-[Releases](https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/releases), depois de ler as
+[Releases](https://github.com/rbolsoni/IA-skills-para-nao-devs/releases), depois de ler as
 notas. É a mesma regra que o kit ensina para qualquer dependência.
 
 ### Claude Code
 
 ```bash
-claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2
+claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-nao-devs#v1.7.2
 ```
 
 ### Clientes com configuração JSON (Claude Desktop, Cursor, Gemini CLI e outros)
@@ -133,9 +133,9 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
 ```json
 {
   "mcpServers": {
-    "aiops-para-nao-devs-ptbr": {
+    "ia-skills-para-nao-devs": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"]
     }
   }
 }
@@ -146,10 +146,10 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
 ```json
 {
   "servers": {
-    "aiops-para-nao-devs-ptbr": {
+    "ia-skills-para-nao-devs": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"]
     }
   }
 }
@@ -158,9 +158,9 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
 ### Codex (`~/.codex/config.toml`)
 
 ```toml
-[mcp_servers.aiops-para-nao-devs-ptbr]
+[mcp_servers.ia-skills-para-nao-devs]
 command = "npx"
-args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
+args = ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"]
 ```
 
 ### Windows
@@ -168,7 +168,7 @@ args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
 Alguns clientes no Windows não encontram o `npx` diretamente. Nesse caso, use o `cmd`:
 
 ```json
-{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"] }
+{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"] }
 ```
 
 ### A partir de um clone local
@@ -195,4 +195,4 @@ uma — assim as regras valem em toda sessão, não só quando uma skill ativa.
 - Pergunte ao agente quais skills ele tem disponíveis.
 - Faça um pedido que deveria ativar uma skill (ex.: "onde coloco a chave da API?") e veja se
   ele segue as instruções de `segredos-e-credenciais`.
-- No MCP, o cliente deve listar as três ferramentas do servidor `aiops-para-nao-devs-ptbr`.
+- No MCP, o cliente deve listar as três ferramentas do servidor `ia-skills-para-nao-devs`.

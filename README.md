@@ -1,4 +1,4 @@
-# AIOps para não devs (PT-BR)
+# Kit de skills de agente para não devs (PT-BR)
 
 Skills em português que fazem **qualquer agente de IA que programa** — Claude Code, Codex,
 Cursor, GitHub Copilot, Gemini CLI, OpenCode e outros — trabalhar com as boas práticas de
@@ -40,7 +40,7 @@ agente: ativa segredos-e-credenciais → lê a chave de variável obrigatória, 
 Instala nos agentes que você escolher:
 
 ```bash
-npx skills add rbolsoni/AIOps_para_nao_devs_ptbr
+npx skills add rbolsoni/IA-skills-para-nao-devs
 ```
 
 Variações úteis: `-g` instala para o seu usuário (todos os projetos); `-a claude-code` escolhe
@@ -56,9 +56,9 @@ executaria a cada início o que estiver na branch principal):
 ```json
 {
   "mcpServers": {
-    "aiops-para-nao-devs-ptbr": {
+    "ia-skills-para-nao-devs": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.2"]
     }
   }
 }
