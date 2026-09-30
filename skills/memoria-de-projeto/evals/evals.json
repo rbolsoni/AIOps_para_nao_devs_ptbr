@@ -20,6 +20,17 @@
         "Aponta que a informação já é derivável do repositório",
         "Pergunta se há algo não óbvio a registrar ou registra apenas o não óbvio"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "A gente já tentou usar aquela biblioteca de gerar PDF e ela dava conflito com o Node 22. Não quero que tente de novo.",
+      "expected_output": "O agente registra uma memória de tipo projeto com o que foi tentado, por que falhou e a data absoluta, com as linhas Por quê e Como aplicar, atualiza o índice e informa o usuário do que foi registrado.",
+      "assertions": [
+        "Cria ou atualiza uma memória com a abordagem descartada e o motivo",
+        "Usa data absoluta, não \"ontem\" ou \"semana passada\"",
+        "Inclui as linhas Por quê e Como aplicar",
+        "Atualiza o INDICE.md com uma linha para a memória"
+      ]
     }
   ]
 }

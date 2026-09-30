@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Observabilidade
@@ -51,6 +51,8 @@ Observabilidade é conseguir responder "o que está acontecendo e por quê?" sem
   identificador de correlação.
 - Métricas de negócio que denunciam falha silenciosa: pedidos por hora, cadastros,
   pagamentos aprovados. Um zero inesperado aqui é um incidente.
+- **Telemetria também custa**: volume de logs, retenção e amostragem entram na conta; alerte
+  gasto anormal (`controle-de-custos`).
 
 ## Saúde e alertas
 

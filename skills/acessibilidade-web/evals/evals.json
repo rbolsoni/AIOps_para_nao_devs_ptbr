@@ -22,6 +22,17 @@
         "Adiciona <label> associado a cada campo",
         "Recomenda verificação por teclado e ferramenta automática"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "Cria a tela que lista os pedidos do usuário buscando na API.",
+      "expected_output": "A tela trata os quatro estados de forma acessível: carregando com texto e aria-busy, vazio com mensagem e próxima ação, erro em texto anunciado (role=\"alert\" ou aria-live) com como resolver, e sucesso anunciado; nada comunicado só por cor ou animação.",
+      "assertions": [
+        "O carregamento tem texto e aria-busy, não só um ícone",
+        "A lista vazia tem mensagem e aponta a próxima ação",
+        "O erro aparece em texto e é anunciado (role=\"alert\" ou aria-live)",
+        "Nenhum estado depende só de cor ou animação"
+      ]
     }
   ]
 }

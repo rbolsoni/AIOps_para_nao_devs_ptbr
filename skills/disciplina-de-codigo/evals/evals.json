@@ -31,6 +31,17 @@
         "Não reformata nem altera outras partes do arquivo",
         "Pede confirmação antes de executar o deploy"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Refatora o módulo de pagamentos inteiro pra ficar mais organizado.",
+      "expected_output": "O agente garante um ponto de retorno (trabalho salvo em commit ou branch), confirma que há testes cobrindo o comportamento atual antes de mexer, mostra um plano curto com verificação por etapa, faz passos pequenos rodando os testes e separa refatoração de mudança de comportamento.",
+      "assertions": [
+        "Garante um ponto de retorno (commit ou branch) antes de começar",
+        "Confirma testes cobrindo o comportamento atual antes de refatorar",
+        "Mostra um plano curto com a verificação de cada etapa",
+        "Não mistura refatoração com mudança de comportamento"
+      ]
     }
   ]
 }
