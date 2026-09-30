@@ -165,6 +165,43 @@ verificações de outros serviços.
 
 ---
 
+### E-mail do domínio: SPF, DKIM e DMARC — bloqueante se o app envia e-mail
+
+**Por quê:** sem esses registros, qualquer pessoa manda e-mail com o endereço do seu domínio
+(golpe usando o nome do app), e os e-mails do próprio app — confirmação, recuperação de senha
+— caem no spam. Desde fevereiro de 2024, o Gmail exige SPF ou DKIM de todo remetente, e DMARC
+de quem envia mais de 5 mil mensagens por dia (conferido em 2026-09-30).
+
+**Onde:** no painel do serviço que envia os e-mails do app ("Domains", "Sender
+authentication" ou similar) e no painel de DNS do domínio.
+
+**Passos:**
+1. No serviço de envio, adicione o seu domínio e anote os registros que ele pedir (em geral
+   um de SPF e dois ou três de DKIM).
+2. No painel de DNS, crie cada registro exatamente como indicado. SPF já existe? Junte o
+   `include:` novo no mesmo registro: o domínio só pode ter um SPF.
+3. No painel de DNS, crie um registro do tipo `TXT` com o nome `_dmarc` e o valor
+   `v=DMARC1; p=none; rua=mailto:<endereço-que-recebe-os-relatórios>`
+4. Volte ao serviço de envio e clique em verificar.
+5. Depois de algumas semanas sem falhas nos relatórios, troque `p=none` por `p=quarantine` e,
+   depois, por `p=reject`.
+
+**Como confirmar:** o serviço de envio mostra o domínio como verificado; um e-mail do app
+enviado para uma conta Gmail, aberto em "Mostrar original", mostra SPF, DKIM e DMARC como
+`PASS`.
+
+**Não faça:** não comece o DMARC em `p=reject` num domínio que já envia e-mail: o que ainda
+não foi autenticado deixaria de chegar.
+
+**Domínio que não envia e-mail:** proteja mesmo assim, porque é alvo fácil de falsificação:
+`TXT` com `v=spf1 -all`; `TXT` em `_dmarc` com `v=DMARC1; p=reject; rua=mailto:<endereço>`;
+e, se o domínio tem site mas não recebe e-mail, um `MX` nulo (prioridade `0`, destino `.`).
+
+**Se a tela estiver diferente:** procure "DNS", "Registros DNS" ou "Editar zona" no painel do
+domínio e "Domain authentication" no serviço de envio.
+
+---
+
 ### Ativar a verificação em duas etapas (2FA) nas contas — bloqueante
 
 **Por quê:** quem entra na sua conta do repositório, da hospedagem ou do provedor de IA

@@ -4,6 +4,7 @@
   { "query": "me passa o passo a passo pra criar a chave da API no Google Cloud", "should_trigger": true },
   { "query": "você não tem acesso ao painel do Supabase, então me diz o que clicar", "should_trigger": true },
   { "query": "preciso ativar a proteção da branch main, como faço?", "should_trigger": true },
+  { "query": "os e-mails de confirmação do meu app estão caindo no spam", "should_trigger": true },
   { "query": "cria um painel administrativo no nosso app para gerenciar usuários", "should_trigger": false },
   { "query": "faz um dashboard com os indicadores de atendimento", "should_trigger": false },
   { "query": "escreve o manual do usuário do nosso sistema para os clientes", "should_trigger": false }
