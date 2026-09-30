@@ -81,6 +81,7 @@ a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, ban
 | [`codigo-limpo-e-solid`](skills/codigo-limpo-e-solid/SKILL.md) | projetar, revisar ou refatorar código; Clean Code e SOLID sem superengenharia |
 | [`documentacao-viva`](skills/documentacao-viva/SKILL.md) | README, AGENTS.md, ADR, descrição de PR; documentação que acompanha o código |
 | [`memoria-de-projeto`](skills/memoria-de-projeto/SKILL.md) | "lembra disso", correções do usuário, fatos não óbvios para as próximas sessões |
+| [`depuracao-guiada`](skills/depuracao-guiada/SKILL.md) | algo não funciona, deu erro ou piorou depois de várias tentativas: reproduzir, colher evidência, uma hipótese por vez e voltar ao último estado bom |
 
 ### Projeto e entrega
 
@@ -119,6 +120,7 @@ a lista de tarefas que você precisa fazer nos painéis (GitHub, hospedagem, ban
 | [`orquestracao-multiagente`](skills/orquestracao-multiagente/SKILL.md) | dividir trabalho entre agentes; revisão adversarial com verificação real |
 | [`arquitetura-de-agentes`](skills/arquitetura-de-agentes/SKILL.md) | construir agentes com LLM: ferramentas, permissões, contexto, custo, independência de provedor |
 | [`guardrails-e-avaliacao`](skills/guardrails-e-avaliacao/SKILL.md) | guardrails, prompt injection, evals, red teaming, avaliação de skills |
+| [`uso-seguro-de-agentes`](skills/uso-seguro-de-agentes/SKILL.md) | configurar ou usar o agente que programa: segredos fora do alcance, aprovações, MCP e skills de terceiros, conteúdo não confiável |
 
 ## Princípios
 

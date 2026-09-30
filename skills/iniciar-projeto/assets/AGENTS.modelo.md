@@ -74,6 +74,7 @@ Se as skills de boas práticas estiverem instaladas, use-as nestas situações:
 | Situação | Skill |
 |---|---|
 | Qualquer mudança de código | `disciplina-de-codigo`, `codigo-limpo-e-solid` |
+| Algo não funciona, deu erro ou piorou | `depuracao-guiada` |
 | Branch, commit, PR | `fluxo-de-git` |
 | Esteira, release, deploy | `esteira-ci-cd`, `isolamento-de-ambientes` |
 | Banco de dados | `mudancas-de-banco` |
@@ -84,6 +85,7 @@ Se as skills de boas práticas estiverem instaladas, use-as nestas situações:
 | Interface web | `acessibilidade-web` |
 | Algo deu errado | `incidente-vira-checagem` |
 | Configuração em painel externo | `guiar-usuario-em-paineis` |
+| Configurar o agente, instalar MCP ou skill, ler conteúdo de terceiros | `uso-seguro-de-agentes` |
 
 ## Nunca sem pedido explícito
 

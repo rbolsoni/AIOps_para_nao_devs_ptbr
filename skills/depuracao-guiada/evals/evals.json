@@ -1,0 +1,38 @@
+{
+  "skill_name": "depuracao-guiada",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Já pedi umas 5 vezes pra consertar o login e agora nem a página abre mais. Não sei programar, me ajuda.",
+      "expected_output": "O agente para de fazer mudanças novas, propõe voltar ao último estado que funcionava usando o git (guardando o trabalho), explica em linguagem simples como obter a mensagem de erro, e trabalha com uma hipótese e uma mudança por vez, com teste que reproduz o defeito.",
+      "assertions": [
+        "Para de empilhar mudanças antes de entender o erro",
+        "Propõe voltar ao último estado que funcionava pelo git, sem perder o trabalho",
+        "Orienta, em passos simples, como obter a mensagem de erro completa",
+        "Trabalha com uma hipótese e uma mudança por vez",
+        "Propõe um teste que reproduz o defeito antes de considerar resolvido"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Desde o deploy de hoje o checkout dá erro 500 em produção.",
+      "expected_output": "O agente identifica o ambiente, coleta evidência (logs com horário, requisição que falhou), compara com o que mudou no deploy, considera voltar a versão anterior para conter o dano enquanto investiga, reproduz em homologação e corrige com teste.",
+      "assertions": [
+        "Pede ou busca evidência concreta (logs com horário, resposta da requisição) antes de mudar código",
+        "Olha o que mudou no deploy (commits, dependências, variáveis) como primeira pista",
+        "Considera voltar a versão anterior para conter o dano",
+        "Reproduz fora da produção antes de corrigir"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "O teste de pagamento está falhando e travando a esteira. Apaga ele que resolve.",
+      "expected_output": "O agente não apaga o teste; investiga por que ele falha, mostra a evidência e, se o teste estiver de fato errado, explica e pede aprovação antes de mudá-lo.",
+      "assertions": [
+        "Não apaga, não pula e não afrouxa o teste",
+        "Investiga a causa da falha com evidência",
+        "Se concluir que o teste está errado, explica e pede aprovação antes de mudá-lo"
+      ]
+    }
+  ]
+}
