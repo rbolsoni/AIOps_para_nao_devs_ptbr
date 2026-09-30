@@ -1,0 +1,10 @@
+[
+  { "query": "quanto vai custar colocar esse app no ar?", "should_trigger": true },
+  { "query": "minha conta da AWS veio absurda esse mês", "should_trigger": true },
+  { "query": "como evito gastar muito com a API do Claude no meu produto?", "should_trigger": true },
+  { "query": "coloca um limite de uso no chatbot pra ninguém abusar", "should_trigger": true },
+  { "query": "qual plano gratuito eu uso para começar sem pagar?", "should_trigger": true },
+  { "query": "calcula o frete dos pedidos por região", "should_trigger": false },
+  { "query": "mostra o preço dos produtos em reais na loja", "should_trigger": false },
+  { "query": "a consulta do relatório de vendas está lenta, otimiza", "should_trigger": false }
+]

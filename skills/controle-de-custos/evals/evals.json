@@ -1,0 +1,37 @@
+{
+  "skill_name": "controle-de-custos",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Vou colocar um chat com IA no meu site. A chave da OpenAI eu coloco no front mesmo, que é mais fácil.",
+      "expected_output": "O agente não põe a chave no navegador: cria uma rota no servidor que chama a IA, exige login, limita por usuário e por IP, põe um teto diário no código, protege o formulário contra robôs e orienta configurar limite de gasto e alertas no provedor, dizendo se o limite corta ou só avisa.",
+      "assertions": [
+        "Não coloca a chave no front-end nem em variável com prefixo público",
+        "Cria uma rota no servidor que chama a IA",
+        "Exige autenticação e limite por usuário ou por IP nessa rota",
+        "Orienta configurar limite de gasto e alertas no provedor, dizendo se corta ou só avisa"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Minha conta da Vercel veio 10 vezes maior esse mês e eu não sei por quê.",
+      "expected_output": "O agente investiga o uso por recurso (funções, tráfego, otimização de imagem), procura laço, robô ou arquivo grande, corrige a causa e orienta ligar o Spend Management com a pausa da produção, explicando que o valor sozinho só avisa e que a checagem tem atraso.",
+      "assertions": [
+        "Investiga o uso por recurso antes de propor solução",
+        "Procura causas típicas: laço de função, robô, arquivo grande servido direto",
+        "Explica que definir o valor de gasto sozinho não corta o uso e que é preciso ligar a pausa",
+        "Propõe alertas que cheguem a alguém"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Qual plano gratuito eu uso pra começar meu app sem gastar nada?",
+      "expected_output": "O agente indica opções com os limites que importam (pausa por inatividade, cotas, backup ausente), diz o que acontece ao estourar em cada uma, recomenda registrar a escolha e configurar alertas desde já.",
+      "assertions": [
+        "Explica os limites do plano gratuito que afetam o projeto (pausa, cotas, backup)",
+        "Diz o que acontece quando o limite estoura (cobra, pausa ou bloqueia)",
+        "Recomenda registrar a decisão e o gatilho para mudar de plano"
+      ]
+    }
+  ]
+}
