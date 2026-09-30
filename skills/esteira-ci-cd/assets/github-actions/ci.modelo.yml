@@ -146,3 +146,17 @@ jobs:
 
       - name: Teste de fumaça contra a homologação
         run: __COMANDO_FUMACA__
+
+  # Opcional (recomendado): auditoria automática dos próprios workflows — injeção de
+  # expressão, permissão demais, token persistido, gatilhos perigosos. Versão fixada; roda pelo
+  # pipx que vem no runner Ubuntu, sem dependência no projeto. Tire os comentários para ligar.
+  # auditar-workflows:
+  #   name: Auditoria dos workflows
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 5
+  #   steps:
+  #     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  #       with:
+  #         persist-credentials: false
+  #     - name: zizmor
+  #       run: pipx run zizmor==1.30.1 --format=github .

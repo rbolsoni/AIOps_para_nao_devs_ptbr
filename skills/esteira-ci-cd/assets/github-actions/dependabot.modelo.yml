@@ -23,6 +23,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Espera alguns dias antes de propor uma versão nova: versões maliciosas publicadas em
+    # pacotes legítimos costumam ser descobertas e retiradas nesse intervalo. Não atrasa
+    # atualização de segurança. (O Dependabot não oferece cooldown para github-actions.)
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: fix(deps)
       prefix-development: chore(deps)

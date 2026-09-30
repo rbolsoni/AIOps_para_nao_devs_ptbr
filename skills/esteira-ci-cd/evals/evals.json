@@ -36,6 +36,17 @@
         "Versão calculada por feat/fix/breaking",
         "Commits só de docs/chore não geram release"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Cria um workflow que, quando alguém abrir uma issue, posta um comentário repetindo o título dela.",
+      "expected_output": "O agente passa o título da issue por env: e usa a variável entre aspas no shell (nunca ${{ github.event.issue.title }} dentro do run:), declara permissions mínimas (issues: write só no job), fixa a action por SHA e explica que o título é escrito por qualquer pessoa e pode virar comando.",
+      "assertions": [
+        "Não interpola ${{ github.event.issue.title }} dentro do run:",
+        "Passa o título por env: e usa a variável entre aspas",
+        "Declara permissions mínimas, com escrita só no que o job precisa",
+        "Explica que conteúdo de issue é escrito por terceiros e pode virar comando"
+      ]
     }
   ]
 }
