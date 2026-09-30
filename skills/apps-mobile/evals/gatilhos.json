@@ -1,0 +1,9 @@
+[
+  { "query": "vou publicar meu app React Native na App Store, o que preciso ver antes?", "should_trigger": true },
+  { "query": "onde guardo o token do usuário no app Flutter?", "should_trigger": true },
+  { "query": "a Play Store pediu para preencher o formulário Data safety do meu app", "should_trigger": true },
+  { "query": "configura o deep link para o app abrir depois do login", "should_trigger": true },
+  { "query": "deixa o site responsivo para celular", "should_trigger": false },
+  { "query": "cria a landing page de divulgação do meu app", "should_trigger": false },
+  { "query": "otimiza as imagens do site para carregar mais rápido no 4G", "should_trigger": false }
+]

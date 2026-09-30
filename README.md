@@ -114,6 +114,7 @@ A skill `iniciar-projeto` pergunta o estágio e dimensiona o plano a ele
 | [`isolamento-de-ambientes`](skills/isolamento-de-ambientes/SKILL.md) | desenvolvimento, homologação e produção; nada de teste apontando para produção |
 | [`mudancas-de-banco`](skills/mudancas-de-banco/SKILL.md) | migrações, políticas de acesso (RLS), mudanças sem interrupção |
 | [`testes-e-qualidade`](skills/testes-e-qualidade/SKILL.md) | testes, cobertura, testes instáveis; todo bug ganha um teste |
+| [`apps-mobile`](skills/apps-mobile/SKILL.md) | app iOS ou Android: nenhum segredo no pacote, token no cofre do aparelho, login e links verificados, exigências das lojas |
 | [`desempenho-e-escalabilidade`](skills/desempenho-e-escalabilidade/SKILL.md) | sistema lento ou que precisa crescer: medir antes, banco (N+1, índices, paginação), cache, filas, Core Web Vitals e onde rodar |
 
 ### Segurança e conformidade

@@ -114,6 +114,7 @@ Se as skills de boas práticas estiverem instaladas, use-as nestas situações:
 | Esteira, release, deploy | `esteira-ci-cd`, `isolamento-de-ambientes` |
 | Banco de dados | `mudancas-de-banco` |
 | Lentidão, carga, escala | `desempenho-e-escalabilidade` |
+| App mobile (iOS, Android), publicação nas lojas | `apps-mobile` |
 | Senhas, chaves, `.env` | `segredos-e-credenciais` |
 | Login, permissões, formulários, APIs | `seguranca-de-aplicacao`, `headers-de-seguranca` |
 | Pagamento, cobrança, assinatura, webhook de pagamento | `pagamentos-e-webhooks` |
