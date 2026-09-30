@@ -12,6 +12,17 @@
         "Inclui orientação para o caso de a tela estar diferente",
         "Diz o que o agente vai verificar quando o usuário terminar"
       ]
+    },
+    {
+      "id": 2,
+      "prompt": "Os e-mails de recuperação de senha do meu app de clínica estão indo para o spam. O domínio está no Registro.br e eu não sei mexer em DNS.",
+      "expected_output": "O agente entrega um cartão passo a passo: adicionar o domínio no serviço de envio, criar no DNS os registros de SPF e DKIM que ele indicar (juntando num único SPF), criar o _dmarc começando em p=none com endereço de relatórios, verificar, e endurecer para quarantine e reject depois de algumas semanas; explica como confirmar pelo \"Mostrar original\" do Gmail.",
+      "assertions": [
+        "Entrega os passos no formato de cartão, em linguagem simples, sem pedir acesso ao painel",
+        "Cria SPF e DKIM a partir dos registros do serviço de envio, com um único registro SPF",
+        "Começa o DMARC em p=none e explica quando endurecer",
+        "Diz como confirmar (SPF, DKIM e DMARC como PASS)"
+      ]
     }
   ]
 }

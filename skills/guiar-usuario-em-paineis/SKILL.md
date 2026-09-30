@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.1.0"
+  versao: "1.2.0"
 ---
 
 # Guiar o usuário em painéis externos
@@ -68,8 +68,8 @@ permissão — ou peça confirmação explícita antes.
 
 Exemplos prontos para situações frequentes (secrets de environment no GitHub, ruleset,
 varredura de segredos, deploy automático da Vercel, integração de banco que pula a
-esteira, DNS, verificação em duas etapas nas contas, token com validade e permissão mínima,
-limite de gasto): [references/exemplos-de-tarefas.md](references/exemplos-de-tarefas.md).
+esteira, DNS, e-mail do domínio (SPF, DKIM e DMARC), verificação em duas etapas nas contas,
+token com validade e permissão mínima, limite de gasto): [references/exemplos-de-tarefas.md](references/exemplos-de-tarefas.md).
 Adapte ao caso e confira se o caminho ainda é o mesmo.
 
 ## Ao entregar a lista
