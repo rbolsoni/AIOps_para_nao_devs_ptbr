@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Relatar uma vulnerabilidade (canal privado)
-    url: https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/security/advisories/new
+    url: https://github.com/rbolsoni/IA-skills-para-nao-devs/security/advisories/new
     about: Não abra issue pública para falha de segurança. Use o relato privado do GitHub (veja o SECURITY.md).

@@ -1,11 +1,11 @@
 {
-  "name": "aiops-para-nao-devs-ptbr",
+  "name": "ia-skills-para-nao-devs",
   "version": "1.0.0",
   "description": "Skills em português (padrão Agent Skills) que fazem qualquer agente de IA programar com as boas práticas de mercado: segurança, governança, CI/CD, documentação e qualidade. Inclui servidor MCP somente leitura.",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "aiops-para-nao-devs-ptbr": "mcp/servidor.mjs"
+    "ia-skills-para-nao-devs": "mcp/servidor.mjs"
   },
   "files": [
     "mcp/",
@@ -28,11 +28,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr.git"
+    "url": "git+https://github.com/rbolsoni/IA-skills-para-nao-devs.git"
   },
-  "homepage": "https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr#readme",
+  "homepage": "https://github.com/rbolsoni/IA-skills-para-nao-devs#readme",
   "bugs": {
-    "url": "https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/issues"
+    "url": "https://github.com/rbolsoni/IA-skills-para-nao-devs/issues"
   },
   "keywords": [
     "agent-skills",
