@@ -96,6 +96,7 @@ Estas regras ficam aqui, e não só nas skills, porque este arquivo é lido em t
 - [ ] Documentação e `.env.example` atualizados.
 - [ ] Nenhum segredo ou dado pessoal novo exposto.
 - [ ] Usuário sabe o que precisa fazer em painéis externos, se houver.
+- [ ] A entrega diz, em linguagem simples, o que mudou, como conferir e o que pode dar errado.
 
 ## Skills recomendadas
 

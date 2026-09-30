@@ -61,6 +61,21 @@ em [instalacao.md](instalacao.md)).
   explica como.
 - **Salve antes de mudança grande**: peça "faça um commit antes de começar". É o seu "desfazer".
 
+## Como conferir o que o agente fez
+
+Você não precisa ler código para conferir o trabalho:
+
+1. **Peça a entrega em três partes**, se ela não vier assim: o que mudou, como conferir na
+   tela e o que pode dar errado.
+2. **Faça você mesmo o caminho principal** numa versão de teste (a prévia da hospedagem),
+   não no app que os usuários usam.
+3. **Mudança que mexe com dinheiro, dados de pessoas ou permissões** merece um segundo olhar:
+   numa conversa nova (ou em outro agente), peça "revise esta mudança como se fosse de outra
+   pessoa, procurando falhas" e cole o que o primeiro agente entregou.
+4. **Antes de publicar**, peça "Faça um diagnóstico do meu projeto." Erro no diagnóstico vem
+   antes de qualquer novidade.
+5. **Piorou?** Peça "volte para a última versão que funcionava" e só depois investigue.
+
 ## O que o agente vai pedir para você fazer
 
 Algumas etapas acontecem em painéis de sites (GitHub, Vercel, Supabase…) e dependem de você:
