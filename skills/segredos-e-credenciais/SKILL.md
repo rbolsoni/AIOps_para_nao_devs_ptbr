@@ -8,7 +8,7 @@ license: MIT
 compatibility: O script de varredura requer Node.js 20+; usa o git quando disponível.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.2"
+  versao: "1.1.0"
 ---
 
 # Segredos e credenciais
@@ -79,10 +79,14 @@ credencial.
 ## Script disponível
 
 - **`scripts/verificar-segredos.mjs`** — procura chaves privadas, tokens de provedores
-  conhecidos, JWT com papel de serviço, URL com senha, `.env` versionado, credencial literal
-  de alta entropia e valor padrão literal para variável sensível (JS/TS, Python, Ruby, PHP,
-  C#, Java). Opções: `--todos`, `--json`, `--help`. Sai com 1 se encontrar algo. Nunca
-  imprime o segredo inteiro.
+  conhecidos (GitHub, GitLab, npm, AWS, Google, Stripe, Slack, Discord, Telegram, SendGrid,
+  Hugging Face, Supabase, provedores de LLM), JWT com papel de serviço, URL com senha, `.env`
+  versionado, credencial literal de alta entropia — inclusive em JSON, como configurações de
+  app e de MCP — e valor padrão literal para variável sensível (JS/TS, Python, Ruby, PHP, C#,
+  Java). Lê arquivos UTF-16 (o `>` do Windows PowerShell 5.1 grava assim) e **lista o que não
+  varreu** (acima de 1 MB, binário), para "não verifiquei" não passar por "está limpo".
+  Opções: `--todos`, `--json`, `--help`. Sai com 1 se encontrar algo. Nunca imprime o
+  segredo inteiro.
 
 ## Armadilhas
 
