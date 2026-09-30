@@ -18,7 +18,9 @@
     "validar": "node ferramentas/validar-skills.mjs",
     "test": "node --test",
     "verificar:segredos": "node skills/segredos-e-credenciais/scripts/verificar-segredos.mjs",
-    "mcp": "node mcp/servidor.mjs"
+    "mcp": "node mcp/servidor.mjs",
+    "conferir:versoes": "node ferramentas/conferir-versoes.mjs",
+    "test:cobertura": "node --test --experimental-test-coverage --test-coverage-exclude=\"testes/**\" --test-coverage-lines=89 --test-coverage-branches=80 --test-coverage-functions=90"
   },
   "engines": {
     "node": ">=20"

@@ -1,4 +1,8 @@
 # Mantém as actions fixadas por SHA atualizadas. O kit não tem dependências npm.
+#
+# Sem "cooldown" (período de espera para versões novas): o Dependabot não oferece a opção
+# para o ecossistema github-actions. A proteção aqui é a fixação por SHA, a revisão do PR do
+# Dependabot e a auditoria dos workflows na CI (zizmor).
 version: 2
 updates:
   - package-ecosystem: github-actions

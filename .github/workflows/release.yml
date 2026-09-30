@@ -4,13 +4,17 @@
 name: Release
 
 on:
-  workflow_run:
+  # workflow_run roda com os privilégios deste repositório e também é disparado pelo CI de PR
+  # vindo de fork. É seguro aqui porque o job só roda para CI de push em main (só quem tem
+  # escrita consegue) e faz checkout exatamente do SHA que o CI aprovou.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: [CI]
     types: [completed]
     branches: [main]
 
+# O workflow só lê; o job da release eleva para escrita.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release
@@ -22,11 +26,16 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write # criar tag e GitHub Release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          # O token deste job tem escrita: não fica configurado no git para os passos
+          # seguintes. A release usa gh com GH_TOKEN.
+          persist-credentials: false
 
       - id: calculo
         run: bash .github/scripts/proxima-versao.sh >> "$GITHUB_OUTPUT"
@@ -37,12 +46,15 @@ jobs:
 
       - name: Criar tag e release
         if: steps.calculo.outputs.proxima != ''
+        # Valores do GitHub entram pelo env: e são usados entre aspas, nunca como ${{ }} no run:.
         env:
           GH_TOKEN: ${{ github.token }}
           VERSAO: ${{ steps.calculo.outputs.proxima }}
+          REPO: ${{ github.repository }}
+          ALVO: ${{ github.event.workflow_run.head_sha }}
         run: |
           gh release create "$VERSAO" \
-            --repo "${{ github.repository }}" \
-            --target "${{ github.event.workflow_run.head_sha }}" \
+            --repo "$REPO" \
+            --target "$ALVO" \
             --title "$VERSAO" \
             --generate-notes
