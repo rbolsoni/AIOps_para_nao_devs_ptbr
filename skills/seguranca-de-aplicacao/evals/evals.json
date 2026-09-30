@@ -22,6 +22,17 @@
         "Propõe armazenamento privado e download por URL assinada de curta duração",
         "Cada achado tem cenário de exploração e prioridade"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "Faz a rota PUT /perfil que atualiza o perfil do usuário com o que vier do formulário.",
+      "expected_output": "O agente confere a autenticação e que o perfil é do próprio usuário, e grava só uma lista explícita de campos editáveis (nome, telefone…), nunca o corpo inteiro da requisição — papel, dono, status e afins não vêm do cliente —, com validação de entrada e teste que tenta mandar papel de administrador.",
+      "assertions": [
+        "Não passa o corpo da requisição inteiro para o banco ou para o ORM",
+        "Lista explicitamente os campos que o usuário pode alterar",
+        "Confere no servidor que o perfil pertence ao usuário autenticado",
+        "Propõe um teste que envia papel de administrador e exige que seja ignorado ou recusado"
+      ]
     }
   ]
 }

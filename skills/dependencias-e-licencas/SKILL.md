@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.2"
+  versao: "1.1.0"
 ---
 
 # Dependências e licenças
@@ -21,12 +21,16 @@ acrescentou é o trabalho.
 
 1. **Precisa mesmo?** A biblioteca padrão ou algo já instalado resolve? Dez linhas suas
    podem valer mais que um pacote com quarenta dependências transitivas.
-2. **É o pacote certo?** Confira o nome exato (pacotes com nome quase igual são um ataque
-   comum), o repositório de origem, o mantenedor e a atividade recente.
+2. **É o pacote certo — e ele existe mesmo?** Confira o nome exato (pacotes com nome quase
+   igual são um ataque comum), o repositório de origem, o mantenedor e a atividade recente.
+   Pacote sugerido por IA merece cuidado dobrado: modelos inventam nomes plausíveis, e
+   atacantes registram esses nomes esperando quem instale sem conferir. Pacote que não existe
+   no registro oficial, ou criado há poucos dias com um nome "óbvio", é sinal de alerta.
 3. **Qual a licença?** Veja a seção abaixo. Na dúvida, não adicione e pergunte.
 4. **Tem vulnerabilidade conhecida?** Consulte o auditor do ecossistema antes.
 5. **Roda código na instalação?** Scripts de `postinstall` e afins executam na máquina e na
-   esteira; desconfie de pacote pequeno com script de instalação.
+   esteira, com os segredos que estiverem ali — é o caminho mais comum de pacote malicioso.
+   Desconfie de pacote pequeno com script de instalação.
 6. Adicione pelo gerenciador (que atualiza o lockfile) e **commite o lockfile**.
 
 ## Política de licenças
@@ -84,6 +88,15 @@ outro repositório:
   registrada com prazo.
 - Atualizações automáticas (Dependabot/Renovate) com PRs pequenos e agrupados.
 - Actions, imagens base e ferramentas da esteira fixadas por SHA/digest ou versão exata.
+- **Idade mínima de versão.** Versões maliciosas publicadas em pacotes legítimos costumam
+  ser descobertas e retiradas em horas ou dias. Espere alguns dias antes de adotar uma versão
+  nova — no Dependabot, no Renovate e nos gerenciadores que oferecem a opção. Correção de
+  segurança segue o fluxo dela. Como configurar em cada ferramenta:
+  [references/ferramentas-por-ecossistema.md](references/ferramentas-por-ecossistema.md).
+- **Scripts de instalação desligados por padrão** onde o gerenciador permitir, liberando só
+  os pacotes que precisam compilar.
+- **MCP, skills, plugins de agente, extensões de editor e actions da esteira também são
+  dependências**: origem conferida, versão fixada e menor privilégio (`uso-seguro-de-agentes`).
 - Prefira pacotes com procedência verificável (assinatura, *provenance*) quando o
   ecossistema oferecer.
 
@@ -95,5 +108,7 @@ outro repositório:
   pacote novo com o mesmo prefixo. Revise ao aparecer pacote novo.
 - **Licença dupla (`A OR B`) e composta (`A AND B`)**: em `OR` você escolhe uma; em `AND`
   cumpre as duas.
+- **Pacote sugerido pela IA instalado sem conferir.** O nome parecia certo — e era um
+  pacote registrado dias antes por quem apostou que alguém instalaria sem olhar.
 - **Ferramenta de verificação sem versão fixa** (`npx ferramenta` sem `@versão`): o
   resultado muda sozinho entre duas execuções.

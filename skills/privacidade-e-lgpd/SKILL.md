@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.1"
+  versao: "1.1.0"
 ---
 
 # Privacidade e LGPD
@@ -60,6 +60,18 @@ Referência rápida dos artigos e das resoluções da ANPD:
 7. **Criptografia em trânsito (HTTPS) sempre** e em repouso conforme o provedor; backups
    também contêm dados pessoais.
 8. **Rastro de auditoria** para acesso e alteração de dados pessoais por operadores.
+9. **Backups entram na retenção**: o que o titular pediu para apagar sai também dos backups,
+   no prazo definido (`backup-e-recuperacao`).
+
+## Dados pessoais e agentes de IA
+
+- O que o agente lê — por conector de banco (MCP), exportação, captura de tela ou log — vai
+  para o provedor do modelo: é compartilhamento com terceiro e, em geral, transferência
+  internacional.
+- Não conecte o agente a dados reais de produção; trabalhe com homologação e dados fictícios
+  (`isolamento-de-ambientes`, `uso-seguro-de-agentes`).
+- Se for inevitável: base legal, termos do provedor (retenção e uso para treinamento),
+  contrato, só os campos necessários e mascarados, e registro no inventário de dados.
 
 ## Direitos do titular — implemente os fluxos
 

@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.2"
+  versao: "1.1.0"
 ---
 
 # Esteira de CI/CD
@@ -90,6 +90,12 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
     do `run:`, ele é colado no script antes de rodar e pode virar comando.
 13. **Não cancele quem publica.** `cancel-in-progress` só em PR. Run que migra banco ou
     publica, na homologação ou na produção, nunca é cancelado no meio: o novo espera.
+14. **Conteúdo de terceiros não vira código.** Título e corpo de issue e de PR, nome de
+    branch e mensagem de commit podem ser escritos por qualquer pessoa: nunca entram no `run:`
+    por `${{ }}` (princípio 12). Evite `pull_request_target` e, nele, nunca faça checkout do
+    código do PR. Agente de IA na esteira só com disparo de quem tem escrita, token mínimo e
+    nenhum segredo de produção (`uso-seguro-de-agentes`). Detalhes em
+    [references/licoes-de-esteira.md](references/licoes-de-esteira.md).
 
 ## 4. Como montar
 
@@ -106,6 +112,9 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
 - [ ] Cadastrar segredos nos environments `staging` e `production` (tarefa de painel).
 - [ ] Se o plano permitir, criar ruleset exigindo PR e CI verde na `main` (e na `staging`).
       Mesmo com ele, mantenha a trava na esteira.
+- [ ] Ligar a auditoria automática dos workflows (passo opcional no modelo de CI, com versão
+      fixada): ela pega injeção de expressão, permissão demais e token persistido.
+- [ ] Ter o caminho de volta pronto: modelo de voltar versão da skill `backup-e-recuperacao`.
 
 ## 5. Prove que a trava funciona
 
@@ -119,6 +128,8 @@ Uma trava que nunca foi vista barrando não é uma trava. Em um PR de teste (ou 
 4. Num fork, faça um commit direto na `main` e depois uma promoção normal → a release
    precisa abortar mostrando o arquivo que difere da homologação.
 5. Mescle só `docs:` → nenhuma tag e nenhum deploy.
+6. Volte uma versão pelo workflow de voltar versão → a produção volta à tag anterior e o
+   teste de fumaça passa.
 
 Registre o resultado no PR que introduziu a esteira.
 

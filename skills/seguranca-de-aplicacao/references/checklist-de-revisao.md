@@ -33,6 +33,10 @@ problema, registre: local, cenário de exploração, impacto, correção e prior
 - [ ] Limites de taxa em autenticação e endpoints caros.
 - [ ] Fluxos de várias etapas não podem ser pulados chamando a última etapa direto.
 - [ ] Valores calculados no servidor (preço, desconto, frete), nunca aceitos do cliente.
+- [ ] Nenhuma rota grava o corpo da requisição inteiro: campos permitidos listados (sem
+      papel, dono, preço, saldo ou status vindos do cliente).
+- [ ] Rotas que chamam IA, e-mail, SMS ou API paga exigem login e têm limite por usuário e
+      teto diário.
 
 ## Configuração
 

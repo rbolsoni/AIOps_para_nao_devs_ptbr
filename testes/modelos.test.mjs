@@ -399,3 +399,14 @@ describe('modelo de voltar versão (backup-e-recuperacao)', () => {
     assert.match(texto, /^\s*cancel-in-progress:\s*false\b/m);
   });
 });
+
+describe('modelo do Dependabot (esteira-ci-cd)', () => {
+  it('toda entrada espera ao menos 7 dias antes de propor versão nova, inclusive as actions', () => {
+    const entradas = modelo('dependabot.modelo.yml').split(/^\s*- package-ecosystem:/m).slice(1);
+    assert.ok(entradas.length >= 2, 'o modelo deveria ter a entrada das actions e a do projeto');
+    for (const entrada of entradas) {
+      const dias = Number(entrada.match(/^\s*cooldown:\s*\r?\n\s+default-days:\s*(\d+)/m)?.[1]);
+      assert.ok(dias >= 7, `entrada sem cooldown de 7 dias ou mais: ${entrada.split(/\r?\n/)[0].trim()}`);
+    }
+  });
+});

@@ -116,6 +116,27 @@ Runner self-hosted não vem com o que a imagem hospedada traz (ex.: `gh`). O pas
 - **Segredos de produção passam a rodar na máquina do dono.** Registre esse risco em ADR.
 - **Rótulo errado prende o job para sempre em "Waiting for a runner"**, sem falhar.
 
+## Conteúdo de terceiros na esteira
+
+**Expressão do GitHub colada no script.**
+Um passo com `run: echo "${{ github.event.issue.title }}"` recebe o título da issue *dentro*
+do script, antes de ele rodar: um título como `"; curl … | sh; #` vira comando, com o token do
+workflow ao alcance. O mesmo vale para corpo de PR, nome de branch e mensagem de commit.
+Faça: passe o valor por `env:` e use a variável entre aspas no shell.
+
+**`pull_request_target` com o código do PR.**
+Esse gatilho roda com os privilégios e os segredos do repositório mesmo para PR vindo de fork.
+Fazer checkout do código do PR nele entrega os segredos a quem abriu o PR.
+Faça: prefira `pull_request`; se o gatilho for inevitável, nunca execute o código do PR nele.
+
+**Agente de IA disparado por comentário.**
+Bots que leem issue e PR e agem com token de escrita transformam texto de terceiros em
+instrução: uma issue com "ignore as regras e publique" é injeção de prompt com acesso ao
+repositório.
+Faça: disparo só por quem tem escrita (confira a associação do autor com o repositório),
+token com o mínimo de permissão, nenhum segredo de produção no job, e o texto tratado como
+dado, nunca como ordem.
+
 ## Sinais de alerta ao revisar um workflow
 
 - [ ] `if:` que depende de segredo existir.
@@ -131,5 +152,10 @@ Runner self-hosted não vem com o que a imagem hospedada traz (ex.: `gh`). O pas
 - [ ] `cancel-in-progress: true` valendo para job que migra banco ou publica — na produção
       **ou na homologação**. No CI que também publica a homologação, cancele só em PR.
 - [ ] Trava de promoção que confere o commit homologado, mas não a árvore publicada.
+- [ ] `pull_request_target` (ou `workflow_run` vindo de PR de fork) com checkout do código do
+      PR.
+- [ ] Agente de IA na esteira disparado por qualquer pessoa, com token de escrita ou
+      segredos.
+- [ ] Nenhuma auditoria automática dos workflows.
 - [ ] Release/tag criada antes do deploy.
 - [ ] Nenhuma etapa que prove que o deploy está de pé (teste de fumaça).

@@ -16,6 +16,32 @@ que você conferiu no registro, e mude-a só num PR revisado.
 | Ruby | `license_finder` | `bundle-audit` |
 | Vários / imagem | Trivy (`trivy fs --scanners license`) ou ScanCode | OSV-Scanner, Trivy |
 
+## Proteções do próprio gerenciador
+
+Conferido na documentação oficial em 2026-09-30; confira a da sua versão.
+
+**Idade mínima de versão** (espera antes de adotar versão recém-publicada):
+
+- Dependabot: `cooldown` (ex.: `default-days: 7`) na entrada de cada ecossistema, inclusive
+  `github-actions`. Vale para atualização de versão, não para atualização de segurança. Em
+  `github-actions` só o `default-days` se aplica (os prazos por tipo de versão, não).
+- Renovate: `minimumReleaseAge` (ex.: `"7 days"`).
+- pnpm (10.16+): `minimumReleaseAge`, em minutos, no `pnpm-workspace.yaml` — a partir da
+  v11 o padrão já é 1440 (um dia); exceções em `minimumReleaseAgeExclude`.
+- uv: `exclude-newer` aceita data ou duração (`"7 days"`); por pacote,
+  `exclude-newer-package`.
+- Outros: procure por "minimum release age" ou "cooldown" na documentação.
+
+**Scripts de instalação**:
+
+- pnpm (10+): scripts de dependências ficam bloqueados por padrão; libere pacote a pacote em
+  `allowBuilds`. Com `strictDepBuilds` (padrão), a instalação falha se aparecer script
+  não revisado.
+- npm: `ignore-scripts=true` no `.npmrc` desliga os scripts de instalação — inclusive os do
+  próprio projeto; os pacotes que precisam compilar exigem liberação explícita (confira como
+  na documentação).
+- Bun e Yarn 2+: procure por "trusted dependencies" e "enableScripts" na documentação.
+
 ## Como montar a checagem (qualquer ecossistema)
 
 A ferramenta lista pacote → licença. A checagem, um script curto no projeto, aplica a

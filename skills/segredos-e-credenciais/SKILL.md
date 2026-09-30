@@ -8,7 +8,7 @@ license: MIT
 compatibility: O script de varredura requer Node.js 20+; usa o git quando disponível.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.0"
+  versao: "1.2.0"
 ---
 
 # Segredos e credenciais
@@ -54,6 +54,14 @@ colaboradores e é copiado por ferramentas.
 9. **Arquivos locais de ferramentas também carregam segredo** (tokens de plugins de build,
    `.npmrc`, credenciais de CLI). Eles precisam estar no `.gitignore` — e causam efeitos
    externos quando a ferramenta roda localmente.
+10. **O agente de IA não lê segredos.** Bloqueie a leitura de `.env*` e de chaves na
+    configuração da ferramenta (`uso-seguro-de-agentes`): o `.gitignore` não protege do
+    agente, e o que ele lê vai para o provedor do modelo e para o histórico da conversa.
+11. **Configuração de MCP e de ferramentas de IA não leva token literal.** `.mcp.json`,
+    `.vscode/mcp.json`, `.cursor/mcp.json` e afins costumam ser versionados: use a referência
+    a variável de ambiente que a ferramenta oferece — `${API_KEY}` no `.mcp.json` do Claude
+    Code; `${input:id}` ou `envFile` no VS Code; `$VAR` no `settings.json` do Gemini CLI.
+    Confira a sintaxe na documentação da sua ferramenta.
 
 ## Varredura
 
@@ -98,5 +106,7 @@ credencial.
   Restrinja regras de código a arquivos de código.
 - **Segredo passado como argumento de linha de comando** aparece na lista de processos e
   no histórico do shell. Use variável de ambiente ou arquivo com permissão restrita.
+- **Log ou mensagem de erro colado na conversa com o token dentro**: ele agora está no
+  histórico da conversa e no provedor do modelo. Mascare antes; se já foi, rotacione.
 - **`echo $SEGREDO` para "depurar" na esteira**: a máscara automática da plataforma não
   cobre valores transformados (base64, trechos). Não imprima.

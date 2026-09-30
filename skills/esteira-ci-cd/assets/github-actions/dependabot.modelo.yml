@@ -13,6 +13,11 @@ updates:
     target-branch: __BRANCH_BASE__
     schedule:
       interval: weekly
+    # Espera alguns dias antes de propor uma versão nova: versões maliciosas publicadas em
+    # projetos legítimos costumam ser descobertas e retiradas nesse intervalo. Não atrasa
+    # atualização de segurança. Para actions, só o default-days vale.
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ci
 
@@ -23,6 +28,8 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: fix(deps)
       prefix-development: chore(deps)
