@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: fundamentos
-  versao: "1.1.0"
+  versao: "1.2.0"
 ---
 
 # Disciplina de código
@@ -73,6 +73,17 @@ algo num painel — use a skill `guiar-usuario-em-paineis`).
    é sinal de dano (terminação de linha trocada, formatação automática, arquivo gerado).
 4. **Relate com fidelidade**: o que rodou e passou, o que rodou e falhou (com a saída), o
    que não rodou e por quê. Nunca escreva "testado" sem ter executado.
+5. **Entregue algo que quem não programa consiga conferir**, em três partes curtas e em
+   linguagem simples:
+   - **o que mudou**, como comportamento ("o formulário recusa e-mail sem @"), não como lista
+     de arquivos;
+   - **como conferir**, em passos que a pessoa faz na tela, com o resultado esperado de cada
+     um. Mudança que não aparece na tela: diga isso e mostre a prova (saída do teste,
+     resposta da API);
+   - **o que pode dar errado**, com o risco real e o que fazer se acontecer.
+6. **Mudança de risco pede um segundo olhar.** Dinheiro, dados de pessoas, permissão ou
+   produção: proponha que outra sessão ou outro agente, sem o contexto desta conversa,
+   revise só o pedido e o diff procurando falhas (skill `orquestracao-multiagente`).
 
 ### Definição de pronto
 
@@ -82,6 +93,7 @@ algo num painel — use a skill `guiar-usuario-em-paineis`).
 - [ ] Nenhum segredo, senha ou dado pessoal entrou no código (veja `segredos-e-credenciais`).
 - [ ] Documentação e `.env.example` acompanham a mudança (veja `documentacao-viva`).
 - [ ] O usuário sabe o que falta fazer do lado dele, se houver algo.
+- [ ] A entrega diz, em linguagem simples, o que mudou, como conferir e o que pode dar errado.
 
 ## Quando parar e perguntar
 

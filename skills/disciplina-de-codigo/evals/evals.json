@@ -42,6 +42,17 @@
         "Mostra um plano curto com a verificação de cada etapa",
         "Não mistura refatoração com mudança de comportamento"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Adiciona um campo de telefone no cadastro de pacientes. Não sou programadora, então me diz como eu confiro.",
+      "expected_output": "O agente faz a mudança com o critério verificável e o teste, e termina com três partes em linguagem simples: o que mudou (o cadastro pede telefone e recusa formato inválido), como conferir na tela (passos na prévia com o resultado esperado) e o que pode dar errado (cadastros antigos sem telefone, dado pessoal novo a proteger).",
+      "assertions": [
+        "Termina dizendo o que mudou como comportamento, não como lista de arquivos",
+        "Dá passos de conferência na tela, com o resultado esperado de cada um",
+        "Diz o que pode dar errado e o que fazer se acontecer",
+        "Usa linguagem simples, sem jargão sem explicação"
+      ]
     }
   ]
 }
