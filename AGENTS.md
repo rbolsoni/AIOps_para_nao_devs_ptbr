@@ -18,12 +18,15 @@ por cópia de pastas e por um servidor MCP somente leitura. Sem dependências de
 | Varredura de segredos | `npm run verificar:segredos` |
 | Conferir se as skills alteradas subiram de versão | `npm run conferir:versoes` |
 | Testes com cobertura mínima (catraca) | `npm run test:cobertura` |
+| Medir a ativação das skills num agente de verdade | `npm run avaliar:gatilhos -- --simular` (depois sem `--simular`) |
 | Rodar o servidor MCP | `npm run mcp` |
 
 Antes de abrir PR, rode `validar`, `test`, `verificar:segredos` e `conferir:versoes`. A
 esteira (`.github/workflows/ci.yml`) roda os mesmos no Ubuntu (Node 20, 22 e 24) e no
 Windows (Node 24), a cobertura com piso, a conferência de versões nos PRs e a auditoria dos
-workflows com o zizmor. O piso de cobertura fica no script `test:cobertura`: suba-o à mão
+workflows com o zizmor. O `avaliar:gatilhos` **não** roda na esteira: cada consulta é uma
+chamada ao agente e consome a cota de quem roda; use antes de release e ao mexer em
+descrições. O piso de cobertura fica no script `test:cobertura`: suba-o à mão
 quando a cobertura subir de verdade, nunca para o valor exato medido.
 
 ## Estrutura

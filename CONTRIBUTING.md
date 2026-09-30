@@ -58,9 +58,12 @@ que um agente cometeu, uma armadilha que custou horas, uma correção que você 
    O validador cobra também as regras do kit (licença, categoria, versão, frontmatter estrito,
    caracteres invisíveis) e o teste do catálogo confere que a skill está no README, na seção
    da categoria dela.
-9. **Teste de verdade num agente**: instale a skill a partir do seu clone
-   (`npx skills add ./ -s <nome>`), rode as consultas de gatilho e alguns casos de
-   `evals.json` com e sem a skill. Conte no PR o que observou.
+9. **Teste de verdade num agente**: meça a ativação com as consultas do `gatilhos.json`:
+   `npm run avaliar:gatilhos -- --skill <nome> --simular` mostra quantas chamadas serão feitas;
+   sem `--simular`, roda no Claude Code (ou no agente de `--comando`) e aponta cada consulta que
+   ativou quando não devia, ou não ativou quando devia. Cada chamada consome a sua cota. No
+   Windows, passe o executável em `--comando` (um `.cmd` não roda sem shell). Rode também
+   alguns casos de `evals.json` com e sem a skill. Conte no PR o que observou.
 10. **Atualize o catálogo** no README, se a skill for nova.
 
 ## Scripts
