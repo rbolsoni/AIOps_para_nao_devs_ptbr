@@ -104,7 +104,7 @@ A skill `iniciar-projeto` pergunta o estágio e dimensiona o plano a ele
 
 | Skill | Ativa quando |
 |---|---|
-| [`iniciar-projeto`](skills/iniciar-projeto/SKILL.md) | começar ou organizar um repositório; "deixar pronto para produção" |
+| [`iniciar-projeto`](skills/iniciar-projeto/SKILL.md) | começar ou organizar um repositório; "deixar pronto para produção"; inclui diagnóstico automático do projeto |
 | [`fluxo-de-git`](skills/fluxo-de-git/SKILL.md) | branch, commit, PR, merge, revert; Commits Convencionais |
 | [`esteira-ci-cd`](skills/esteira-ci-cd/SKILL.md) | pipelines, deploy, release e versão semântica; a trava que impede código sem teste em produção |
 | [`isolamento-de-ambientes`](skills/isolamento-de-ambientes/SKILL.md) | desenvolvimento, homologação e produção; nada de teste apontando para produção |
