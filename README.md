@@ -52,7 +52,7 @@ executaria a cada início o que estiver na branch principal):
   "mcpServers": {
     "aiops-para-nao-devs-ptbr": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0"]
+      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.1.1"]
     }
   }
 }
