@@ -44,8 +44,8 @@ e chaves próprias. Esquema ou prefixo diferente dentro do mesmo projeto não é
    (ex.: `seeds/homologacao/`), com dados claramente fictícios. Nunca roda em produção.
 5. **Dado de produção não desce para teste** sem anonimização irreversível (veja
    `privacidade-e-lgpd`). Prefira gerar dados fictícios.
-6. **Diga sempre de qual ambiente veio a observação.** "Os pedidos estão zerados" não
-   serve; "os pedidos estão zerados na homologação, consultando a tabela X" serve. Os dados
+6. **Diga sempre de qual ambiente veio a observação.** "Os registros estão zerados" não
+   serve; "os registros estão zerados na homologação, consultando a tabela X" serve. Os dados
    dos ambientes são diferentes, e uma conclusão de um não vale para o outro.
 7. **Ferramentas de inspeção com acesso de leitura.** Conectores de banco para agentes de
    IA, dashboards e consoles usam credencial somente leitura sempre que possível. Escrita

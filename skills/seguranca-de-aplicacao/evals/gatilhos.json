@@ -1,7 +1,7 @@
 [
   { "query": "implementa o login com e-mail e senha no meu app", "should_trigger": true },
   { "query": "faz uma revisão de segurança dessa API antes de lançar", "should_trigger": true },
-  { "query": "o usuário comum conseguiu ver o pedido de outro trocando o número na URL", "should_trigger": true },
+  { "query": "o usuário comum conseguiu ver o documento de outro trocando o número na URL", "should_trigger": true },
   { "query": "cria o painel de administrador para bloquear usuários", "should_trigger": true },
   { "query": "adiciona upload de foto de perfil", "should_trigger": true },
   { "query": "o site está lento para carregar as imagens, otimiza", "should_trigger": false },

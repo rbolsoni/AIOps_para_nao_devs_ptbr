@@ -2,9 +2,9 @@
   { "query": "quero construir um agente de IA que automatiza o atendimento", "should_trigger": true },
   { "query": "como faço tool calling funcionando igual com OpenAI e Claude?", "should_trigger": true },
   { "query": "meu agente estoura a janela de contexto em tarefas longas", "should_trigger": true },
-  { "query": "cria um servidor MCP que expõe nosso catálogo de produtos para agentes", "should_trigger": true },
+  { "query": "cria um servidor MCP que expõe nosso catálogo de documentos para agentes", "should_trigger": true },
   { "query": "quero que o agente melhore o próprio prompt com base nos erros", "should_trigger": true },
   { "query": "cria uma API REST de cadastro de clientes em Node", "should_trigger": false },
   { "query": "qual a diferença entre GPT e Claude para escrever textos de marketing?", "should_trigger": false },
-  { "query": "escreve um prompt para gerar a descrição dos produtos da loja", "should_trigger": false }
+  { "query": "escreve um prompt para gerar a descrição dos relatórios do sistema", "should_trigger": false }
 ]

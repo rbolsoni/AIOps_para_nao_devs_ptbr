@@ -51,7 +51,7 @@ frontmatter com `nome`, `descricao`, `tipo` e `atualizado`, e o fato no corpo.
 |---|---|---|
 | `usuario` | quem é o usuário, nível técnico, como prefere receber informação | "não é programador; quer passos de painel com captura do caminho de menus" |
 | `feedback` | correção ou aprovação sobre o seu modo de trabalhar | "mostrar mudança de texto visível ao cliente e esperar OK antes de aplicar" |
-| `projeto` | fato, restrição ou decisão em andamento que não está no código | "catálogo fica atrás do login por decisão de produto; não propor páginas públicas" |
+| `projeto` | fato, restrição ou decisão em andamento que não está no código | "o painel principal fica atrás do login por regra de negócio; não propor páginas públicas" |
 | `referencia` | onde encontrar algo fora do repositório | "painel de erros: projeto X na ferramenta Y; alertas vão para o canal Z" |
 
 Para `feedback` e `projeto`, o corpo termina com duas linhas:

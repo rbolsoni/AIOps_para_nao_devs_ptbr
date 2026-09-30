@@ -13,7 +13,7 @@
 
 ## Diálogo
 
-- Fluxos permitidos definidos (ex.: consultar pedido, segunda via, falar com humano).
+- Fluxos permitidos definidos (ex.: consultar status, segunda via, falar com humano).
 - Gatilhos de escalonamento: insatisfação, pedido de humano, tema sensível, repetição.
 - Respostas padronizadas para recusa, com explicação curta e caminho alternativo.
 

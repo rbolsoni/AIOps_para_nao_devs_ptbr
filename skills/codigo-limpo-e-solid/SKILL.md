@@ -36,7 +36,7 @@ ele está sendo mal aplicado.
 
 ## Nomes
 
-- O nome diz **o que é** ou **o que faz**, no vocabulário do negócio: `pedidosVencidos`,
+- O nome diz **o que é** ou **o que faz**, no vocabulário do negócio: `registrosPendentes`,
   não `lista2`; `calcularFrete`, não `processa`.
 - Booleanos como pergunta: `estaAtivo`, `temPermissao`.
 - Evite abreviações que só o autor entende e prefixos de tipo (`strNome`).

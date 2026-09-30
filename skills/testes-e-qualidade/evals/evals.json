@@ -3,12 +3,12 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Achei um bug: o desconto de 10% está sendo aplicado duas vezes no carrinho. Corrige.",
-      "expected_output": "O agente escreve primeiro um teste que reproduz o desconto duplicado, mostra que falha, corrige e mostra que passa.",
+      "prompt": "Achei um bug: a taxa de serviço está sendo cobrada duas vezes na fatura. Corrige.",
+      "expected_output": "O agente escreve primeiro um teste que reproduz a taxa duplicada, mostra que falha, corrige e mostra que passa.",
       "assertions": [
         "Cria teste que reproduz o bug antes da correção",
         "Relata que o teste falhou antes e passou depois",
-        "O teste verifica o valor final do carrinho, não chamadas internas"
+        "O teste verifica o valor final da fatura, não chamadas internas"
       ]
     },
     {

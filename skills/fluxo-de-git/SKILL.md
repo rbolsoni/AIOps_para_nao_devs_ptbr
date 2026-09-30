@@ -65,9 +65,9 @@ release implementa. Há esteiras que geram versão e deploy em *todo* merge — 
 Mensagem boa:
 
 ```
-fix(carrinho): confere o raio de entrega pelo município do IBGE
+fix(cadastro): confere o fuso horário pelo código IBGE do município
 
-O raio era calculado pelo nome da cidade digitado, que falhava com acento e
+O fuso era calculado pelo nome da cidade digitado, que falhava com acentos e
 homônimos. Agora usa o código do município.
 
 Closes #274

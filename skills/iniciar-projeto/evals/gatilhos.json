@@ -4,7 +4,7 @@
   { "query": "configura esse projeto Go com as melhores práticas antes de eu chamar outros devs", "should_trigger": true },
   { "query": "não sou programador, fiz um site com IA e quero colocar no ar com segurança, por onde começo?", "should_trigger": true },
   { "query": "adota as boas práticas de governança nesse projeto existente em Laravel", "should_trigger": true },
-  { "query": "cria um endpoint POST /pedidos na API existente", "should_trigger": false },
+  { "query": "cria um endpoint POST /cadastros na API existente", "should_trigger": false },
   { "query": "o deploy de ontem quebrou a tela de login, investiga", "should_trigger": false },
   { "query": "atualiza a versão do React de 18 para 19", "should_trigger": false }
 ]
