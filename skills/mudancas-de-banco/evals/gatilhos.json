@@ -1,9 +1,9 @@
 [
-  { "query": "adiciona uma coluna data_entrega na tabela pedidos", "should_trigger": true },
-  { "query": "cria as policies de RLS pra tabela de produtos", "should_trigger": true },
+  { "query": "adiciona uma coluna data_nascimento na tabela pacientes", "should_trigger": true },
+  { "query": "cria as policies de RLS pra tabela de tarefas", "should_trigger": true },
   { "query": "preciso de um índice na tabela de eventos que tem 50 milhões de linhas", "should_trigger": true },
   { "query": "escreve a migration do Prisma para o novo modelo Assinatura", "should_trigger": true },
-  { "query": "o checkout às vezes vende o mesmo item duas vezes, como deixo atômico no banco?", "should_trigger": true },
+  { "query": "às vezes duas pessoas reservam o mesmo horário, como deixo isso atômico no banco?", "should_trigger": true },
   { "query": "faz uma consulta SQL que mostra o total de vendas por mês", "should_trigger": false },
   { "query": "qual banco escolher para um app pequeno, Postgres ou MySQL?", "should_trigger": false },
   { "query": "exporta essa planilha de clientes para CSV", "should_trigger": false }

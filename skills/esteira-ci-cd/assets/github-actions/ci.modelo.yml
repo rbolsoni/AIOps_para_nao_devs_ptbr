@@ -19,10 +19,13 @@ on:
 permissions:
   contents: read
 
-# Um push novo na mesma branch cancela o run anterior, que ficou obsoleto.
+# Em PR, um push novo cancela o run anterior, que ficou obsoleto. No push da branch base,
+# não: o job "homologacao" migra o banco e publica, e cancelá-lo no meio deixaria a
+# migração pela metade. Ali o run novo espera o anterior terminar (se chegarem vários, só o
+# mais recente fica na fila; os intermediários nem começam).
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validar:
@@ -33,6 +36,11 @@ jobs:
       # Actions fixadas por SHA completo (a tag pode ser movida; o SHA não). O comentário
       # guarda a versão legível; o Dependabot atualiza os dois juntos.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Não deixa o token do GitHub configurado no git para os passos seguintes, onde
+          # qualquer script (inclusive os de instalação de dependências) poderia lê-lo.
+          # Nenhum passo deste workflow faz git push.
+          persist-credentials: false
 
       # __SETUP_DA_LINGUAGEM__ — troque pelo setup da stack, fixado por SHA. Exemplo Node:
       # - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -71,6 +79,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # __SETUP_DA_LINGUAGEM__
       - name: Instalar dependências
         run: __COMANDO_INSTALAR__
@@ -96,6 +106,8 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # __SETUP_DA_LINGUAGEM__
       - name: Instalar dependências
         run: __COMANDO_INSTALAR__

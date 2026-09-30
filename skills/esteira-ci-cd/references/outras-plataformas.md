@@ -19,8 +19,11 @@ A lógica não muda:
 1. Descubra o commit promovido (segundo pai do merge, ou o SHA do pipeline de origem).
 2. Consulte a API da plataforma: existe execução do pipeline de homologação **concluída com
    sucesso** para esse SHA, na branch de homologação?
-3. Falha de consulta → erro próprio ("não consegui verificar"). Nenhuma execução ou nenhuma
-   com sucesso → aborta antes de versão, migração e deploy.
+3. Confira que o que vai ser publicado é idêntico ao homologado (no git,
+   `git diff --quiet <commit-homologado> HEAD`). Diferença significa mudança que entrou na
+   branch de produção por fora da homologação e iria junto.
+4. Falha de consulta → erro próprio ("não consegui verificar"). Nenhuma execução, nenhuma
+   com sucesso ou árvore diferente → aborta antes de versão, migração e deploy.
 
 ## GitLab: esqueleto equivalente
 
@@ -50,7 +53,7 @@ producao:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   script:
-    - __TRAVA_DE_PROMOCAO__   # consulta a API de pipelines pelo SHA promovido
+    - __TRAVA_DE_PROMOCAO__   # API de pipelines pelo SHA promovido + mesma árvore
     - __COMANDO_MIGRAR__
     - __COMANDO_DEPLOY_PRODUCAO__
 ```

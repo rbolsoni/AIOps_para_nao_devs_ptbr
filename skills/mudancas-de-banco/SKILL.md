@@ -11,7 +11,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Mudanças de banco
@@ -36,16 +36,21 @@ revisado, provado em homologação e aplicada por um único caminho.
    a partir do schema, SDKs no navegador): políticas por linha que conferem o usuário, nunca
    "libera tudo". Detalhes e modelos em
    [references/autorizacao-no-banco.md](references/autorizacao-no-banco.md).
-6. **Operação crítica é atômica e acontece no servidor.** Checkout, transferência de saldo,
-   baixa de estoque: função/transação no banco (ou serviço) com trava de linha
-   (`SELECT … FOR UPDATE`) — nunca vários `insert`/`update` separados vindos do cliente.
+6. **Operação crítica é atômica e acontece no servidor.** Consumir algo limitado (vagas,
+   créditos, ingressos, estoque), transferir saldo, confirmar uma reserva ou uma compra:
+   função/transação no banco (ou serviço) com trava de linha (`SELECT … FOR UPDATE`) —
+   nunca vários `insert`/`update` separados vindos do cliente. A função valida os próprios
+   argumentos (quantidade, valores, identificadores, dono do saldo) antes de tocar em
+   qualquer linha e nunca confia no cliente: uma quantidade negativa que passa vira saldo
+   somado.
 7. **Minimize o que é exposto.** Tabela com dados pessoais é lida só pelo titular ou por
-   operador autorizado; vitrines e telas de terceiros leem views com apenas as colunas
-   necessárias, somente leitura.
+   operador autorizado; perfis públicos e telas de terceiros leem views com apenas as colunas
+   necessárias, somente leitura, com a permissão de cada papel declarada na migração — não
+   herdada do padrão da plataforma, que pode liberar leitura para anônimos.
 8. **Prove com checagem empírica.** Depois de aplicar em homologação, uma checagem na
    esteira *tenta* a operação proibida (ler dado de outro usuário, escrever com conta
-   bloqueada, inserir pedido direto) e exige a recusa. Ler o SQL não prova que a política
-   funciona; executar, sim.
+   bloqueada, gravar direto sem passar pela função) e exige a recusa. Ler o SQL não prova
+   que a política funciona; executar, sim.
 9. **Paridade e drift.** Depois de aplicar, confira que as migrações registradas no banco
    batem com as do repositório. Uma checagem agendada compara homologação e produção para
    pegar mudança manual.
@@ -72,7 +77,7 @@ revisado, provado em homologação e aplicada por um único caminho.
 | `NOT NULL` em coluna existente | falha com dados nulos; trava a tabela | preencher dados em lotes → adicionar a restrição |
 | Índice em tabela grande | trava escrita | criação concorrente (`CREATE INDEX CONCURRENTLY` no PostgreSQL), fora de transação |
 | Atualização em massa | trava longa, log enorme | lotes pequenos, idempotentes, com progresso |
-| Função com privilégio elevado (`SECURITY DEFINER`) | executa como dono, ignora políticas | `search_path` fixo, `REVOKE` do público, conceder só a quem precisa, validar o chamador dentro |
+| Função com privilégio elevado (`SECURITY DEFINER`) | executa como dono, ignora políticas | `search_path` fixo, `REVOKE` do público, conceder só a quem precisa, validar o chamador e os argumentos dentro |
 
 ## Alertas de linter de banco não são achados
 
@@ -83,7 +88,7 @@ Alguns alertas descrevem uma decisão deliberada que a ferramenta não conhece.
   resposta num ADR, com a evidência.
 - **Nunca corrija todos de uma vez "para limpar".** Converter em lote funções de privilégio
   elevado para privilégio do chamador, só para zerar alertas, já derrubou de uma vez o
-  controle de acesso de operador, o checkout, notificações e métricas públicas de um
+  controle de acesso de operador, os pagamentos, notificações e métricas públicas de um
   sistema em produção.
 
 ## Armadilhas

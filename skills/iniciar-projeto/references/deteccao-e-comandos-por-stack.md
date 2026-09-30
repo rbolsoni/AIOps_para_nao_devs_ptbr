@@ -2,8 +2,13 @@
 
 Use esta tabela para (1) descobrir a stack pelo manifesto e (2) escolher um comando padrão
 quando o projeto ainda não tiver um. Se o projeto já tem comando próprio, **use o do
-projeto**. Fixe a versão das ferramentas executadas sob demanda (`npx pacote@versão`,
-`uvx pacote@versão`) para que a checagem não mude sozinha.
+projeto**.
+
+Versão fixa, sempre: ferramenta que está nas dependências de desenvolvimento roda na versão
+do lockfile (`npx eslint`, `uv run ruff`); ferramenta executada sob demanda, fora do
+lockfile, leva a versão no próprio comando (`npx pacote@<versão>`,
+`uv run --with pacote==<versão>`, `go run …@<versão>`) — senão a checagem muda sozinha entre
+duas execuções. Troque `<versão>` pela mais recente que você conferiu no registro.
 
 ## Como detectar
 
@@ -12,6 +17,7 @@ projeto**. Fixe a versão das ferramentas executadas sob demanda (`npx pacote@ve
 | `package.json` + `package-lock.json` | Node.js / TypeScript | npm |
 | `package.json` + `pnpm-lock.yaml` | Node.js / TypeScript | pnpm |
 | `package.json` + `yarn.lock` | Node.js / TypeScript | Yarn |
+| `package.json` + `bun.lock` (ou `bun.lockb`, formato antigo) | JavaScript / TypeScript | Bun |
 | `pyproject.toml` + `uv.lock` | Python | uv |
 | `pyproject.toml` + `poetry.lock` | Python | Poetry |
 | `requirements.txt` | Python | pip |
@@ -40,7 +46,13 @@ Também observe: `Dockerfile`/`compose.yaml` (contêiner), pasta `supabase/`, `p
 | Tipos | `npx tsc --noEmit` |
 | Testes + cobertura | `npx vitest run --coverage` ou `npx jest --coverage` |
 | Vulnerabilidades | `npm audit --omit=dev` |
-| Licenças | `npx license-checker@25.0.1 --production --json` (ver `dependencias-e-licencas`) |
+| Licenças | `npx license-checker-rseidelsohn@<versão> --production --json` (ver `dependencias-e-licencas`) |
+
+Com outro gerenciador, a instalação na esteira também recusa lockfile desatualizado:
+`pnpm install --frozen-lockfile`, `yarn install --immutable` (Yarn 2+; no Yarn 1,
+`--frozen-lockfile`) e `bun install --frozen-lockfile`. O `license-checker` original está sem
+atualização desde 2022; o fork `license-checker-rseidelsohn` é mantido e aceita as mesmas
+opções.
 
 ### Python (uv)
 
@@ -51,11 +63,13 @@ Também observe: `Dockerfile`/`compose.yaml` (contêiner), pasta `supabase/`, `p
 | Lint | `uv run ruff check .` |
 | Tipos | `uv run mypy .` ou `uv run pyright` |
 | Testes + cobertura | `uv run pytest --cov` |
-| Vulnerabilidades | `uvx pip-audit` |
-| Licenças | `uvx pip-licenses --format=json` (rodar no ambiente do projeto) |
+| Vulnerabilidades | `uv run --with pip-audit==<versão> pip-audit` |
+| Licenças | `uv run --with pip-licenses==<versão> pip-licenses --format=json` |
 
-Com pip puro: `pip install -r requirements.txt`, e as mesmas ferramentas instaladas no
-ambiente virtual.
+Os dois inspecionam o ambiente em que rodam: por isso `uv run --with` (ambiente do projeto
+mais a ferramenta), e não `uvx`, que roda num ambiente isolado e veria só os pacotes da
+própria ferramenta. Com pip puro: `pip install -r requirements.txt`, e as mesmas ferramentas
+instaladas, com versão fixa, no ambiente virtual do projeto.
 
 ### Go
 
@@ -65,8 +79,8 @@ ambiente virtual.
 | Formatar (checar) | `test -z "$(gofmt -l .)"` |
 | Lint | `go vet ./...` e `golangci-lint run` |
 | Testes + cobertura | `go test -race -cover ./...` |
-| Vulnerabilidades | `go run golang.org/x/vuln/cmd/govulncheck@latest ./...` (fixe a versão) |
-| Licenças | `go-licenses report ./...` |
+| Vulnerabilidades | `go run golang.org/x/vuln/cmd/govulncheck@<versão> ./...` |
+| Licenças | `go-licenses report ./...` (instalado com versão fixa) |
 
 ### Java / Kotlin
 

@@ -4,13 +4,17 @@
     {
       "id": 1,
       "prompt": "Quero que todo merge na main vá direto pra produção na Vercel, mas sem risco de subir código quebrado. Temos Postgres com migrações e o repositório é privado no GitHub Free.",
-      "expected_output": "O agente propõe fluxo de promoção staging -> main, explica que proteção de branch não está disponível no plano, implementa a trava na release (CI verde na staging para o mesmo SHA), desliga o deploy automático por git e lista as tarefas de painel.",
+      "expected_output": "O agente propõe fluxo de promoção staging -> main, explica que proteção de branch não está disponível no plano, implementa a trava na release (CI verde na staging para o mesmo SHA e árvore publicada idêntica à homologada), desliga o deploy automático por git e lista as tarefas de painel.",
       "assertions": [
         "Explica que a proteção de branch pode não existir no plano e que a trava fica na esteira",
         "O workflow de release verifica via API o CI verde na staging para o commit promovido",
+        "A trava também exige que a árvore publicada seja idêntica à do commit homologado (git diff contra o segundo pai do merge)",
         "Instrui a desligar o deploy automático por git da plataforma",
         "Segredos de produção ficam num environment separado",
-        "Actions fixadas por SHA"
+        "Actions fixadas por SHA",
+        "Permissões só de leitura no nível do workflow; escrita apenas no job que cria a release",
+        "Checkout com persist-credentials: false e valores de expressão passados por env:, nunca escritos dentro do run:",
+        "O CI cancela run em andamento só em PR; o push que migra e publica a homologação nunca é cancelado no meio"
       ]
     },
     {

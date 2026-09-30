@@ -10,7 +10,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Esteira de CI/CD
@@ -37,7 +37,8 @@ a migração prova que aplica.
 2. **Build** e testes de ponta a ponta locais.
 3. **Homologação** (push na `staging`): migrações no banco de homologação, checagens de
    banco que exercitam o comportamento real, deploy de homologação, teste de fumaça.
-4. **Trava de promoção** (push na `main`): exige CI verde na `staging` para o mesmo commit.
+4. **Trava de promoção** (push na `main`): exige CI verde na `staging` para o mesmo commit e
+   que a árvore publicada seja idêntica à dele.
 5. **Versão**: calculada pelos Commits Convencionais
    ([scripts/proxima-versao.sh](scripts/proxima-versao.sh)); sem `feat`/`fix`/breaking, não há
    release nem deploy.
@@ -59,15 +60,19 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
    de hospedagem e qualquer integração que aplique migração ao detectar merge. Dois atores
    publicando em produção é indistinguível de um no log — e o segundo não passa pela trava.
 3. **Produção recebe o commit que foi homologado.** Promoção por merge commit (não
-   squash); a release confere o segundo pai do merge. Squash cria um commit novo, que nunca
-   rodou na homologação.
+   squash); a release confere o segundo pai do merge e também que a árvore publicada é
+   idêntica à dele. Squash cria um commit novo, que nunca rodou na homologação; e um commit
+   que entrou direto na `main` iria junto na promoção seguinte se a release conferisse só o
+   commit.
 4. **Falhe alto.** Segredo ausente faz a etapa falhar com mensagem dizendo onde cadastrar.
    Nunca `if: segredo != ''` — isso termina verde sem ter feito nada.
 5. **Não verificar ≠ reprovado.** Separe "não consegui consultar" (permissão, rede, API) de
    "consultei e não passou". Mensagens diferentes mandam investigar no lugar certo.
-6. **Menor privilégio.** Declare `permissions:` em todo workflow. Ao declarar, todo escopo
-   omitido vira `none` — a trava que consulta runs precisa de `actions: read`, ou a API
-   responde 403.
+6. **Menor privilégio.** Declare `permissions:` em todo workflow, só com leitura; o job que
+   precisa de mais eleva no próprio bloco (`actions: read` na trava, `contents: write` só no
+   job que cria a release). Ao declarar, todo escopo omitido vira `none`, e a lista do job
+   substitui a do workflow: repita `contents: read` no job que faz checkout. A trava sem
+   `actions: read` recebe 403 da API.
 7. **Segredos por ambiente.** Homologação e produção em environments separados. Um job só
    enxerga os segredos do seu `environment:`; tarefa que precisa dos dois ambientes vira dois
    jobs. Nunca promova segredo de produção a segredo do repositório inteiro.
@@ -81,6 +86,13 @@ plataformas, leia [references/outras-plataformas.md](references/outras-plataform
     isso no `CONTRIBUTING.md`.
 11. **Resultado se confere pela conclusão do run.** Comandos que acompanham checks podem
     sair com 0 num run que falhou. Consulte o status final e os jobs.
+12. **Token e expressões longe do script.** Checkout com `persist-credentials: false`: sem
+    isso o token fica configurado no git, ao alcance de qualquer passo seguinte — inclusive
+    script de instalação de dependência (nenhum passo dos modelos faz `git push`). Valor de
+    `${{ … }}` entra no `run:` pelo `env:` e é usado entre aspas (`"$REPO"`); escrito dentro
+    do `run:`, ele é colado no script antes de rodar e pode virar comando.
+13. **Não cancele quem publica.** `cancel-in-progress` só em PR. Run que migra banco ou
+    publica, na homologação ou na produção, nunca é cancelado no meio: o novo espera.
 
 ## 4. Como montar
 
@@ -107,7 +119,9 @@ Uma trava que nunca foi vista barrando não é uma trava. Em um PR de teste (ou 
    que diz onde cadastrar.
 3. Simule a promoção de um commit sem run verde na homologação → a release precisa abortar
    antes de calcular versão.
-4. Mescle só `docs:` → nenhuma tag e nenhum deploy.
+4. Num fork, faça um commit direto na `main` e depois uma promoção normal → a release
+   precisa abortar mostrando o arquivo que difere da homologação.
+5. Mescle só `docs:` → nenhuma tag e nenhum deploy.
 
 Registre o resultado no PR que introduziu a esteira.
 

@@ -2,14 +2,18 @@
 #
 # A TRAVA É A ESTEIRA. Proteção de branch pode não existir no plano contratado (ex.: GitHub
 # Free em repositório privado), e um environment sem regra de proteção não bloqueia nada.
-# Então, antes de calcular versão, migrar banco ou publicar, o job "homologacao" exige que o
-# commit promovido tenha um run do CI concluído com SUCESSO na branch staging. Push direto
-# em main não passa por staging, não acha run nenhum e é barrado aqui.
+# Então, antes de calcular versão, migrar banco ou publicar, o job "homologacao" exige duas
+# coisas: que o commit promovido tenha um run do CI concluído com SUCESSO na branch staging,
+# e que a árvore publicada (os arquivos que vão para a produção) seja idêntica à dele. Push
+# direto em main não passa por staging, não acha run nenhum e é barrado aqui; e o commit
+# que ele deixou na main também barra a promoção seguinte, em vez de ir junto de carona.
 #
 # Requisitos:
 #   - PR de staging para main mesclado com MERGE COMMIT (não squash, não rebase): o commit
 #     homologado é o segundo pai do merge. Squash cria um commit novo, que nunca rodou na
 #     staging, e a trava (corretamente) barra.
+#   - Tudo que muda a main chega por merge da staging, inclusive commits de bots: qualquer
+#     outra mudança deixa a árvore diferente da homologada, e a trava barra.
 #   - .github/scripts/proxima-versao.sh copiado da skill esteira-ci-cd.
 #   - Segredos de produção no environment "production".
 #
@@ -21,9 +25,10 @@ on:
   push:
     branches: [main]
 
+# Menor privilégio: o workflow só lê, e cada job eleva só o que usa. Permissão declarada no
+# job substitui a do workflow — escopo omitido ali vira "none".
 permissions:
-  contents: write # criar tag e GitHub Release
-  actions: read   # a trava consulta os runs do CI; sem isto a API responde 403
+  contents: read
 
 # Nunca cancelar uma release em andamento: interromper migração ou deploy pela metade é pior
 # do que esperar a próxima.
@@ -36,25 +41,35 @@ jobs:
     name: Trava — o commit passou verde na homologação?
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read # checkout
+      actions: read  # a trava consulta os runs do CI; sem isto a API responde 403
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # o segundo pai do merge não existe com profundidade 1
+          # Não deixa o token configurado no git para os passos seguintes, onde qualquer
+          # script poderia lê-lo. Nenhum job deste workflow faz git push: a release usa gh.
+          persist-credentials: false
 
-      - name: Exigir CI verde na staging para o commit promovido
+      - name: Exigir CI verde na staging e a mesma árvore do commit promovido
+        # Valores do GitHub entram pelo env: e são usados entre aspas. Uma expressão escrita
+        # dentro do run: é colada no script antes de ele rodar e pode virar código.
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           # Merge de PR traz o topo da staging como segundo pai. Push direto não tem segundo
           # pai: o candidato vira o próprio HEAD, que nunca rodou na staging — e é barrado.
-          SHA=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)
+          # Sem --verify, o rev-parse devolveria o texto "HEAD^2" junto com o SHA.
+          SHA=$(git rev-parse --verify --quiet 'HEAD^2' || git rev-parse HEAD)
           echo "Commit a promover: $SHA"
 
           # Falha ao CONSULTAR é diferente de ausência de homologação. Misturar os dois manda
           # quem investiga procurar no lugar errado.
           if ! RESPOSTA=$(gh api \
-              "repos/${{ github.repository }}/actions/workflows/ci.yml/runs?branch=staging&head_sha=$SHA&per_page=20" \
+              "repos/$REPO/actions/workflows/ci.yml/runs?branch=staging&head_sha=$SHA&per_page=20" \
               --jq '[.workflow_runs[] | select(.status == "completed") | .conclusion] | join(",")' 2>&1); then
             echo "::error::Não foi possível consultar os runs do CI: $RESPOSTA. Isto NÃO significa que o código não foi homologado — a trava não conseguiu verificar. Confira 'actions: read' em permissions."
             exit 1
@@ -65,6 +80,20 @@ jobs:
             *,success,*) echo "Homologação confirmada." ;;
             ,,) echo "::error::Nenhum run concluído do CI na staging para $SHA. O código não passou pela homologação; release abortada antes de tocar a produção."; exit 1 ;;
             *)  echo "::error::O CI da staging para $SHA terminou como [$RESPOSTA], sem sucesso. Release abortada."; exit 1 ;;
+          esac
+
+          # CI verde no segundo pai não basta: o que vai para a produção é a árvore do merge.
+          # Um commit que entrou na main sem passar pela staging (push direto cuja release
+          # abortou) continua lá e iria junto nesta promoção. No fluxo normal — a main só
+          # recebe merges da staging — as duas árvores são idênticas.
+          DIFERENCA=0
+          git diff --quiet "$SHA" HEAD || DIFERENCA=$?
+          case "$DIFERENCA" in
+            0) echo "Árvore publicada idêntica à homologada." ;;
+            1) echo "::error::A árvore que iria para a produção difere da homologada em $SHA. Causa provável: uma mudança entrou na main sem passar pela staging (ex.: push direto). Traga a main para a staging por PR (o CI roda lá; reverta o que não deve ir ao ar) e promova de novo. Arquivos que diferem:"
+               git diff --stat "$SHA" HEAD
+               exit 1 ;;
+            *) echo "::error::Não foi possível comparar a árvore publicada com $SHA (git saiu com $DIFERENCA). Isto NÃO significa que há diferença — a trava não conseguiu verificar."; exit 1 ;;
           esac
 
   versao:
@@ -79,14 +108,18 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # precisa das tags e do histórico desde a última versão
+          persist-credentials: false
       - id: calculo
         run: bash .github/scripts/proxima-versao.sh >> "$GITHUB_OUTPUT"
       - name: Resumo
+        env:
+          PROXIMA: ${{ steps.calculo.outputs.proxima }}
+          NIVEL: ${{ steps.calculo.outputs.nivel }}
         run: |
-          if [ -z "${{ steps.calculo.outputs.proxima }}" ]; then
+          if [ -z "$PROXIMA" ]; then
             echo "Nenhum commit feat/fix/breaking desde a última versão: sem release e sem deploy." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Próxima versão: ${{ steps.calculo.outputs.proxima }} (${{ steps.calculo.outputs.nivel }})" >> "$GITHUB_STEP_SUMMARY"
+            echo "Próxima versão: $PROXIMA ($NIVEL)" >> "$GITHUB_STEP_SUMMARY"
           fi
 
   producao:
@@ -100,6 +133,8 @@ jobs:
       url: __URL_DE_PRODUCAO__
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # __SETUP_DA_LINGUAGEM__
       - name: Instalar dependências
         run: __COMANDO_INSTALAR__
@@ -147,14 +182,18 @@ jobs:
     needs: [versao, producao]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write # criar tag e GitHub Release: o único job com escrita
     steps:
       - name: Criar tag e release
         env:
           GH_TOKEN: ${{ github.token }}
           VERSAO: ${{ needs.versao.outputs.proxima }}
+          REPO: ${{ github.repository }}
+          ALVO: ${{ github.sha }}
         run: |
           gh release create "$VERSAO" \
-            --repo "${{ github.repository }}" \
-            --target "${{ github.sha }}" \
+            --repo "$REPO" \
+            --target "$ALVO" \
             --title "$VERSAO" \
             --generate-notes

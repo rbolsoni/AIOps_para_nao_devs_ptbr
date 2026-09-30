@@ -54,6 +54,24 @@ Causa: faltava `actions: read` no bloco `permissions`; a API devolveu 403 e o `s
 encerrou antes de qualquer diagnóstico.
 Faça: trate a falha de consulta separadamente, com mensagem própria.
 
+**Trava que confere o commit, mas não o que é publicado.**
+A release conferia o CI verde do segundo pai do merge — o topo da `staging` —, mas o que vai
+para a produção é a árvore do merge. Um push direto na `main` tem a própria release
+abortada, porque não há run na `staging`; o commit, porém, continua na `main`. Na promoção
+seguinte o segundo pai está verde, a trava libera, e o commit que nunca rodou na
+homologação vai junto.
+Faça: depois do CI verde, exija que a árvore publicada seja idêntica à homologada
+(`git diff --quiet "$SHA" HEAD`). No fluxo normal as duas são iguais. Se diferirem, traga a
+`main` para a `staging` por PR, deixe o CI rodar lá (revertendo o que não deve ir ao ar) e
+promova de novo. Tudo que escreve na `main`, inclusive bot, precisa passar pela `staging`.
+
+**Segundo pai que não existe.**
+Num commit sem segundo pai, `git rev-parse HEAD^2` imprime o próprio texto `HEAD^2` antes
+de falhar. Com `|| git rev-parse HEAD`, a variável fica com duas linhas e a consulta à API
+vai com um SHA inválido: o diagnóstico sai torto (pode acusar falha de consulta onde o
+problema é falta de homologação). Use `git rev-parse --verify --quiet`, que não imprime
+nada quando falha.
+
 **Squash no PR de promoção.**
 O commit que chega à `main` é novo e nunca rodou na homologação; a trava barra. Use merge
 commit na promoção (squash pode continuar nos PRs de funcionalidade para a `staging`).
@@ -101,10 +119,17 @@ Runner self-hosted não vem com o que a imagem hospedada traz (ex.: `gh`). O pas
 ## Sinais de alerta ao revisar um workflow
 
 - [ ] `if:` que depende de segredo existir.
-- [ ] Workflow sem `permissions:` explícito.
+- [ ] Workflow sem `permissions:` explícito, ou com escrita no nível do workflow em vez de
+      só no job que precisa.
 - [ ] Action referenciada por tag (`@v4`) em vez de SHA.
+- [ ] `actions/checkout` sem `persist-credentials: false` em job que não faz `git push`.
+- [ ] `${{ … }}` escrito dentro de `run:` em vez de passar por `env:`.
+- [ ] `workflow_run` sem exigir que o run de origem seja de `push` (PR de fork também
+      dispara o CI).
 - [ ] `npm install` (ou equivalente que altera lockfile) na esteira.
 - [ ] Job de produção sem `environment:`; segredo de produção no nível do repositório.
-- [ ] `cancel-in-progress: true` em workflow de deploy de produção.
+- [ ] `cancel-in-progress: true` valendo para job que migra banco ou publica — na produção
+      **ou na homologação**. No CI que também publica a homologação, cancele só em PR.
+- [ ] Trava de promoção que confere o commit homologado, mas não a árvore publicada.
 - [ ] Release/tag criada antes do deploy.
 - [ ] Nenhuma etapa que prove que o deploy está de pé (teste de fumaça).

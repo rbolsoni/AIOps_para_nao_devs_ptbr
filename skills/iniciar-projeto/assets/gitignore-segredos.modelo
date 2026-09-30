@@ -3,6 +3,7 @@
 .env
 .env.*
 !.env.example
+.envrc
 *.pem
 *.key
 *.p12
@@ -15,8 +16,31 @@ service-account*.json
 # Tokens de ferramentas de build/monitoramento guardados em arquivo local
 .env.sentry-build-plugin
 .npmrc.local
+# Vínculo local com a plataforma de deploy (identificadores do projeto e da conta)
+.vercel/
+# Configuração pessoal do agente de IA: permissões desta máquina, não do projeto
+.claude/settings.local.json
 
-# --- Artefatos que não devem ser versionados ---
+# --- Estado de infraestrutura: costuma guardar segredos em texto puro ---
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+*.tfvars.json
+
+# --- Bancos locais e despejos de banco: dado real não entra no repositório ---
+# Se o projeto versiona um banco de exemplo, abra exceção explícita (ex.: !exemplo.db).
+# Nunca ignore *.sql: pegaria as migrações.
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+*.bak
+
+# --- Artefatos comuns (os específicos da linguagem vêm do .gitignore padrão dela) ---
+# bin/ e obj/ ficam de fora de propósito: em Rails, bin/ é código versionado, e pacotes
+# Node costumam ter a CLI em bin/. Para .NET, use o modelo da linguagem, que já os cobre.
 node_modules/
 dist/
 build/
@@ -24,8 +48,6 @@ coverage/
 .venv/
 __pycache__/
 target/
-bin/
-obj/
 *.log
 
 # --- Área de trabalho de agentes de IA (dados transitórios) ---
