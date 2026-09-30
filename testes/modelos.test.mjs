@@ -351,3 +351,21 @@ describe('modelos SQL de autorização (mudancas-de-banco)', () => {
     assert.match(view, /^grant select on public\.vitrine_fornecedores to authenticated;$/m);
   });
 });
+
+describe('modelo de .gitignore (iniciar-projeto)', () => {
+  const linhas = readFileSync(path.join(RAIZ, 'skills', 'iniciar-projeto', 'assets', 'gitignore-segredos.modelo'), 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('#'));
+
+  it('não ignora bin/ nem obj/: em Rails e em pacotes Node, bin/ é código versionado', () => {
+    assert.ok(!linhas.includes('bin/') && !linhas.includes('obj/'));
+  });
+
+  it('protege estado de infraestrutura, bancos locais e despejos, sem pegar as migrações', () => {
+    for (const padrao of ['*.tfstate', '*.tfvars', '.envrc', '*.db', '*.sqlite', '*.dump', '.env', '.env.*', '!.env.example']) {
+      assert.ok(linhas.includes(padrao), `falta ${padrao}`);
+    }
+    assert.ok(!linhas.includes('*.sql'), '*.sql ignoraria as migrações');
+  });
+});
