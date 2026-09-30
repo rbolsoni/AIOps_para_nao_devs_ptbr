@@ -27,7 +27,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rbolsoni/Padroes_skill_para_AIOps_ptbr.git"
+    "url": "git+https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr.git"
+  },
+  "homepage": "https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr#readme",
+  "bugs": {
+    "url": "https://github.com/rbolsoni/AIOps_para_nao_devs_ptbr/issues"
   },
   "keywords": [
     "agent-skills",
