@@ -115,7 +115,7 @@ e oferece cada skill como *prompt*. Não executa nada nem grava arquivos.
 
 Ferramentas expostas: `listar_skills`, `ler_skill`, `ler_arquivo_da_skill`.
 
-**Fixe a versão.** Os exemplos abaixo apontam para uma tag (`#v1.7.1`). Sem ela, o cliente
+**Fixe a versão.** Os exemplos abaixo apontam para uma tag (`#v1.7.2`). Sem ela, o cliente
 baixa e executa o topo da branch principal a cada início — uma mudança com defeito (ou um
 comprometimento do repositório) chegaria a você sem revisão. Para atualizar, troque a tag pela
 mais recente em
@@ -125,7 +125,7 @@ notas. É a mesma regra que o kit ensina para qualquer dependência.
 ### Claude Code
 
 ```bash
-claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1
+claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2
 ```
 
 ### Clientes com configuração JSON (Claude Desktop, Cursor, Gemini CLI e outros)
@@ -135,7 +135,7 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
   "mcpServers": {
     "aiops-para-nao-devs-ptbr": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1"]
+      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
     }
   }
 }
@@ -149,7 +149,7 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
     "aiops-para-nao-devs-ptbr": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1"]
+      "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
     }
   }
 }
@@ -160,7 +160,7 @@ claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao
 ```toml
 [mcp_servers.aiops-para-nao-devs-ptbr]
 command = "npx"
-args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1"]
+args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"]
 ```
 
 ### Windows
@@ -168,7 +168,7 @@ args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1"]
 Alguns clientes no Windows não encontram o `npx` diretamente. Nesse caso, use o `cmd`:
 
 ```json
-{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.1"] }
+{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.7.2"] }
 ```
 
 ### A partir de um clone local
