@@ -410,3 +410,42 @@ describe('modelo do Dependabot (esteira-ci-cd)', () => {
     }
   });
 });
+
+describe('regras essenciais e modelo de AGENTS.md (iniciar-projeto)', () => {
+  const pastaAssets = path.join(RAIZ, 'skills', 'iniciar-projeto', 'assets');
+  const essenciais = readFileSync(path.join(pastaAssets, 'regras-essenciais.modelo.md'), 'utf8');
+  const agentes = readFileSync(path.join(pastaAssets, 'AGENTS.modelo.md'), 'utf8');
+
+  it('as regras essenciais cabem nas instruções fixas das plataformas e são usadas sem preencher nada', () => {
+    // O menor campo documentado é o Knowledge do Lovable, com 10 mil caracteres: sobra espaço
+    // para as regras do próprio projeto.
+    assert.ok(essenciais.length <= 4000, `regras essenciais com ${essenciais.length} caracteres`);
+    assert.doesNotMatch(essenciais, /__[A-Z_]+__|<[^>\n]+>/, 'as regras essenciais são coladas como estão');
+  });
+
+  it('o modelo de AGENTS.md traz as mesmas regras de segurança, que precisam valer em toda sessão', () => {
+    for (const trecho of [
+      'prefixo público',
+      'Row Level Security',
+      'vêm do servidor, nunca do',
+      'webhook) com a assinatura verificada',
+      'teto diário',
+      'em massa sem mostrar o que muda',
+      'registro oficial',
+    ]) {
+      assert.ok(essenciais.includes(trecho), `regras essenciais sem "${trecho}"`);
+      assert.ok(agentes.includes(trecho), `AGENTS.modelo.md sem "${trecho}"`);
+    }
+  });
+
+  it('a tabela de skills do modelo de AGENTS.md lista todas as skills do kit', () => {
+    const secao = agentes.slice(agentes.indexOf('## Skills recomendadas'), agentes.indexOf('## Nunca sem pedido explícito'));
+    const naTabela = new Set([...secao.matchAll(/`([a-z0-9-]+)`/g)].map((m) => m[1]));
+    const pastaSkills = path.join(RAIZ, 'skills');
+    const skills = readdirSync(pastaSkills, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name);
+    const faltando = skills.filter((s) => !naTabela.has(s));
+    assert.deepEqual(faltando, [], 'skill nova precisa entrar na tabela de skills do modelo de AGENTS.md');
+  });
+});
