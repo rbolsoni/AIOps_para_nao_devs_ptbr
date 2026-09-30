@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.1.1"
+  versao: "1.2.0"
 ---
 
 # Iniciar projeto
@@ -35,7 +35,20 @@ e receber OK.
 
 ## 1. Diagnóstico
 
-Levante, sem modificar nada:
+Comece pelo diagnóstico automático, que só lê a pasta:
+
+```bash
+node scripts/diagnosticar-projeto.mjs <pasta-do-projeto>
+```
+
+Ele confere o que costuma dar errado (segredo versionado, `.env` fora do `.gitignore`, chave
+secreta com prefixo público, tabela sem RLS em projeto com Supabase, Dockerfile levando o
+`.env` para a imagem, falta de esteira, testes, trava de dependências e regras para o
+agente) e aponta a skill de cada achado. Erro vem antes de qualquer outra tarefa. Caminho
+relativo à pasta desta skill; se o Node não estiver disponível, faça as mesmas conferências
+à mão.
+
+Depois, levante, sem modificar nada:
 
 - **Stack**: detecte pelos arquivos de manifesto usando
   [references/deteccao-e-comandos-por-stack.md](references/deteccao-e-comandos-por-stack.md).
@@ -134,6 +147,7 @@ no formato da skill `guiar-usuario-em-paineis`. Não peça que ele cole segredos
 ## 8. Verificação final e relatório
 
 - Rode todos os comandos canônicos e a validação da esteira (quando possível localmente).
+- Rode o diagnóstico de novo: nenhum erro. Aviso que ficar tem motivo registrado no relatório.
 - Passe pela [references/checklist-de-prontidao.md](references/checklist-de-prontidao.md)
   e marque o que está coberto, o que ficou pendente e por quê.
 - Relate ao usuário, em linguagem simples: o que foi criado, o que cada coisa protege, o

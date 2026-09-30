@@ -41,6 +41,7 @@ em [instalacao.md](instalacao.md)).
 
 | Peça | O que acontece |
 |---|---|
+| "Faça um diagnóstico do meu projeto." | a lista do que falta, sem mudar nada: segredo exposto, banco sem proteção, esteira e testes, com a skill que resolve cada item |
 | "Configure este projeto seguindo as boas práticas." | diagnóstico, plano do tamanho do seu projeto, arquivos de base e a lista do que você faz nos painéis |
 | "Deixe o agente mais seguro neste projeto." | o agente deixa de ler suas senhas e passa a pedir confirmação antes de ações perigosas |
 | "Coloque limite de gasto nas contas do projeto." | teto e alertas em cada serviço pago — e o aviso de qual deles só avisa, sem cortar |

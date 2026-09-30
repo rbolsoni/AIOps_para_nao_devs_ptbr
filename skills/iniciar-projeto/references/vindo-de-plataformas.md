@@ -4,6 +4,10 @@ Projetos criados em plataformas que geram o app a partir de conversa — Lovable
 v0 e similares — chegam com armadilhas previsíveis. As plataformas mudam rápido: confira na
 documentação de cada uma antes de afirmar como algo funciona.
 
+Comece pelo diagnóstico automático ([../scripts/diagnosticar-projeto.mjs](../scripts/diagnosticar-projeto.mjs)):
+ele acusa, pelo código, várias das armadilhas abaixo (segredo versionado, chave secreta com
+prefixo público, tabela sem RLS nas migrações).
+
 ## 1. Traga o código para um repositório seu
 
 - Conecte a plataforma ao GitHub (ou exporte o código) e confirme que o repositório é

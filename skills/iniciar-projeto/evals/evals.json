@@ -34,6 +34,17 @@
         "Inclui 2FA nas contas e limite de gasto",
         "Diz o que fica para o próximo nível, em linguagem simples"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Baixei o código do meu app que fiz no Bolt. Antes de divulgar, confere se está seguro? Não sei programar.",
+      "expected_output": "O agente roda o diagnóstico automático antes de propor qualquer mudança, explica cada erro em linguagem simples (ex.: chave secreta com prefixo público, tabela sem RLS, .env versionado), trata os erros antes dos avisos, não altera nada sem mostrar o plano e receber OK e lista o que o usuário faz nos painéis.",
+      "assertions": [
+        "Roda o diagnóstico automático (scripts/diagnosticar-projeto.mjs) antes de propor mudanças",
+        "Explica cada erro do diagnóstico em linguagem simples, com o risco concreto",
+        "Trata os erros (segredo, chave pública, RLS) antes dos avisos",
+        "Não altera arquivos sem mostrar o plano e receber OK"
+      ]
     }
   ]
 }
