@@ -50,7 +50,7 @@ executaria a cada início o que estiver na branch principal):
 ```json
 {
   "mcpServers": {
-    "padroes-skill": {
+    "aiops-para-nao-devs-ptbr": {
       "command": "npx",
       "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0"]
     }

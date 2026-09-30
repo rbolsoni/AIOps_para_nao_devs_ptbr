@@ -74,7 +74,7 @@ notas. É a mesma regra que o kit ensina para qualquer dependência.
 ### Claude Code
 
 ```bash
-claude mcp add padroes-skill -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0
+claude mcp add aiops-para-nao-devs-ptbr -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0
 ```
 
 ### Clientes com configuração JSON (Claude Desktop, Cursor, Gemini CLI e outros)
@@ -82,7 +82,7 @@ claude mcp add padroes-skill -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#
 ```json
 {
   "mcpServers": {
-    "padroes-skill": {
+    "aiops-para-nao-devs-ptbr": {
       "command": "npx",
       "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0"]
     }
@@ -95,7 +95,7 @@ claude mcp add padroes-skill -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#
 ```json
 {
   "servers": {
-    "padroes-skill": {
+    "aiops-para-nao-devs-ptbr": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0"]
@@ -107,7 +107,7 @@ claude mcp add padroes-skill -- npx -y github:rbolsoni/AIOps_para_nao_devs_ptbr#
 ### Codex (`~/.codex/config.toml`)
 
 ```toml
-[mcp_servers.padroes-skill]
+[mcp_servers.aiops-para-nao-devs-ptbr]
 command = "npx"
 args = ["-y", "github:rbolsoni/AIOps_para_nao_devs_ptbr#v1.0.0"]
 ```
@@ -144,4 +144,4 @@ uma — assim as regras valem em toda sessão, não só quando uma skill ativa.
 - Pergunte ao agente quais skills ele tem disponíveis.
 - Faça um pedido que deveria ativar uma skill (ex.: "onde coloco a chave da API?") e veja se
   ele segue as instruções de `segredos-e-credenciais`.
-- No MCP, o cliente deve listar as três ferramentas do servidor `padroes-skill`.
+- No MCP, o cliente deve listar as três ferramentas do servidor `aiops-para-nao-devs-ptbr`.
