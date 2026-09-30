@@ -34,7 +34,7 @@
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CATEGORIAS, LIMITE_AVISO_DESCRICAO, VERSAO_VALIDA } from './lib/regras-do-kit.mjs';
+import { ALVO_DESCRICAO, CATEGORIAS, LIMITE_DESCRICAO, VERSAO_VALIDA } from './lib/regras-do-kit.mjs';
 import { carregarSkills, listarArquivosDaSkill } from './lib/skills.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -68,9 +68,9 @@ Valida cada subpasta com SKILL.md contra o padrão Agent Skills e as regras port
 links, evals, caminhos de máquina local e caracteres Unicode invisíveis.
 
   --kit    aplica também as regras deste kit (AGENTS.md): license MIT, metadata.categoria
-           da lista do catálogo, metadata.versao no formato X.Y.Z e aviso de description
-           acima de ${LIMITE_AVISO_DESCRICAO} caracteres. Ligadas sempre que a pasta validada é a
-           skills/ deste repositório (o padrão).
+           da lista do catálogo, metadata.versao no formato X.Y.Z e description de até
+           ${LIMITE_DESCRICAO} caracteres (aviso acima de ${ALVO_DESCRICAO}; ADR 0005). Ligadas sempre que a
+           pasta validada é a skills/ deste repositório (o padrão).
   --json   saída para automação
 
 Sai com 0 sem erros, 1 com erros (ou nenhuma skill encontrada), 2 com opção
@@ -121,10 +121,12 @@ function validarRegrasDoKit(fm, erros, avisos) {
     const problema = meta.versao === undefined ? 'ausente' : `inválida ("${meta.versao}")`;
     erros.push(`"metadata.versao" ${problema}; use X.Y.Z entre aspas, ex.: versao: "1.0.0"`);
   }
-  if (typeof fm.description === 'string' && fm.description.length > LIMITE_AVISO_DESCRICAO) {
-    avisos.push(
-      `"description" com ${fm.description.length} caracteres (acima de ${LIMITE_AVISO_DESCRICAO}); o agente a carrega em toda sessão, encurte mantendo o que faz a skill ativar`,
-    );
+  const tamanho = typeof fm.description === 'string' ? fm.description.length : 0;
+  const porque = 'o agente a carrega em toda sessão; encurte mantendo o que faz a skill ativar (ADR 0005)';
+  if (tamanho > LIMITE_DESCRICAO) {
+    erros.push(`"description" com ${tamanho} caracteres (máximo ${LIMITE_DESCRICAO}); ${porque}`);
+  } else if (tamanho > ALVO_DESCRICAO) {
+    avisos.push(`"description" com ${tamanho} caracteres (alvo: até ${ALVO_DESCRICAO}); ${porque}`);
   }
 }
 

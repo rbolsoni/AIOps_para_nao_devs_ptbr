@@ -49,12 +49,13 @@ quando a cobertura subir de verdade, nunca para o valor exato medido.
 6. **Skill autossuficiente**: links só para arquivos da própria skill. Outra skill é citada
    pelo nome, entre crases.
 7. **Frontmatter**: `name` igual à pasta; `description` no imperativo ("Use quando…/Use
-   ao…"), até 1024 caracteres, cobrindo pedidos que não usam o termo técnico; `license: MIT`;
+   ao…"), com os casos de uso principais primeiro e as palavras que o usuário usa (inclusive
+   quem não programa), em **até 360 caracteres — alvo de 300** (ADR 0005: o agente carrega a
+   descrição de toda skill em toda sessão, e a soma do kit tem teto testado); `license: MIT`;
    `metadata.categoria` (uma das seções do catálogo) e `metadata.versao` (`X.Y.Z`) como
    strings entre aspas. O validador lê o frontmatter num subconjunto **estrito** de YAML e
    recusa o que o YAML real leria diferente: valor com `: ` ou ` #` precisa de aspas ou de
-   bloco `>-`. Descrição acima de 360 caracteres gera aviso (orçamento de contexto: o agente
-   carrega a descrição de toda skill em toda sessão).
+   bloco `>-`.
 8. **Avaliações obrigatórias**: `evals/evals.json` (casos com asserções verificáveis) e
    `evals/gatilhos.json` (ao menos 3 consultas que devem ativar e 2 quase-acertos que não
    devem).

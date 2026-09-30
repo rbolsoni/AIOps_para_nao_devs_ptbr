@@ -37,6 +37,11 @@ que um agente cometeu, uma armadilha que custou horas, uma correção que você 
    ## Armadilhas
    ```
 
+   A descrição é o que o agente vê de todas as skills em toda sessão: **até 300 caracteres**
+   (360 no máximo; ADR 0005), casos de uso principais primeiro, com as palavras que o usuário
+   usaria — inclusive quem não programa ("colocar no ar", "salvar no GitHub"). Confira cada
+   consulta do `gatilhos.json` contra ela.
+
 4. **Escreva do zero**, em português, explicando o porquê de cada regra. Nada copiado de
    outras fontes.
 5. **Mantenha o `SKILL.md` enxuto** (menos de 500 linhas). Detalhe vai para `references/`,
