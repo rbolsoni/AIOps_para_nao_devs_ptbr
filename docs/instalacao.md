@@ -123,7 +123,7 @@ e oferece cada skill como *prompt*. Não executa nada nem grava arquivos.
 
 Ferramentas expostas: `listar_skills`, `ler_skill`, `ler_arquivo_da_skill`.
 
-**Fixe a versão.** Os exemplos abaixo apontam para uma tag (`#v1.7.3`). Sem ela, o cliente
+**Fixe a versão.** Os exemplos abaixo apontam para uma tag (`#v1.14.0`). Sem ela, o cliente
 baixa e executa o topo da branch principal a cada início — uma mudança com defeito (ou um
 comprometimento do repositório) chegaria a você sem revisão. Para atualizar, troque a tag pela
 mais recente em
@@ -133,7 +133,7 @@ notas. É a mesma regra que o kit ensina para qualquer dependência.
 ### Claude Code
 
 ```bash
-claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-nao-devs#v1.7.3
+claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-nao-devs#v1.14.0
 ```
 
 ### Clientes com configuração JSON (Claude Desktop, Cursor, Gemini CLI e outros)
@@ -143,7 +143,7 @@ claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-
   "mcpServers": {
     "ia-skills-para-nao-devs": {
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.0"]
     }
   }
 }
@@ -157,7 +157,7 @@ claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-
     "ia-skills-para-nao-devs": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"]
+      "args": ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.0"]
     }
   }
 }
@@ -168,7 +168,7 @@ claude mcp add ia-skills-para-nao-devs -- npx -y github:rbolsoni/IA-skills-para-
 ```toml
 [mcp_servers.ia-skills-para-nao-devs]
 command = "npx"
-args = ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"]
+args = ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.0"]
 ```
 
 ### Windows
@@ -176,7 +176,7 @@ args = ["-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"]
 Alguns clientes no Windows não encontram o `npx` diretamente. Nesse caso, use o `cmd`:
 
 ```json
-{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.7.3"] }
+{ "command": "cmd", "args": ["/c", "npx", "-y", "github:rbolsoni/IA-skills-para-nao-devs#v1.14.0"] }
 ```
 
 ### A partir de um clone local
