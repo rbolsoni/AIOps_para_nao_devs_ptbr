@@ -61,6 +61,11 @@ mesmos, em Node 20, 22 e 24.
 - `--help`, `--json`, códigos de saída documentados (0 ok, 1 achado/violação, 2 erro de uso
   ou de execução — "não consegui verificar" nunca se confunde com "verifiquei e falhou").
 - Nunca imprimir segredos: só início e tamanho.
+- **Funciona chamado por caminho com link simbólico**, o modo padrão do `npx skills` (junction
+  no Windows). Para decidir se foi executado diretamente, compare o caminho real dos dois
+  lados (`realpathSync` em `process.argv[1]` e em `import.meta.url`): o Node resolve o link
+  só no segundo, e a comparação direta faz o script sair com 0 sem verificar nada. O teste
+  de cada script também o roda por um link.
 - Todo script tem teste em `testes/`. Segredos de teste são gerados em tempo de execução —
   nunca grave um token com formato real no repositório (dispara os scanners e o bloqueio de
   push).

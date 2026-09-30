@@ -1,16 +1,29 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { criarLinkDePasta } from './links.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Sobe o servidor de verdade (processo separado) e conversa por stdio. */
-function iniciarServidor() {
-  const processo = spawn(process.execPath, [path.join(RAIZ, 'mcp', 'servidor.mjs')], { stdio: ['pipe', 'pipe', 'pipe'] });
+/**
+ * Sobe o servidor de verdade (processo separado) e conversa por stdio.
+ * Se o processo morrer, os pedidos em aberto falham na hora, com o stderr dele, em vez de
+ * esperar o tempo limite.
+ */
+function iniciarServidor({ script = path.join(RAIZ, 'mcp', 'servidor.mjs'), args = [] } = {}) {
+  const processo = spawn(process.execPath, [script, ...args], { stdio: ['pipe', 'pipe', 'pipe'] });
   const pendentes = new Map();
   let buffer = '';
+  let stderr = '';
+  processo.stdin.on('error', () => {}); // escrever para um servidor que caiu: quem acusa é o 'close'
+  processo.stderr.setEncoding('utf8');
+  processo.stderr.on('data', (dados) => {
+    stderr += dados;
+  });
   processo.stdout.setEncoding('utf8');
   processo.stdout.on('data', (dados) => {
     buffer += dados;
@@ -19,28 +32,39 @@ function iniciarServidor() {
       const linha = buffer.slice(0, fim);
       buffer = buffer.slice(fim + 1);
       const msg = JSON.parse(linha);
-      pendentes.get(msg.id)?.(msg);
+      pendentes.get(msg.id)?.resolve(msg);
       pendentes.delete(msg.id);
     }
   });
+  processo.on('close', (codigo) => {
+    for (const { reject } of pendentes.values()) reject(new Error(`o servidor encerrou (código ${codigo}): ${stderr.trim()}`));
+    pendentes.clear();
+  });
+  const esperarId = (id, rotulo = `o id ${id}`) =>
+    new Promise((resolve, reject) => {
+      const limite = setTimeout(() => reject(new Error(`sem resposta para ${rotulo}`)), 5000);
+      pendentes.set(id, {
+        resolve: (msg) => {
+          clearTimeout(limite);
+          resolve(msg);
+        },
+        reject: (erro) => {
+          clearTimeout(limite);
+          reject(erro);
+        },
+      });
+    });
   let proximoId = 1;
   return {
     processo,
     enviarBruto: (texto) => processo.stdin.write(`${texto}\n`),
     pedir(method, params) {
       const id = proximoId++;
-      return new Promise((resolve, reject) => {
-        const limite = setTimeout(() => reject(new Error(`sem resposta para ${method}`)), 5000);
-        pendentes.set(id, (msg) => {
-          clearTimeout(limite);
-          resolve(msg);
-        });
-        processo.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
-      });
+      const resposta = esperarId(id, method);
+      processo.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
+      return resposta;
     },
-    esperarId(id) {
-      return new Promise((resolve) => pendentes.set(id, resolve));
-    },
+    esperarId,
   };
 }
 
@@ -117,6 +141,18 @@ describe('servidor MCP', () => {
     s.enviarBruto('{isto não é json');
     const invalido = await esperaNull;
     assert.equal(invalido.error.code, -32700);
+    const ping = await s.pedir('ping', {});
+    assert.deepEqual(ping.result, {});
+  });
+});
+
+describe('servidor MCP chamado por link', () => {
+  it('sobe e responde quando chamado por um caminho com link (como o atalho do npx)', async (t) => {
+    const link = path.join(mkdtempSync(path.join(tmpdir(), 'link-')), 'mcp');
+    const motivo = criarLinkDePasta(path.join(RAIZ, 'mcp'), link);
+    if (motivo) return t.skip(motivo);
+    const s = iniciarServidor({ script: path.join(link, 'servidor.mjs') });
+    t.after(() => s.processo.kill());
     const ping = await s.pedir('ping', {});
     assert.deepEqual(ping.result, {});
   });

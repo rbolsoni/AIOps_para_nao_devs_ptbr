@@ -11,7 +11,7 @@ license: MIT
 compatibility: O script de varredura requer Node.js 20+; usa o git quando disponível.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Segredos e credenciais

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -6,6 +7,7 @@ import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { carregarSkills, lerArquivoDaSkill, lerYamlSimples } from '../ferramentas/lib/skills.mjs';
 import { validarSkill } from '../ferramentas/validar-skills.mjs';
+import { criarLinkDePasta } from './links.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -117,6 +119,15 @@ describe('validador', () => {
 
   it('recusa sintaxe de frontmatter não reconhecida em vez de interpretar pela metade', () => {
     assert.throws(() => lerYamlSimples('name: x\n- item solto'), /esperado "chave: valor"/);
+  });
+
+  it('chamado por um caminho com link, valida as skills em vez de sair calado', (t) => {
+    const link = path.join(mkdtempSync(path.join(tmpdir(), 'link-')), 'ferramentas');
+    const motivo = criarLinkDePasta(path.join(RAIZ, 'ferramentas'), link);
+    if (motivo) return t.skip(motivo);
+    const r = spawnSync(process.execPath, [path.join(link, 'validar-skills.mjs')], { encoding: 'utf8' });
+    assert.equal(r.status, 0, `saída ${r.status}; stdout: "${r.stdout}"; stderr: "${r.stderr}"`);
+    assert.match(r.stdout.trim().split('\n').at(-1), /^\d+ skill\(s\), 0 erro\(s\)\.$/);
   });
 });
 
