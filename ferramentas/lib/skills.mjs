@@ -9,14 +9,14 @@
  * blocos `>`/`|` e um nível de mapa aninhado (`metadata`). Qualquer outra construção é
  * recusada com erro, em vez de ser interpretada pela metade.
  */
-import { existsSync, lstatSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 const LIMITE_LEITURA_BYTES = 512 * 1024;
 
 /** Separa o bloco `---` inicial do corpo Markdown. Devolve null se não houver frontmatter. */
 export function separarFrontmatter(texto) {
-  const semBom = texto.replace(/^﻿/, '');
+  const semBom = texto.replace(/^\uFEFF/, '');
   const m = semBom.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!m) return null;
   return { bruto: m[1], corpo: m[2] };
@@ -106,20 +106,53 @@ export function lerYamlSimples(bruto) {
   return { dados, avisos };
 }
 
-/** Lista as skills (subpastas com SKILL.md) de um diretório, em ordem alfabética. */
+/**
+ * Diz se o caminho é uma pasta, seguindo link. O `npx skills` instala cada skill como link
+ * (junction no Windows) para uma cópia central, e para link `Dirent.isDirectory()` é falso.
+ */
+function ehPasta(caminho) {
+  try {
+    return statSync(caminho).isDirectory();
+  } catch {
+    return false; // link quebrado ou sem permissão
+  }
+}
+
+/** Lista as skills (subpastas com SKILL.md, inclusive por link) de um diretório, em ordem alfabética. */
 export function carregarSkills(dirSkills) {
   if (!existsSync(dirSkills)) return [];
-  return readdirSync(dirSkills, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && existsSync(path.join(dirSkills, e.name, 'SKILL.md')))
-    .map((e) => carregarSkill(path.join(dirSkills, e.name)))
+  return readdirSync(dirSkills)
+    .filter((nome) => ehPasta(path.join(dirSkills, nome)) && existsSync(path.join(dirSkills, nome, 'SKILL.md')))
+    .map((nome) => carregarSkill(path.join(dirSkills, nome)))
     .sort((a, b) => a.pasta.localeCompare(b.pasta));
+}
+
+/**
+ * O SKILL.md vai para um cliente externo pelo servidor MCP: se fosse link para fora da pasta
+ * da skill, entregaria qualquer arquivo da máquina. Confere antes de ler (a pasta pode ser
+ * link; vale o caminho real dela) e devolve o motivo da recusa, ou null.
+ */
+function problemaNoSkillMd(dir, arquivo) {
+  try {
+    if (!realpathSync(arquivo).startsWith(realpathSync(dir) + path.sep)) {
+      return 'SKILL.md é link para fora da pasta da skill e não foi lido';
+    }
+    const info = statSync(arquivo);
+    if (!info.isFile()) return 'SKILL.md não é um arquivo';
+    if (info.size > LIMITE_LEITURA_BYTES) return `SKILL.md maior que ${LIMITE_LEITURA_BYTES / 1024} KB e não foi lido`;
+    return null;
+  } catch (e) {
+    return `SKILL.md não pôde ser lido (${e.code ?? e.message})`;
+  }
 }
 
 export function carregarSkill(dir) {
   const arquivo = path.join(dir, 'SKILL.md');
-  const texto = readFileSync(arquivo, 'utf8');
-  const skill = { pasta: path.basename(dir), dir, arquivo, texto, frontmatter: null, corpo: '', erroFrontmatter: null, avisosFrontmatter: [] };
-  const partes = separarFrontmatter(texto);
+  const skill = { pasta: path.basename(dir), dir, arquivo, texto: '', frontmatter: null, corpo: '', erroFrontmatter: null, avisosFrontmatter: [] };
+  skill.erroFrontmatter = problemaNoSkillMd(dir, arquivo);
+  if (skill.erroFrontmatter) return skill;
+  skill.texto = readFileSync(arquivo, 'utf8');
+  const partes = separarFrontmatter(skill.texto);
   if (!partes) {
     skill.erroFrontmatter = 'SKILL.md não começa com bloco de frontmatter delimitado por "---"';
     return skill;

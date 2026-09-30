@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFile, execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import http from 'node:http';
 import { tmpdir } from 'node:os';
@@ -8,10 +8,26 @@ import { after, before, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { verificar } from '../skills/headers-de-seguranca/scripts/verificar-headers.mjs';
 import { varrer } from '../skills/segredos-e-credenciais/scripts/verificar-segredos.mjs';
+import { criarLinkDePasta } from './links.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT_SEGREDOS = path.join(RAIZ, 'skills', 'segredos-e-credenciais', 'scripts', 'verificar-segredos.mjs');
 const SCRIPT_VERSAO = path.join(RAIZ, 'skills', 'esteira-ci-cd', 'scripts', 'proxima-versao.sh');
+
+/** Link para a pasta da skill numa pasta temporária, como o `npx skills` instala. */
+function ligarSkill(nome) {
+  const link = path.join(mkdtempSync(path.join(tmpdir(), 'link-')), nome);
+  return { link, motivo: criarLinkDePasta(path.join(RAIZ, 'skills', nome), link) };
+}
+
+/** Roda o Node em outro processo sem bloquear este (o servidor HTTP dos testes precisa responder). */
+function rodarNode(args) {
+  return new Promise((resolve) => {
+    execFile(process.execPath, args, { encoding: 'utf8' }, (erro, stdout, stderr) => {
+      resolve({ status: erro ? erro.code : 0, stdout, stderr });
+    });
+  });
+}
 
 // Segredos falsos gerados em tempo de execução: um token no formato real gravado no
 // repositório dispararia os próprios scanners e o bloqueio de push da hospedagem.
@@ -55,6 +71,14 @@ describe('verificar-segredos', () => {
     const r = spawnSync(process.execPath, [SCRIPT_SEGREDOS, dir, '--todos', '--json'], { encoding: 'utf8' });
     assert.equal(r.status, 1);
     assert.ok(!r.stdout.includes(tokenGithub));
+  });
+
+  it('chamado por um caminho com link (como o npx skills instala), varre e acusa', (t) => {
+    const { link, motivo } = ligarSkill('segredos-e-credenciais');
+    if (motivo) return t.skip(motivo);
+    const r = spawnSync(process.execPath, [path.join(link, 'scripts', 'verificar-segredos.mjs'), dir, '--todos', '--json'], { encoding: 'utf8' });
+    assert.equal(r.status, 1, `saída ${r.status}; stdout: "${r.stdout}"; stderr: "${r.stderr}"`);
+    assert.ok(JSON.parse(r.stdout).achados.some((a) => a.regra === 'github-token'));
   });
 
   it('no modo git, acusa .env versionado', () => {
@@ -127,6 +151,14 @@ describe('verificar-headers', () => {
   it('não expõe o valor dos cookies', async () => {
     const r = await verificar(`${base}/ruim`);
     assert.ok(!JSON.stringify(r).includes('valor-secreto'));
+  });
+
+  it('chamado por um caminho com link (como o npx skills instala), audita e acusa', async (t) => {
+    const { link, motivo } = ligarSkill('headers-de-seguranca');
+    if (motivo) return t.skip(motivo);
+    const r = await rodarNode([path.join(link, 'scripts', 'verificar-headers.mjs'), `${base}/ruim`, '--json']);
+    assert.equal(r.status, 1, `saída ${r.status}; stdout: "${r.stdout}"; stderr: "${r.stderr}"`);
+    assert.ok(JSON.parse(r.stdout).resumo.erros > 0);
   });
 });
 

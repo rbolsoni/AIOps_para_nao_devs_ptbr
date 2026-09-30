@@ -11,7 +11,7 @@ license: MIT
 compatibility: O script de verificação requer Node.js 20+ e acesso à URL verificada.
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Headers de segurança

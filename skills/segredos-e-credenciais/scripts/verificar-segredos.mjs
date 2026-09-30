@@ -23,7 +23,7 @@
  * Código de saída: 0 nada encontrado; 1 achados; 2 uso incorreto ou erro de execução.
  */
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -331,4 +331,15 @@ function main() {
   process.exit(resultado.achados.length > 0 ? 1 : 0);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+// Executado (e não importado)? Compare o caminho real dos dois lados: o `npx skills` instala
+// a skill por link simbólico (junction no Windows), e o Node resolve o link em
+// import.meta.url, mas não em process.argv[1]. A comparação direta faria o script sair com 0
+// sem verificar nada. Repetido em cada script de propósito: cada skill é instalada sozinha.
+function executadoDireto() {
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+if (executadoDireto()) main();

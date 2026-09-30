@@ -11,6 +11,9 @@
  * Nada é escrito nem executado: o servidor só lê arquivos de dentro da pasta de cada skill,
  * recusando caminhos que saiam dela, links simbólicos, binários e arquivos grandes.
  *
+ * A versão informada ao cliente (serverInfo.version) é a do pacote mais uma impressão do
+ * conteúdo das skills (ex.: 1.0.0+3f2a9c1b7d4e): identifica exatamente o que está sendo servido.
+ *
  * Transporte: stdio, JSON-RPC 2.0, uma mensagem por linha. Logs vão para stderr.
  *
  * Uso:
@@ -18,6 +21,7 @@
  *   node mcp/servidor.mjs --skills <pasta>    # usa outra pasta de skills
  *   npx -y github:rbolsoni/Padroes_skill_para_AIOps_ptbr
  */
+import { createHash } from 'node:crypto';
 import { readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
@@ -47,7 +51,7 @@ const FERRAMENTAS = [
   {
     name: 'listar_skills',
     title: 'Listar skills',
-    description: 'Lista as skills disponíveis com nome, categoria e descrição de quando usar cada uma. Chame no início da tarefa para escolher quais seguir.',
+    description: 'Lista as skills disponíveis com nome, categoria, versão e descrição de quando usar cada uma. Chame no início da tarefa para escolher quais seguir.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
@@ -80,6 +84,36 @@ const FERRAMENTAS = [
   },
 ];
 
+/**
+ * `params` e `arguments` ausentes ou null valem {}; outro valor que não seja objeto é inválido
+ * (devolve null). O padrão `= {}` da desestruturação só cobre undefined: com "params": null, o
+ * acesso a params.name lançava erro fora de qualquer try/catch e derrubava o servidor.
+ */
+function comoObjeto(valor) {
+  if (valor === undefined || valor === null) return {};
+  return typeof valor === 'object' && !Array.isArray(valor) ? valor : null;
+}
+
+/**
+ * Impressão do conteúdo servido: sha256 do caminho relativo e dos bytes de cada arquivo das
+ * skills (menos evals/, que não é entregue), em ordem fixa. Vai na versão informada ao
+ * cliente, porque a do package.json não muda a cada release das skills.
+ */
+function impressaoDoConteudo(skills) {
+  const hash = createHash('sha256');
+  // Ordem por código de caractere, não por idioma: a mesma em qualquer máquina.
+  const porPasta = [...skills].sort((a, b) => (a.pasta < b.pasta ? -1 : a.pasta > b.pasta ? 1 : 0));
+  for (const s of porPasta) {
+    for (const rel of ['SKILL.md', ...listarArquivosDaSkill(s.dir).filter((a) => !a.startsWith('evals/'))]) {
+      const bytes = readFileSync(path.join(s.dir, rel));
+      // Caminho entre aspas e tamanho delimitam cada arquivo sem ambiguidade.
+      hash.update(`${JSON.stringify(`${s.pasta}/${rel}`)} ${bytes.length}\n`);
+      hash.update(bytes);
+    }
+  }
+  return hash.digest('hex').slice(0, 12);
+}
+
 function lerOpcoes(argv) {
   if (argv.includes('--help') || argv.includes('-h')) return { ajuda: true };
   const i = argv.indexOf('--skills');
@@ -90,6 +124,7 @@ function lerOpcoes(argv) {
 export function criarServidor(pastaSkills) {
   const skills = carregarSkills(pastaSkills).filter((s) => s.frontmatter?.name && s.frontmatter?.description);
   const porNome = new Map(skills.map((s) => [s.frontmatter.name, s]));
+  const versao = `${PACOTE.version}+${impressaoDoConteudo(skills)}`;
 
   const texto = (t) => ({ content: [{ type: 'text', text: t }] });
   const erroDeFerramenta = (t) => ({ content: [{ type: 'text', text: t }], isError: true });
@@ -105,7 +140,10 @@ export function criarServidor(pastaSkills) {
   function chamarFerramenta(nome, args = {}) {
     try {
       if (nome === 'listar_skills') {
-        const linhas = skills.map((s) => `- **${s.frontmatter.name}** (${s.frontmatter.metadata?.categoria ?? 'sem categoria'}): ${s.frontmatter.description}`);
+        const linhas = skills.map((s) => {
+          const { categoria = 'sem categoria', versao: v } = s.frontmatter.metadata ?? {};
+          return `- **${s.frontmatter.name}** (${v ? `${categoria}, v${v}` : categoria}): ${s.frontmatter.description}`;
+        });
         return texto(`${skills.length} skills disponíveis:\n\n${linhas.join('\n')}`);
       }
       if (nome === 'ler_skill') {
@@ -125,9 +163,11 @@ export function criarServidor(pastaSkills) {
   }
 
   function tratar(mensagem) {
-    const { id, method, params = {} } = mensagem;
+    const { id, method } = mensagem;
     const ok = (result) => ({ jsonrpc: '2.0', id, result });
     const falha = (code, message) => ({ jsonrpc: '2.0', id, error: { code, message } });
+    const params = comoObjeto(mensagem.params);
+    if (!params) return falha(-32602, 'params inválido: esperado um objeto');
 
     switch (method) {
       case 'initialize': {
@@ -135,7 +175,7 @@ export function criarServidor(pastaSkills) {
         return ok({
           protocolVersion: VERSOES_SUPORTADAS.includes(pedida) ? pedida : VERSOES_SUPORTADAS[0],
           capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
-          serverInfo: { name: PACOTE.name, title: 'Padrões de Skills para AIOps (PT-BR)', version: PACOTE.version },
+          serverInfo: { name: PACOTE.name, title: 'Padrões de Skills para AIOps (PT-BR)', version: versao },
           instructions: INSTRUCOES,
         });
       }
@@ -144,7 +184,9 @@ export function criarServidor(pastaSkills) {
       case 'tools/list':
         return ok({ tools: FERRAMENTAS });
       case 'tools/call': {
-        const resultado = chamarFerramenta(params.name, params.arguments);
+        const args = comoObjeto(params.arguments);
+        if (!args) return falha(-32602, 'arguments inválido: esperado um objeto');
+        const resultado = chamarFerramenta(params.name, args);
         return resultado ? ok(resultado) : falha(-32602, `ferramenta desconhecida: ${params.name}`);
       }
       case 'prompts/list':
@@ -156,9 +198,11 @@ export function criarServidor(pastaSkills) {
           })),
         });
       case 'prompts/get': {
+        const args = comoObjeto(params.arguments);
+        if (!args) return falha(-32602, 'arguments inválido: esperado um objeto');
         const skill = porNome.get(params.name);
         if (!skill) return falha(-32602, `prompt desconhecido: ${params.name}`);
-        const tarefa = params.arguments?.tarefa ? `\n\nTarefa: ${params.arguments.tarefa}` : '';
+        const tarefa = args.tarefa ? `\n\nTarefa: ${args.tarefa}` : '';
         return ok({
           description: skill.frontmatter.description,
           messages: [
@@ -193,10 +237,17 @@ export function criarServidor(pastaSkills) {
     if (typeof mensagem.method !== 'string') {
       return { jsonrpc: '2.0', id: mensagem.id, error: { code: -32600, message: 'requisição sem "method"' } };
     }
-    return tratar(mensagem);
+    try {
+      return tratar(mensagem);
+    } catch (e) {
+      // Um defeito ao tratar um pedido não pode derrubar o servidor: o cliente perderia todas as
+      // ferramentas. O detalhe vai para o stderr; o stdout é o canal do protocolo.
+      console.error(`[${PACOTE.name}] erro interno ao tratar "${mensagem.method}": ${e?.stack ?? e}`);
+      return { jsonrpc: '2.0', id: mensagem.id, error: { code: -32603, message: 'erro interno do servidor' } };
+    }
   }
 
-  return { skills, processarLinha };
+  return { skills, versao, processarLinha };
 }
 
 function main() {
@@ -216,7 +267,7 @@ function main() {
     console.error(`erro: nenhuma skill encontrada em ${opcoes.pastaSkills}`);
     process.exit(2);
   }
-  console.error(`[${PACOTE.name}] ${servidor.skills.length} skills carregadas de ${opcoes.pastaSkills}`);
+  console.error(`[${PACOTE.name}] ${servidor.skills.length} skills carregadas de ${opcoes.pastaSkills} (versão ${servidor.versao})`);
   const entrada = createInterface({ input: process.stdin, crlfDelay: Infinity });
   entrada.on('line', (linha) => {
     const resposta = servidor.processarLinha(linha);

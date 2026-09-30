@@ -21,5 +21,7 @@ Confirmação de recebimento em até 5 dias úteis e aviso quando a correção f
 ## Garantias do servidor MCP
 
 O servidor é somente leitura: não executa scripts nem grava arquivos, e recusa ler fora da
-pasta de cada skill (ver `docs/adr/0003-mcp-somente-leitura.md`). Qualquer forma de contornar
-isso é uma vulnerabilidade.
+pasta de cada skill (ver `docs/adr/0003-mcp-somente-leitura.md`). Isso vale também para o
+`SKILL.md`: se ele for link para fora da pasta, a skill é recusada. Quando a pasta da skill é
+um link (como o `npx skills` instala), o limite é a pasta real para onde ele aponta. Qualquer
+forma de contornar isso é uma vulnerabilidade.

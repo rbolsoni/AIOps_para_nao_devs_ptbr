@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { carregarSkills, lerArquivoDaSkill, lerYamlSimples } from '../ferramentas/lib/skills.mjs';
+import { carregarSkills, lerArquivoDaSkill, lerYamlSimples, separarFrontmatter } from '../ferramentas/lib/skills.mjs';
 import { validarSkill } from '../ferramentas/validar-skills.mjs';
+import { criarLinkDeArquivo, criarLinkDePasta } from './links.mjs';
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -118,6 +120,16 @@ describe('validador', () => {
   it('recusa sintaxe de frontmatter não reconhecida em vez de interpretar pela metade', () => {
     assert.throws(() => lerYamlSimples('name: x\n- item solto'), /esperado "chave: valor"/);
   });
+
+  it('chamado por um caminho com link, valida as skills em vez de sair calado', (t) => {
+    const link = path.join(mkdtempSync(path.join(tmpdir(), 'link-')), 'ferramentas');
+    const motivo = criarLinkDePasta(path.join(RAIZ, 'ferramentas'), link);
+    if (motivo) return t.skip(motivo);
+    const r = spawnSync(process.execPath, [path.join(link, 'validar-skills.mjs')], { encoding: 'utf8' });
+    assert.equal(r.status, 0, `saída ${r.status}; stdout: "${r.stdout}"; stderr: "${r.stderr}"`);
+    // O resumo pode trazer avisos depois dos erros; o que importa é que validou e não achou erro.
+    assert.match(r.stdout.trim().split('\n').at(-1), /^\d+ skill\(s\), 0 erro\(s\)[.,]/);
+  });
 });
 
 describe('leitura segura de arquivos da skill', () => {
@@ -141,5 +153,88 @@ describe('leitura segura de arquivos da skill', () => {
   it('recusa arquivo binário', () => {
     writeFileSync(path.join(dir, 'references', 'bin.dat'), Buffer.from([0x50, 0x00, 0x51]));
     assert.throws(() => lerArquivoDaSkill(dir, 'references/bin.dat'), /binário/);
+  });
+});
+
+describe('skills instaladas por link', () => {
+  // Como o `npx skills` instala: a pasta da skill no agente é um link para uma cópia central.
+  const central = mkdtempSync(path.join(tmpdir(), 'skills-central-'));
+  const real = criarSkill(central, 'por-link', {
+    frontmatter: 'name: por-link\ndescription: Use sempre.',
+    arquivos: { 'references/ok.md': 'conteúdo ok' },
+  });
+  writeFileSync(path.join(central, 'segredo.txt'), 'fora da skill');
+  const doAgente = mkdtempSync(path.join(tmpdir(), 'skills-agente-'));
+  const link = path.join(doAgente, 'por-link');
+  const motivo = criarLinkDePasta(real, link);
+
+  it('carregarSkills encontra a skill e o validador a aceita', (t) => {
+    if (motivo) return t.skip(motivo);
+    const skills = carregarSkills(doAgente);
+    assert.deepEqual(skills.map((s) => s.pasta), ['por-link']);
+    assert.deepEqual(validarSkill(skills[0]).erros, []);
+  });
+
+  it('lê arquivo de apoio pelo link e continua recusando sair da pasta real', (t) => {
+    if (motivo) return t.skip(motivo);
+    assert.equal(lerArquivoDaSkill(link, 'references/ok.md'), 'conteúdo ok');
+    assert.throws(() => lerArquivoDaSkill(link, '../segredo.txt'), /sai da pasta/);
+  });
+});
+
+describe('SKILL.md fora dos limites', () => {
+  it('recusa SKILL.md acima de 512 KB sem ler o conteúdo', () => {
+    const base = mkdtempSync(path.join(tmpdir(), 'skills-'));
+    criarSkill(base, 'enorme', { frontmatter: 'name: enorme\ndescription: Use sempre.', corpo: `${'x'.repeat(520 * 1024)}\n` });
+    const [skill] = carregarSkills(base);
+    assert.match(skill.erroFrontmatter ?? '', /maior que 512 KB/);
+    assert.equal(skill.texto, '');
+    assert.ok(validarSkill(skill).erros.some((e) => e.includes('512 KB')));
+  });
+
+  it('recusa SKILL.md que é link para arquivo fora da pasta da skill', (t) => {
+    const base = mkdtempSync(path.join(tmpdir(), 'skills-'));
+    const fora = path.join(base, 'fora.md');
+    writeFileSync(fora, '---\nname: vazada\ndescription: Use sempre.\n---\nconteúdo de fora da skill\n');
+    mkdirSync(path.join(base, 'skills', 'vazada'), { recursive: true });
+    const motivo = criarLinkDeArquivo(fora, path.join(base, 'skills', 'vazada', 'SKILL.md'));
+    if (motivo) return t.skip(motivo);
+    const [skill] = carregarSkills(path.join(base, 'skills'));
+    assert.match(skill.erroFrontmatter ?? '', /fora da pasta/);
+    assert.equal(skill.texto, '');
+  });
+
+  it('aceita SKILL.md que é link para arquivo dentro da própria skill', (t) => {
+    const base = mkdtempSync(path.join(tmpdir(), 'skills-'));
+    const dir = path.join(base, 'interna');
+    mkdirSync(path.join(dir, 'docs'), { recursive: true });
+    writeFileSync(path.join(dir, 'docs', 'skill.md'), '---\nname: interna\ndescription: Use sempre.\n---\n# Interna\n');
+    const motivo = criarLinkDeArquivo(path.join(dir, 'docs', 'skill.md'), path.join(dir, 'SKILL.md'));
+    if (motivo) return t.skip(motivo);
+    const [skill] = carregarSkills(base);
+    assert.equal(skill.erroFrontmatter, null);
+    assert.equal(skill.frontmatter.name, 'interna');
+  });
+});
+
+describe('caracteres invisíveis', () => {
+  it('separarFrontmatter ignora o BOM no início do SKILL.md', () => {
+    assert.equal(separarFrontmatter('\uFEFF---\nname: x\n---\ncorpo\n')?.bruto, 'name: x');
+  });
+
+  // BOM, espaço de largura zero e controles de direção do texto não aparecem no editor nem no
+  // diff: numa expressão, mudam o que ela casa sem ninguém ver. No código, use o escape (\uFEFF).
+  const INVISIVEIS = /[\u200B-\u200D\u2060\u202A-\u202E\u2066-\u2069\uFEFF]/;
+  const listarCodigo = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+      if (e.name === '.git' || e.name === 'node_modules') return [];
+      const completo = path.join(dir, e.name);
+      if (e.isDirectory()) return listarCodigo(completo);
+      return /\.(mjs|js|sh)$/.test(e.name) ? [completo] : [];
+    });
+
+  it('o código do kit não tem caractere invisível literal', () => {
+    const comInvisivel = listarCodigo(RAIZ).filter((f) => INVISIVEIS.test(readFileSync(f, 'utf8')));
+    assert.deepEqual(comInvisivel.map((f) => path.relative(RAIZ, f).split(path.sep).join('/')), []);
   });
 });

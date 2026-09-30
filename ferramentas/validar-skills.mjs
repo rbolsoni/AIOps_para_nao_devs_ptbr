@@ -23,7 +23,7 @@
  *
  * Código de saída: 0 sem erros, 1 com erros de validação, 2 se a pasta não existir.
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { carregarSkills, listarArquivosDaSkill } from './lib/skills.mjs';
@@ -198,4 +198,14 @@ function main() {
   process.exit(totalErros > 0 || resultados.length === 0 ? 1 : 0);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+// Executado (e não importado)? Compare o caminho real dos dois lados: o Node resolve link
+// simbólico em import.meta.url, mas não em process.argv[1], e a comparação direta faria o
+// validador chamado por um caminho com link sair com 0 sem validar nada.
+function executadoDireto() {
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+if (executadoDireto()) main();
