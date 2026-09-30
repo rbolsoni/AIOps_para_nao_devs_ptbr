@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.4"
+  versao: "1.1.0"
 ---
 
 # Iniciar projeto
@@ -49,10 +49,17 @@ Levante, sem modificar nada:
   `segredos-e-credenciais` antes de qualquer outra coisa.
 - **Contexto de produto**: tem banco de dados? Deploy em qual plataforma? Lida com dados
   pessoais? Tem usuários reais?
+- **Origem**: o projeto veio de uma plataforma de vibe coding (Lovable, Bolt, Replit, v0…)?
+  Leia [references/vindo-de-plataformas.md](references/vindo-de-plataformas.md): há armadilhas
+  previsíveis (plataforma gravando direto na branch principal, chave pública no front, banco
+  sem RLS).
 
 ## 2. Perguntas que mudam o plano
 
 Pergunte apenas o que você não consegue descobrir e que muda o resultado:
+
+- Em que estágio está o projeto — protótipo, primeiros usuários ou produto? O plano muda com
+  o nível: [references/niveis-de-maturidade.md](references/niveis-de-maturidade.md).
 
 - Nome e descrição do projeto (uma frase).
 - Licença: projeto aberto → recomende MIT (ou Apache-2.0, se proteção de patente importar);
@@ -66,6 +73,8 @@ Para o resto, use padrões sensatos e diga quais usou.
 ## 3. Plano
 
 Mostre a lista de arquivos a criar e a alterar, uma linha cada, com o motivo. Espere o OK.
+Dimensione ao nível do projeto: não monte a esteira de promoção num protótipo, e diga, em
+linguagem simples, o que fica para quando o projeto mudar de nível.
 
 ## 4. Arquivos de base
 
@@ -112,6 +121,9 @@ veja `testes-e-qualidade`).
 - Se for aplicação web: `headers-de-seguranca` e `acessibilidade-web`.
 - Se tiver banco: `mudancas-de-banco` e `isolamento-de-ambientes`.
 - Se tratar dados pessoais: `privacidade-e-lgpd`.
+- Sempre: agente configurado com segurança (`uso-seguro-de-agentes`) e limites de gasto
+  (`controle-de-custos`).
+- Se tiver banco ou usuários: backup e volta de versão ensaiados (`backup-e-recuperacao`).
 
 ## 7. Tarefas de painel
 

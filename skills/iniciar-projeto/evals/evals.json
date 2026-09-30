@@ -22,6 +22,18 @@
         "Não sobrescreve o README existente sem mostrar a mudança",
         "Explica que adicionar ao .gitignore não remove o arquivo do histórico"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "Fiz meu app no Lovable e ele já tem uns 50 usuários. Quero deixar profissional, mas não sou programador.",
+      "expected_output": "O agente identifica o nível (primeiros usuários) e dimensiona o plano a ele, trata as armadilhas de quem vem de plataforma (sincronização direta na branch principal, chave pública no front, RLS no banco), dá prioridade a segredos, 2FA e limite de gasto, e diz em linguagem simples o que fica para o nível seguinte.",
+      "assertions": [
+        "Identifica o estágio do projeto e dimensiona o plano ao nível",
+        "Trata a sincronização da plataforma com a branch principal (branch de trabalho e PR)",
+        "Confere chaves expostas no front e as políticas de acesso (RLS) do banco",
+        "Inclui 2FA nas contas e limite de gasto",
+        "Diz o que fica para o próximo nível, em linguagem simples"
+      ]
     }
   ]
 }

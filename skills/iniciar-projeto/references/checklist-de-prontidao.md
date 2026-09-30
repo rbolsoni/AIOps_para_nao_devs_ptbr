@@ -29,12 +29,19 @@ motivo e o risco — em linguagem simples.
 - [ ] Autorização verificada no servidor (e no banco, se o cliente acessa o banco).
 - [ ] Headers de segurança configurados e verificados na URL publicada.
 - [ ] Pasta pública não expõe arquivo interno (manuais, prints de painel, backups).
+- [ ] Verificação em duas etapas em todas as contas: repositório, hospedagem, banco, domínio,
+      provedores de IA e o e-mail que recupera todas.
+- [ ] Agente de IA configurado: sem acesso a `.env` e a credenciais de produção, aprovações
+      ligadas, MCPs com versão fixada e token por variável de ambiente.
+- [ ] Dependências com idade mínima de versão e scripts de instalação sob controle.
 
 ## Dados e ambientes
 
 - [ ] Desenvolvimento e testes nunca apontam para produção; scripts têm trava de ambiente.
 - [ ] Mudanças de banco só por migração versionada, aplicada pela esteira.
 - [ ] Backups/recuperação configurados no banco de produção.
+- [ ] Restauração de backup ensaiada, com tempo medido; caminho para voltar a versão do
+      site ensaiado.
 - [ ] Dados pessoais mapeados: finalidade, base legal, retenção e como excluir.
 
 ## Esteira e deploy
@@ -53,6 +60,8 @@ motivo e o risco — em linguagem simples.
 - [ ] Tarefas agendadas avisam quando não rodam.
 - [ ] Runbook dos painéis externos: o que foi configurado, onde, por quem (nomes, nunca
       valores de segredo).
+- [ ] Limite de gasto e alertas em cada provedor pago; sei qual corta e qual só avisa.
+- [ ] Desempenho medido nas rotas e páginas principais, quando há usuários.
 
 ## Legal e acessibilidade
 
