@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.2"
+  versao: "1.2.0"
 ---
 
 # Segurança de aplicação
@@ -86,6 +86,10 @@ Responda por escrito, no PR ou num ADR:
 
 - Limite de taxa em login, cadastro, recuperação de senha, envio de e-mail/SMS e
   endpoints caros.
+- Ataques por volume, que usam o app do jeito que ele foi feito (senhas vazadas testadas em
+  massa, cadastro falso, SMS pago disparado por robô, bombardeio de e-mail, abuso de cupom e
+  de teste grátis): sinais e defesas em
+  [references/abuso-e-fraude.md](references/abuso-e-fraude.md).
 - Paginação e limites máximos em toda listagem; nada de "retornar tudo".
 - Timeouts em chamadas externas.
 - Rota que custa dinheiro (IA, e-mail, SMS, API paga) exige login, limite por usuário e teto

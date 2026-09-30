@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Controle de custos
@@ -69,4 +69,6 @@ ar.
 - **Log em nível debug em produção**: ingestão e retenção são cobradas.
 - **Chave de IA dentro do app móvel**: qualquer um extrai do pacote.
 - **Prévia automática por branch com banco pago** e ambiente de teste esquecido ligado.
-- **Robô no formulário público** disparando e-mail, SMS ou IA na sua conta.
+- **Robô no formulário público** disparando e-mail, SMS ou IA na sua conta. Em SMS, libere no
+  provedor só os países que o app atende: robôs disparam códigos para números de alto custo
+  (SMS pumping). Defesas na skill `seguranca-de-aplicacao`.
