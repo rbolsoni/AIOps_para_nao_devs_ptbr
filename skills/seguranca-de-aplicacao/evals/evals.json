@@ -3,12 +3,12 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Cria a rota GET /api/pedidos/:id que retorna o pedido. Só usuário logado pode acessar.",
-      "expected_output": "Uma rota que além de exigir login confere que o pedido pertence ao usuário (ou que ele tem papel autorizado), valida o id, retorna 404/403 sem vazar detalhes e tem teste que tenta acessar pedido de outro usuário.",
+      "prompt": "Cria a rota GET /api/documentos/:id que retorna o documento. Só usuário logado pode acessar.",
+      "expected_output": "Uma rota que além de exigir login confere que o documento pertence ao usuário (ou que ele tem papel autorizado), valida o id, retorna 404/403 sem vazar detalhes e tem teste que tenta acessar documento de outro usuário.",
       "assertions": [
-        "Confere a posse do pedido pelo usuário, não apenas a autenticação",
+        "Confere a posse do documento pelo usuário, não apenas a autenticação",
         "Valida o formato do id recebido",
-        "Inclui teste em que um usuário tenta ler o pedido de outro e é recusado",
+        "Inclui teste em que um usuário tenta ler o documento de outro e é recusado",
         "A resposta de erro não expõe stack trace nem detalhes internos"
       ]
     },

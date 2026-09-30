@@ -19,6 +19,7 @@
 - [ ] `npm test` passando
 - [ ] `npm run verificar:segredos` limpo
 - [ ] Texto escrito do zero (nenhum trecho copiado de outro repositório)
+- [ ] Exemplos servem a qualquer tipo de aplicação (nomes genéricos ou domínios variados)
 - [ ] `evals/evals.json` e `evals/gatilhos.json` atualizados (quase-acertos incluídos)
 - [ ] Nenhuma dependência nova
 - [ ] `metadata.versao` subiu nas skills alteradas (`npm run conferir:versoes`)

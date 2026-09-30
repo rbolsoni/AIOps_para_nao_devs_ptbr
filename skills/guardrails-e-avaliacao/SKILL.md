@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.1"
+  versao: "1.0.2"
 ---
 
 # Guardrails e avaliação

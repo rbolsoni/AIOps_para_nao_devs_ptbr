@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: agentes-de-ia
-  versao: "1.0.2"
+  versao: "1.0.3"
 ---
 
 # Arquitetura de agentes
@@ -28,7 +28,7 @@ skill é `uso-seguro-de-agentes`; esta é para construir agentes.
 
 | Tipo de problema | Quem resolve | Exemplo |
 |---|---|---|
-| Determinístico, verificável | **código** | validar CPF, calcular frete, checar permissão, aplicar limite de gasto |
+| Determinístico, verificável | **código** | validar CPF, calcular juros, checar permissão, aplicar limite de gasto |
 | Julgamento, linguagem, ambiguidade | **modelo** | entender o pedido, escolher a ferramenta, resumir, redigir |
 | O que o modelo vê | **contexto** (montado pelo código) | quais documentos, quais ferramentas, qual histórico |
 

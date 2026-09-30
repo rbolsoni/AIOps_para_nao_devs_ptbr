@@ -15,7 +15,7 @@
     },
     {
       "id": 2,
-      "prompt": "Desde o deploy de hoje o checkout dá erro 500 em produção.",
+      "prompt": "Desde o deploy de hoje a tela de login dá erro 500 em produção.",
       "expected_output": "O agente identifica o ambiente, coleta evidência (logs com horário, requisição que falhou), compara com o que mudou no deploy, considera voltar a versão anterior para conter o dano enquanto investiga, reproduz em homologação e corrige com teste.",
       "assertions": [
         "Pede ou busca evidência concreta (logs com horário, resposta da requisição) antes de mudar código",

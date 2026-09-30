@@ -43,8 +43,10 @@ quando a cobertura subir de verdade, nunca para o valor exato medido.
 1. **Português do Brasil**, direto, no imperativo, explicando o porquê das regras.
 2. **Escrito do zero.** Nada copiado de outros repositórios ou documentos, nem trechos
    (ADR 0004). Inspiração vai para `docs/inspiracoes.md`.
-3. **Agnóstico** de modelo, fornecedor e linguagem. Comando específico de uma stack vem
-   acompanhado dos equivalentes ou fica numa referência por stack.
+3. **Agnóstico** de modelo, fornecedor, linguagem e tipo de aplicação. Comando específico
+   de uma stack vem acompanhado dos equivalentes ou fica numa referência por stack. Exemplo
+   não presume um domínio (loja, por exemplo): use nomes genéricos (registro, saldo,
+   cadastro) ou varie os domínios entre os exemplos, para o kit servir a qualquer aplicação.
 4. **Só o que o agente não sabe sozinho**: armadilhas reais, padrões escolhidos,
    procedimentos. Não explique o óbvio. Dê um padrão, não um menu.
 5. **`SKILL.md` com menos de 500 linhas**; detalhes em `references/`, dizendo **quando** ler

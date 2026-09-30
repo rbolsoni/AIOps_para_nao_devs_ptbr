@@ -25,7 +25,7 @@
     },
     {
       "id": 3,
-      "prompt": "Cria a tela que lista os pedidos do usuário buscando na API.",
+      "prompt": "Cria a tela que lista as consultas agendadas do usuário buscando na API.",
       "expected_output": "A tela trata os quatro estados de forma acessível: carregando com texto e aria-busy, vazio com mensagem e próxima ação, erro em texto anunciado (role=\"alert\" ou aria-live) com como resolver, e sucesso anunciado; nada comunicado só por cor ou animação.",
       "assertions": [
         "O carregamento tem texto e aria-busy, não só um ícone",

@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "A listagem de pedidos demora uns 8 segundos pra abrir. Deixa mais rápido.",
+      "prompt": "A listagem de pacientes demora uns 8 segundos pra abrir. Deixa mais rápido.",
       "expected_output": "O agente mede antes (tempo da rota, plano de execução), procura N+1, falta de índice e ausência de paginação, corrige uma coisa por vez e mostra o número antes e depois.",
       "assertions": [
         "Mede o tempo antes de mudar o código",

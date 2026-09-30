@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Segurança de aplicação
@@ -47,7 +47,7 @@ Responda por escrito, no PR ou num ADR:
   acesso.
 - **Negar por padrão**; liberar explicitamente.
 - **Por objeto**: não basta estar logado — confira que *este* usuário pode ver *este*
-  pedido (falha clássica: trocar o ID na URL e ver o pedido de outra pessoa).
+  registro (falha clássica: trocar o ID na URL e ver o registro de outra pessoa).
 - **Camadas independentes para papéis críticos**: middleware + função/política no banco +
   trigger que impede autopromoção (skill `mudancas-de-banco`).
 - **Bloqueio de conta vale no banco** e encerra as sessões ativas; não só esconde a tela.

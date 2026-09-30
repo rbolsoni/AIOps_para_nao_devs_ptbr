@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.0.0"
+  versao: "1.0.1"
 ---
 
 # Desempenho e escalabilidade
@@ -18,7 +18,7 @@ defeitos. Esta skill separa um do outro e dá o método.
 
 ## Regras
 
-1. **Meça antes e depois, com número.** "Está lento" vira "a rota de pedidos leva 2,3 s no
+1. **Meça antes e depois, com número.** "Está lento" vira "a rota de relatórios leva 2,3 s no
    percentil 95" ou "o LCP da página inicial é 4,1 s no celular". Mude uma coisa por vez e meça
    de novo do mesmo jeito: sem o número de antes, não há como provar a melhora.
 2. **Orçamento de desempenho vira checagem.** Defina metas (tempo das rotas principais, Core Web

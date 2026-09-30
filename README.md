@@ -144,8 +144,9 @@ A skill `iniciar-projeto` pergunta o estágio e dimensiona o plano a ele
 
 ## Princípios
 
-- **Agnóstico**: nenhuma skill depende de um modelo de IA, fornecedor ou linguagem de
-  programação. Onde há comando, há o equivalente por stack.
+- **Agnóstico**: nenhuma skill depende de um modelo de IA, fornecedor, linguagem de
+  programação ou tipo de aplicação. Onde há comando, há o equivalente por stack; os
+  exemplos usam nomes genéricos ou domínios variados, para servir de base a qualquer app.
 - **Lições reais antes de teoria**: as seções "Armadilhas" vêm de incidentes que aconteceram.
 - **A trava é código, não promessa**: o que pode ser verificado por script vira checagem na
   esteira.

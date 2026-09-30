@@ -14,7 +14,7 @@
 
 | Tipo | Serve para | Exemplo |
 |---|---|---|
-| Asserção por código | o que é objetivo | JSON válido; ferramenta `buscar_pedido` chamada com o ID certo; resposta contém o número do pedido |
+| Asserção por código | o que é objetivo | JSON válido; ferramenta `buscar_registro` chamada com o ID certo; resposta contém o número do registro |
 | Juiz por modelo | qualidade com critério claro | "a resposta explica o motivo da recusa e oferece alternativa" — com rubrica e exigência de citar o trecho |
 | Revisão humana | o que ninguém pensou em verificar | amostra de saídas lidas por alguém do domínio |
 

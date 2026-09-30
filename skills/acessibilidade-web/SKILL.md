@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: seguranca-e-conformidade
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Acessibilidade web
@@ -51,8 +51,8 @@ quem não enxerga a tela:
 
 - **Carregando**: indicador com texto ("Carregando pedidos…"), não só um ícone girando; a
   região que atualiza leva `aria-busy="true"` enquanto carrega.
-- **Vazio**: mensagem que explica e aponta a próxima ação ("Nenhum pedido ainda. Criar
-  pedido").
+- **Vazio**: mensagem que explica e aponta a próxima ação ("Nenhuma tarefa ainda. Criar
+  tarefa").
 - **Erro**: o que houve e como resolver, em texto, anunciado com `role="alert"` (ou numa
   região `aria-live`); nunca só a borda vermelha.
 - **Sucesso**: confirmação anunciada (`aria-live="polite"`) que não some antes de dar tempo de

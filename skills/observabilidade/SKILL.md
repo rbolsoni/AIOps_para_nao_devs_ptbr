@@ -8,7 +8,7 @@ description: >-
 license: MIT
 metadata:
   categoria: operacao
-  versao: "1.0.2"
+  versao: "1.0.3"
 ---
 
 # Observabilidade
@@ -22,7 +22,7 @@ Observabilidade é conseguir responder "o que está acontecendo e por quê?" sem
   nome do serviço, ambiente e um **identificador de correlação** por requisição/tarefa que
   atravessa todos os serviços.
 - **Mensagem que responde o quê, onde e com qual entrada** (identificadores, não dados
-  pessoais): `pedido 8f2c… recusado: estoque insuficiente (item 91, pedido 3, disponível 1)`.
+  pessoais): `registro 8f2c… recusado: limite de uso excedido (recurso 91, limite 3, uso 4)`.
 - **Nunca registre**: senha, token, chave, cookie de sessão, cabeçalho `Authorization`, número
   de cartão, documento completo, corpo inteiro de requisição com dados pessoais. Mascare na
   origem; filtros depois do fato falham.
@@ -49,8 +49,8 @@ Observabilidade é conseguir responder "o que está acontecendo e por quê?" sem
 - Por recurso: uso, saturação e erros (CPU, memória, conexões de banco, fila).
 - Rastreamento distribuído com OpenTelemetry quando houver mais de um serviço; propague o
   identificador de correlação.
-- Métricas de negócio que denunciam falha silenciosa: pedidos por hora, cadastros,
-  pagamentos aprovados. Um zero inesperado aqui é um incidente.
+- Métricas de negócio que denunciam falha silenciosa: cadastros por hora, conversões,
+  processamentos com sucesso. Um zero inesperado aqui é um incidente.
 - **Telemetria também custa**: volume de logs, retenção e amostragem entram na conta; alerte
   gasto anormal (`controle-de-custos`).
 

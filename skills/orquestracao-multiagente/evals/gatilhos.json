@@ -6,5 +6,5 @@
   { "query": "valida de forma independente se a documentação bate com o código", "should_trigger": true },
   { "query": "cria um chatbot de atendimento com LLM para o site", "should_trigger": false },
   { "query": "organiza as tarefas da equipe no quadro do Trello", "should_trigger": false },
-  { "query": "revisa o meu PR de correção do cálculo de frete", "should_trigger": false }
+  { "query": "revisa o meu PR de correção do cálculo de juros", "should_trigger": false }
 ]

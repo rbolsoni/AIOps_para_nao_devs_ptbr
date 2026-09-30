@@ -3,7 +3,7 @@
   { "query": "esse teste passa na minha máquina e falha no CI de vez em quando", "should_trigger": true },
   { "query": "como eu testo esse fluxo de login de ponta a ponta com Playwright?", "should_trigger": true },
   { "query": "a cobertura de testes está baixa, como aumento sem fazer teste inútil?", "should_trigger": true },
-  { "query": "o valor do frete sai errado para o Nordeste, corrige", "should_trigger": true },
+  { "query": "o cálculo das horas extras sai errado no fim de semana, corrige", "should_trigger": true },
   { "query": "quero fazer um teste A/B no botão de comprar para ver qual converte mais", "should_trigger": false },
   { "query": "sobe uma máquina na AWS com Terraform para a equipe de QA usar", "should_trigger": false },
   { "query": "cria um questionário de teste de personalidade para o site", "should_trigger": false }

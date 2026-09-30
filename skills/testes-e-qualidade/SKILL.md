@@ -7,7 +7,7 @@ description: >-
 license: MIT
 metadata:
   categoria: projeto-e-entrega
-  versao: "1.1.0"
+  versao: "1.1.1"
 ---
 
 # Testes e qualidade
@@ -39,7 +39,7 @@ Priorize pelo risco: o que, se quebrar, causa prejuízo ou vaza dado, tem teste 
 5. **Não simule o que você não controla por dentro.** Envolva a biblioteca externa num
    adaptador seu e simule o adaptador; teste o adaptador contra a coisa real num teste de
    integração.
-6. **Nomes que contam a regra**: `recusa_pedido_quando_estoque_insuficiente`, não
+6. **Nomes que contam a regra**: `rejeita_cadastro_se_email_duplicado`, não
    `teste2`.
 7. **Teste contra o ambiente certo.** Integração e E2E rodam contra local ou homologação,
    nunca produção (skill `isolamento-de-ambientes`). Prévia protegida por senha/SSO exige o

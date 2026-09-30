@@ -21,7 +21,7 @@ O que procurar:
 |---|---|---|
 | Prisma | `findMany` seguido de uma consulta por item | `include` ou `select` aninhado |
 | Django | acesso a chave estrangeira ou relação reversa dentro do laço | `select_related` (FK e 1:1) e `prefetch_related` (N:N e reversa) |
-| Rails (Active Record) | `pedido.cliente` dentro do laço | `includes` (ou `preload` e `eager_load`) |
+| Rails (Active Record) | `comentario.autor` dentro do laço | `includes` (ou `preload` e `eager_load`) |
 | SQLAlchemy | relação preguiçosa acessada no laço | `selectinload` ou `joinedload` |
 | Entity Framework | propriedade de navegação acessada no laço | `Include` e `ThenInclude` |
 
@@ -32,12 +32,12 @@ não cresce com o número de itens.
 
 ```sql
 -- primeira página
-select id, criado_em, total from pedidos
+select id, criado_em, assunto from mensagens
 order by criado_em desc, id desc
 limit 50;
 
 -- próximas páginas: continue depois da última linha recebida
-select id, criado_em, total from pedidos
+select id, criado_em, assunto from mensagens
 where (criado_em, id) < (:ultimo_criado_em, :ultimo_id)
 order by criado_em desc, id desc
 limit 50;

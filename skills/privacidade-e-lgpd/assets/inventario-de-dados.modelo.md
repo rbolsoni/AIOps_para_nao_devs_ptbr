@@ -37,4 +37,4 @@ Encarregado (DPO): <nome e contato público>
 
 | Dado | Motivo legal | Prazo |
 |---|---|---|
-| <ex.: dados fiscais do pedido> | <obrigação legal> | <prazo> |
+| <ex.: dados fiscais do cadastro> | <obrigação legal> | <prazo> |

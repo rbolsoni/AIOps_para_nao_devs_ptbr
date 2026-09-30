@@ -3,12 +3,12 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Quero um agente que lê os e-mails de clientes, consulta os pedidos no banco e responde automaticamente, podendo emitir reembolso. Desenha a arquitetura sem me prender a um fornecedor de LLM.",
+      "prompt": "Quero um agente que lê os e-mails de alunos, consulta as matrículas no banco e responde automaticamente, podendo emitir reembolso. Desenha a arquitetura sem me prender a um fornecedor de LLM.",
       "expected_output": "Arquitetura com harness que valida e autoriza ações, ferramentas estreitas com classes de risco (reembolso com aprovação humana e limite no código), e-mail tratado como conteúdo não confiável, credenciais fora do contexto, adaptador de provedor, orçamento e condições de parada, rastreamento e avaliações.",
       "assertions": [
         "O reembolso exige aprovação humana e tem limite aplicado no código",
         "O conteúdo dos e-mails é tratado como dado não confiável (risco de prompt injection)",
-        "Consultas ao banco são filtradas pelo cliente no código, não por instrução no prompt",
+        "Consultas ao banco são filtradas pelo aluno no código, não por instrução no prompt",
         "Há camada de adaptação de provedor para trocar de modelo por configuração",
         "Define orçamento, condições de parada e rastreamento por passo"
       ]
