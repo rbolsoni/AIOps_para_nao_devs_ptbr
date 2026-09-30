@@ -309,3 +309,13 @@ describe('arquivos de instrução do próprio repositório', () => {
     }
   });
 });
+
+describe('perfis de instalação (docs/instalacao.md)', () => {
+  it('juntos, os perfis cobrem todas as skills, cada uma uma única vez', () => {
+    const texto = readFileSync(path.join(RAIZ, 'docs', 'instalacao.md'), 'utf8');
+    const secao = texto.slice(texto.indexOf('### Perfis'), texto.indexOf('## 2. Copiar as pastas'));
+    const nosPerfis = [...secao.matchAll(/-s ([a-z0-9-]+)/g)].map((m) => m[1]).sort();
+    const skills = skillsDoRepositorio().map((s) => s.pasta).sort();
+    assert.deepEqual(nosPerfis, skills, 'skill nova precisa entrar em um perfil (e só em um)');
+  });
+});
