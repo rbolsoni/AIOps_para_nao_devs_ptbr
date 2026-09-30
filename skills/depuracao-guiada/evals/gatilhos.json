@@ -1,0 +1,10 @@
+[
+  { "query": "não funciona, clico em salvar e nada acontece", "should_trigger": true },
+  { "query": "deu erro quando tento fazer login", "should_trigger": true },
+  { "query": "quebrou tudo depois que atualizei as dependências", "should_trigger": true },
+  { "query": "tá em loop tentando consertar e só piora", "should_trigger": true },
+  { "query": "a tela ficou branca depois do deploy", "should_trigger": true },
+  { "query": "adiciona um botão de exportar a lista para Excel", "should_trigger": false },
+  { "query": "o que é um stack trace? só quero entender o conceito", "should_trigger": false },
+  { "query": "faz uma revisão de segurança do fluxo de login", "should_trigger": false }
+]
